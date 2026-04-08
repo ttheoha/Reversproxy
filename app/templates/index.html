@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse Proxy Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            color: #38bdf8;
+        }
+        .flash {
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        .flash.success { background: #065f46; color: #6ee7b7; }
+        .flash.error { background: #7f1d1d; color: #fca5a5; }
+
+        /* Add form */
+        .add-form {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid #334155;
+        }
+        .add-form h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #94a3b8; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 120px auto;
+            gap: 0.75rem;
+            align-items: end;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.3rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #38bdf8;
+        }
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-add { background: #0ea5e9; color: #fff; }
+        .btn-add:hover { background: #0284c7; }
+        .btn-delete { background: #dc2626; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-delete:hover { background: #b91c1c; }
+        .btn-edit { background: #f59e0b; color: #000; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-edit:hover { background: #d97706; }
+        .btn-save { background: #22c55e; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-save:hover { background: #16a34a; }
+        .btn-cancel { background: #64748b; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+        .btn-cancel:hover { background: #475569; }
+
+        /* Table */
+        .routes-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        .routes-table th {
+            background: #334155;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            letter-spacing: 0.05em;
+        }
+        .routes-table td {
+            padding: 0.75rem 1rem;
+            border-top: 1px solid #334155;
+            font-size: 0.9rem;
+        }
+        .routes-table tr:hover { background: #263348; }
+        .port-badge {
+            display: inline-block;
+            background: #1e3a5f;
+            color: #38bdf8;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .actions { display: flex; gap: 0.4rem; }
+        .empty {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        /* Edit row */
+        .edit-input {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 700px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Reverse Proxy Manager</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <div class="add-form">
+            <h2>Ajouter une redirection</h2>
+            <form method="POST" action="{{ url_for('add_route') }}">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="domain">Domaine / Host</label>
+                        <input type="text" id="domain" name="domain" placeholder="exemple.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="target">Cible (IP:port ou URL)</label>
+                        <input type="text" id="target" name="target" placeholder="http://192.168.1.10:8080" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="listen_port">Port d'écoute</label>
+                        <input type="number" id="listen_port" name="listen_port" value="443" min="1" max="65535">
+                    </div>
+                    <button type="submit" class="btn btn-add">Ajouter</button>
+                </div>
+            </form>
+        </div>
+
+        {% if routes %}
+        <table class="routes-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Domaine</th>
+                    <th>Cible</th>
+                    <th>Port</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for route in routes %}
+                <tr id="row-{{ loop.index0 }}">
+                    <td>{{ loop.index }}</td>
+                    <td class="cell-domain">{{ route.domain }}</td>
+                    <td class="cell-target">{{ route.target }}</td>
+                    <td class="cell-port"><span class="port-badge">{{ route.listen_port | default('443') }}</span></td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn btn-edit" onclick="startEdit({{ loop.index0 }}, '{{ route.domain }}', '{{ route.target }}', '{{ route.listen_port | default('443') }}')">Modifier</button>
+                            <form method="POST" action="{{ url_for('delete_route', route_id=loop.index0) }}" onsubmit="return confirm('Supprimer cette route ?')">
+                                <button type="submit" class="btn btn-delete">Supprimer</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Aucune redirection configurée. Ajoutez-en une ci-dessus.</div>
+        {% endif %}
+    </div>
+
+    <script>
+        function startEdit(id, domain, target, port) {
+            const row = document.getElementById('row-' + id);
+            const cells = row.querySelectorAll('td');
+            cells[1].innerHTML = '<input class="edit-input" name="domain" value="' + domain + '" id="edit-domain-' + id + '">';
+            cells[2].innerHTML = '<input class="edit-input" name="target" value="' + target + '" id="edit-target-' + id + '">';
+            cells[3].innerHTML = '<input class="edit-input" name="listen_port" type="number" value="' + port + '" id="edit-port-' + id + '" style="width:80px">';
+            cells[4].innerHTML = '<div class="actions">' +
+                '<button class="btn btn-save" onclick="saveEdit(' + id + ')">Sauver</button>' +
+                '<button class="btn btn-cancel" onclick="location.reload()">Annuler</button></div>';
+        }
+
+        function saveEdit(id) {
+            const domain = document.getElementById('edit-domain-' + id).value;
+            const target = document.getElementById('edit-target-' + id).value;
+            const port = document.getElementById('edit-port-' + id).value;
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/edit/' + id;
+            [['domain', domain], ['target', target], ['listen_port', port]].forEach(function(pair) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = pair[0];
+                input.value = pair[1];
+                form.appendChild(input);
+            });
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
+</body>
+</html>

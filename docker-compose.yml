@@ -1,0 +1,15 @@
+services:
+  reverseproxy:
+    build: .
+    container_name: reverseproxy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+      - proxy-data:/data
+    environment:
+      - SECRET_KEY=changez-moi-en-production
+
+volumes:
+  proxy-data:

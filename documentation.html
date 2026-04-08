@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Documentation - Reverse Proxy Manager</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 18mm 25mm 18mm;
+            @bottom-center {
+                content: "Reverse Proxy Manager — Documentation technique";
+                font-size: 8pt;
+                color: #888;
+            }
+            @bottom-right {
+                content: counter(page) " / " counter(pages);
+                font-size: 8pt;
+                color: #888;
+            }
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.6;
+            color: #1a1a2e;
+            background: #fff;
+        }
+
+        /* Cover page */
+        .cover {
+            page-break-after: always;
+            text-align: center;
+            padding-top: 120px;
+        }
+        .cover h1 {
+            font-size: 36pt;
+            color: #0ea5e9;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        .cover .subtitle {
+            font-size: 16pt;
+            color: #475569;
+            margin-bottom: 60px;
+        }
+        .cover .meta {
+            font-size: 11pt;
+            color: #64748b;
+            line-height: 2;
+        }
+        .cover .logo-box {
+            display: inline-block;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            border-radius: 24px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        .cover .logo-box svg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* TOC */
+        .toc {
+            page-break-after: always;
+        }
+        .toc h2 {
+            font-size: 20pt;
+            color: #0ea5e9;
+            border-bottom: 3px solid #0ea5e9;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+        }
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        .toc li {
+            padding: 6px 0;
+            border-bottom: 1px dotted #cbd5e1;
+            font-size: 11pt;
+        }
+        .toc li a {
+            text-decoration: none;
+            color: #1e293b;
+        }
+        .toc li .num {
+            display: inline-block;
+            width: 35px;
+            font-weight: 700;
+            color: #0ea5e9;
+        }
+        .toc li.sub {
+            padding-left: 35px;
+            font-size: 10pt;
+            color: #475569;
+        }
+        .toc li.sub .num {
+            width: 45px;
+        }
+
+        /* Headings */
+        h2 {
+            font-size: 18pt;
+            color: #0ea5e9;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 14pt;
+            color: #334155;
+            margin-top: 22px;
+            margin-bottom: 10px;
+            page-break-after: avoid;
+        }
+        h4 {
+            font-size: 12pt;
+            color: #475569;
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        /* Content */
+        p { margin-bottom: 10px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px 0;
+            font-size: 10pt;
+            page-break-inside: avoid;
+        }
+        th {
+            background: #0ea5e9;
+            color: #fff;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        tr:nth-child(even) td {
+            background: #f8fafc;
+        }
+
+        code {
+            font-family: 'Consolas', 'Fira Code', 'Courier New', monospace;
+            background: #f1f5f9;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 9.5pt;
+            color: #0f172a;
+        }
+
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 9pt;
+            line-height: 1.5;
+            overflow-x: auto;
+            margin: 12px 0 18px 0;
+            page-break-inside: avoid;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e2e8f0;
+            font-size: 9pt;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 14px 0;
+            font-size: 10pt;
+        }
+        .info-box strong { color: #1d4ed8; }
+
+        .warn-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 14px 0;
+            font-size: 10pt;
+        }
+        .warn-box strong { color: #92400e; }
+
+        .danger-box {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            padding: 12px 16px;
+            border-radius: 0 8px 8px 0;
+            margin: 14px 0;
+            font-size: 10pt;
+        }
+        .danger-box strong { color: #991b1b; }
+
+        /* Diagrams */
+        .diagram {
+            text-align: center;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        .diagram svg {
+            max-width: 100%;
+        }
+        .diagram-caption {
+            font-size: 9pt;
+            color: #64748b;
+            font-style: italic;
+            margin-top: 6px;
+        }
+
+        .section { page-break-before: always; }
+        .section:first-of-type { page-break-before: avoid; }
+
+        ul, ol { margin-bottom: 10px; padding-left: 22px; }
+        li { margin-bottom: 4px; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: 600;
+        }
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+        .badge-green { background: #dcfce7; color: #166534; }
+        .badge-orange { background: #ffedd5; color: #9a3412; }
+        .badge-red { background: #fee2e2; color: #991b1b; }
+
+        .file-tree {
+            font-family: 'Consolas', monospace;
+            font-size: 9.5pt;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 14px 18px;
+            line-height: 1.7;
+            margin: 12px 0;
+        }
+
+        .page-break { page-break-before: always; }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- PAGE DE COUVERTURE                                           -->
+<!-- ============================================================ -->
+<div class="cover">
+    <div class="logo-box">
+        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <path d="M32 8 L56 20 L56 44 L32 56 L8 44 L8 20 Z" stroke="white" stroke-width="2.5" fill="none"/>
+            <circle cx="32" cy="32" r="8" stroke="white" stroke-width="2" fill="none"/>
+            <line x1="32" y1="8" x2="32" y2="24" stroke="white" stroke-width="1.5"/>
+            <line x1="32" y1="40" x2="32" y2="56" stroke="white" stroke-width="1.5"/>
+            <line x1="8" y1="20" x2="24" y2="28" stroke="white" stroke-width="1.5"/>
+            <line x1="40" y1="36" x2="56" y2="44" stroke="white" stroke-width="1.5"/>
+            <line x1="8" y1="44" x2="24" y2="36" stroke="white" stroke-width="1.5"/>
+            <line x1="40" y1="28" x2="56" y2="20" stroke="white" stroke-width="1.5"/>
+        </svg>
+    </div>
+    <h1>Reverse Proxy Manager</h1>
+    <div class="subtitle">Documentation Technique Exhaustive</div>
+    <hr style="border: none; border-top: 2px solid #e2e8f0; width: 200px; margin: 40px auto;">
+    <div class="meta">
+        <strong>Version :</strong> 1.0<br>
+        <strong>Date :</strong> 8 avril 2026<br>
+        <strong>Auteur :</strong> Equipe d'infrastructure<br>
+        <strong>Classification :</strong> Documentation interne<br>
+        <strong>Technologies :</strong> Docker &bull; Nginx &bull; Flask &bull; Python 3 &bull; Supervisor
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TABLE DES MATIERES                                           -->
+<!-- ============================================================ -->
+<div class="toc">
+    <h2>Table des matieres</h2>
+    <ul>
+        <li><span class="num">1</span> Introduction et objectifs du projet</li>
+        <li><span class="num">2</span> Architecture globale</li>
+        <li class="sub"><span class="num">2.1</span> Vue d'ensemble</li>
+        <li class="sub"><span class="num">2.2</span> Diagramme d'architecture</li>
+        <li class="sub"><span class="num">2.3</span> Flux reseau</li>
+        <li><span class="num">3</span> Arborescence du projet</li>
+        <li><span class="num">4</span> Installation et deploiement</li>
+        <li class="sub"><span class="num">4.1</span> Prerequis</li>
+        <li class="sub"><span class="num">4.2</span> Generation des certificats SSL</li>
+        <li class="sub"><span class="num">4.3</span> Construction et lancement</li>
+        <li class="sub"><span class="num">4.4</span> Verification du deploiement</li>
+        <li><span class="num">5</span> Configuration Docker</li>
+        <li class="sub"><span class="num">5.1</span> Dockerfile</li>
+        <li class="sub"><span class="num">5.2</span> Docker Compose</li>
+        <li><span class="num">6</span> Configuration Nginx</li>
+        <li class="sub"><span class="num">6.1</span> Configuration principale</li>
+        <li class="sub"><span class="num">6.2</span> Generation dynamique des routes</li>
+        <li><span class="num">7</span> Application Flask</li>
+        <li class="sub"><span class="num">7.1</span> Structure de l'application</li>
+        <li class="sub"><span class="num">7.2</span> API et routes HTTP</li>
+        <li class="sub"><span class="num">7.3</span> Gestion des donnees</li>
+        <li class="sub"><span class="num">7.4</span> Interface utilisateur</li>
+        <li><span class="num">8</span> Gestion des processus (Supervisor)</li>
+        <li><span class="num">9</span> Securite SSL/TLS</li>
+        <li class="sub"><span class="num">9.1</span> Certificats auto-signes</li>
+        <li class="sub"><span class="num">9.2</span> Protocoles et chiffrement</li>
+        <li><span class="num">10</span> Guide d'utilisation</li>
+        <li class="sub"><span class="num">10.1</span> Ajouter une route</li>
+        <li class="sub"><span class="num">10.2</span> Modifier une route</li>
+        <li class="sub"><span class="num">10.3</span> Supprimer une route</li>
+        <li><span class="num">11</span> Maintenance et operations</li>
+        <li><span class="num">12</span> Securite et recommandations de production</li>
+        <li><span class="num">13</span> Annexes</li>
+        <li class="sub"><span class="num">A</span> Code source complet — app.py</li>
+        <li class="sub"><span class="num">B</span> Code source complet — index.html</li>
+        <li class="sub"><span class="num">C</span> Fichiers de configuration complets</li>
+        <li class="sub"><span class="num">D</span> Schema JSON des routes</li>
+        <li class="sub"><span class="num">E</span> Glossaire</li>
+    </ul>
+</div>
+
+<!-- ============================================================ -->
+<!-- 1. INTRODUCTION                                               -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>1. Introduction et objectifs du projet</h2>
+    <p>
+        Le <strong>Reverse Proxy Manager</strong> est une solution auto-hebergee permettant la gestion dynamique
+        de regles de reverse proxy Nginx via une interface web intuitive. L'ensemble de l'application fonctionne
+        dans un unique conteneur Docker, combinant un serveur Nginx performant et une application d'administration
+        Flask.
+    </p>
+    <h3>Objectifs</h3>
+    <ul>
+        <li><strong>Simplifier</strong> la configuration de reverse proxy sans editer manuellement les fichiers Nginx.</li>
+        <li><strong>Centraliser</strong> la gestion des redirections dans une interface unique accessible via HTTPS.</li>
+        <li><strong>Automatiser</strong> la validation et le rechargement de Nginx apres chaque modification.</li>
+        <li><strong>Persister</strong> les configurations entre les redemarrages grace a un volume Docker dedie.</li>
+        <li><strong>Securiser</strong> les communications avec TLS 1.2/1.3 par defaut.</li>
+    </ul>
+
+    <h3>Cas d'usage</h3>
+    <table>
+        <tr><th>Scenario</th><th>Description</th></tr>
+        <tr><td>Homelab / Self-hosting</td><td>Exposer plusieurs services internes (Nextcloud, Gitea, Jellyfin...) derriere un point d'entree unique.</td></tr>
+        <tr><td>Environnement de developpement</td><td>Router dynamiquement le trafic vers differents microservices en cours de developpement.</td></tr>
+        <tr><td>Infrastructure interne</td><td>Fournir un point d'entree HTTPS unifie pour des applications internes sans certificat propre.</td></tr>
+    </table>
+
+    <h3>Stack technique</h3>
+    <table>
+        <tr><th>Composant</th><th>Technologie</th><th>Version</th><th>Role</th></tr>
+        <tr><td>Reverse Proxy</td><td>Nginx</td><td>1.27 (Alpine)</td><td>Terminaison TLS, routage HTTP(S)</td></tr>
+        <tr><td>Application web</td><td>Flask</td><td>3.1.0</td><td>Interface d'administration</td></tr>
+        <tr><td>Serveur WSGI</td><td>Gunicorn</td><td>23.0.0</td><td>Serveur d'application Python</td></tr>
+        <tr><td>Gestionnaire de processus</td><td>Supervisor</td><td>Alpine pkg</td><td>Orchestration des services internes</td></tr>
+        <tr><td>Conteneurisation</td><td>Docker + Compose</td><td>-</td><td>Deploiement et isolation</td></tr>
+        <tr><td>Langage</td><td>Python 3</td><td>Alpine pkg</td><td>Logique applicative</td></tr>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 2. ARCHITECTURE                                               -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>2. Architecture globale</h2>
+
+    <h3>2.1 Vue d'ensemble</h3>
+    <p>
+        L'architecture repose sur un conteneur Docker unique hebergeant deux processus geres par Supervisor :
+        Nginx (reverse proxy) et Gunicorn/Flask (administration). L'interface web genere dynamiquement des fichiers
+        de configuration Nginx et recharge le serveur a chaud sans interruption de service.
+    </p>
+
+    <h3>2.2 Diagramme d'architecture</h3>
+    <div class="diagram">
+        <svg width="720" height="520" viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background container -->
+            <rect x="140" y="80" width="440" height="420" rx="16" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="8,4"/>
+            <text x="360" y="110" text-anchor="middle" font-size="14" font-weight="700" fill="#0ea5e9">Conteneur Docker : reverseproxy</text>
+
+            <!-- Supervisor -->
+            <rect x="170" y="130" width="380" height="50" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+            <text x="360" y="160" text-anchor="middle" font-size="12" font-weight="600" fill="#4338ca">Supervisor (PID 1)</text>
+
+            <!-- Nginx -->
+            <rect x="170" y="210" width="180" height="120" rx="10" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="260" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Nginx 1.27</text>
+            <text x="260" y="260" text-anchor="middle" font-size="10" fill="#bae6fd">Port 443 (HTTPS)</text>
+            <text x="260" y="276" text-anchor="middle" font-size="10" fill="#bae6fd">Port 80 (redirect)</text>
+            <text x="260" y="296" text-anchor="middle" font-size="10" fill="#bae6fd">TLS 1.2 / 1.3</text>
+            <text x="260" y="316" text-anchor="middle" font-size="9" fill="#e0f2fe">default_server + conf.d/*.conf</text>
+
+            <!-- Flask -->
+            <rect x="390" y="210" width="180" height="120" rx="10" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="480" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Flask / Gunicorn</text>
+            <text x="480" y="260" text-anchor="middle" font-size="10" fill="#bbf7d0">127.0.0.1:5000</text>
+            <text x="480" y="276" text-anchor="middle" font-size="10" fill="#bbf7d0">2 workers</text>
+            <text x="480" y="296" text-anchor="middle" font-size="10" fill="#bbf7d0">Admin Panel Web</text>
+            <text x="480" y="316" text-anchor="middle" font-size="9" fill="#dcfce7">Genere proxy.conf</text>
+
+            <!-- Arrows supervisor -> nginx/flask -->
+            <line x1="260" y1="180" x2="260" y2="210" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrowViolet)"/>
+            <line x1="480" y1="180" x2="480" y2="210" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrowViolet)"/>
+
+            <!-- Nginx -> Flask internal -->
+            <path d="M350 270 L390 270" stroke="#334155" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowGray)"/>
+            <text x="370" y="264" text-anchor="middle" font-size="8" fill="#64748b">proxy_pass</text>
+
+            <!-- Flask -> proxy.conf -->
+            <rect x="350" y="370" width="200" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+            <text x="450" y="395" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">/etc/nginx/conf.d/proxy.conf</text>
+
+            <line x1="480" y1="330" x2="480" y2="370" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+            <text x="500" y="354" font-size="8" fill="#92400e">generate</text>
+
+            <!-- proxy.conf -> nginx -->
+            <path d="M350 390 L260 390 L260 330" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowOrange)"/>
+            <text x="290" y="384" font-size="8" fill="#92400e">include</text>
+
+            <!-- Routes.json volume -->
+            <rect x="170" y="440" width="160" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="250" y="465" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">/data/routes.json</text>
+            <text x="250" y="490" text-anchor="middle" font-size="8" fill="#3b82f6">Volume: proxy-data</text>
+
+            <line x1="480" y1="330" x2="330" y2="455" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="420" y="404" font-size="8" fill="#1d4ed8">read/write</text>
+
+            <!-- Certs -->
+            <rect x="400" y="440" width="160" height="40" rx="6" fill="#fce7f3" stroke="#ec4899" stroke-width="1"/>
+            <text x="480" y="465" text-anchor="middle" font-size="10" font-weight="600" fill="#9d174d">/etc/nginx/certs/</text>
+            <text x="480" y="490" text-anchor="middle" font-size="8" fill="#ec4899">Volume: ./certs (ro)</text>
+
+            <!-- External clients -->
+            <rect x="10" y="230" width="100" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="60" y="256" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Clients</text>
+            <text x="60" y="274" text-anchor="middle" font-size="9" fill="#64748b">Navigateurs</text>
+            <line x1="110" y1="260" x2="170" y2="260" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowBlue)"/>
+            <text x="140" y="252" text-anchor="middle" font-size="8" fill="#0ea5e9">HTTPS</text>
+
+            <!-- Backend services -->
+            <rect x="620" y="200" width="90" height="100" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="665" y="230" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Services</text>
+            <text x="665" y="248" text-anchor="middle" font-size="9" fill="#64748b">Backend 1</text>
+            <text x="665" y="264" text-anchor="middle" font-size="9" fill="#64748b">Backend 2</text>
+            <text x="665" y="280" text-anchor="middle" font-size="9" fill="#64748b">Backend N</text>
+            <line x1="580" y1="260" x2="620" y2="260" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+            <text x="600" y="252" text-anchor="middle" font-size="8" fill="#64748b">proxy</text>
+
+            <!-- Arrow markers -->
+            <defs>
+                <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
+                <marker id="arrowViolet" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#6366f1"/></marker>
+                <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#64748b"/></marker>
+                <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f59e0b"/></marker>
+            </defs>
+        </svg>
+        <div class="diagram-caption">Figure 1 — Architecture interne du conteneur Reverse Proxy Manager</div>
+    </div>
+
+    <h3>2.3 Flux reseau</h3>
+    <div class="diagram">
+        <svg width="700" height="300" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+            <!-- Client -->
+            <rect x="20" y="100" width="100" height="70" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="70" y="130" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Client</text>
+            <text x="70" y="150" text-anchor="middle" font-size="9" fill="#64748b">Navigateur</text>
+
+            <!-- Arrow 1: HTTP -->
+            <line x1="120" y1="120" x2="200" y2="120" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+            <text x="160" y="112" text-anchor="middle" font-size="9" fill="#ef4444">HTTP :80</text>
+
+            <!-- Nginx redirect -->
+            <rect x="200" y="90" width="130" height="50" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+            <text x="265" y="112" text-anchor="middle" font-size="10" font-weight="600" fill="#991b1b">301 Redirect</text>
+            <text x="265" y="128" text-anchor="middle" font-size="9" fill="#dc2626">HTTP → HTTPS</text>
+
+            <!-- Arrow 2: HTTPS -->
+            <line x1="120" y1="155" x2="200" y2="155" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowBlue2)"/>
+            <text x="160" y="170" text-anchor="middle" font-size="9" fill="#0ea5e9">HTTPS :443</text>
+
+            <!-- Nginx main -->
+            <rect x="200" y="170" width="130" height="70" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="265" y="195" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Nginx</text>
+            <text x="265" y="212" text-anchor="middle" font-size="9" fill="#bae6fd">TLS Termination</text>
+            <text x="265" y="228" text-anchor="middle" font-size="9" fill="#bae6fd">Routing</text>
+
+            <!-- Arrow to Admin panel -->
+            <line x1="330" y1="190" x2="420" y2="190" stroke="#22c55e" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+            <text x="375" y="182" text-anchor="middle" font-size="8" fill="#16a34a">server_name _</text>
+
+            <!-- Admin Flask -->
+            <rect x="420" y="170" width="120" height="50" rx="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="480" y="192" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Flask Admin</text>
+            <text x="480" y="208" text-anchor="middle" font-size="9" fill="#bbf7d0">:5000 (local)</text>
+
+            <!-- Arrow to Backends -->
+            <line x1="330" y1="220" x2="420" y2="260" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+            <text x="360" y="248" font-size="8" fill="#7c3aed">server_name X</text>
+
+            <!-- Backend -->
+            <rect x="420" y="240" width="120" height="50" rx="8" fill="#8b5cf6" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="480" y="262" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Backend</text>
+            <text x="480" y="278" text-anchor="middle" font-size="9" fill="#ddd6fe">proxy_pass target</text>
+
+            <!-- Arrow to more backends -->
+            <line x1="540" y1="265" x2="590" y2="265" stroke="#64748b" stroke-width="1" stroke-dasharray="4,3"/>
+            <text x="610" y="250" font-size="9" fill="#64748b">192.168.x.x</text>
+            <text x="610" y="268" font-size="9" fill="#64748b">10.0.x.x</text>
+            <text x="610" y="286" font-size="9" fill="#64748b">172.17.x.x</text>
+
+            <defs>
+                <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ef4444"/></marker>
+                <marker id="arrowBlue2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
+                <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
+                <marker id="arrowPurple" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#8b5cf6"/></marker>
+            </defs>
+        </svg>
+        <div class="diagram-caption">Figure 2 — Flux reseau : routage du trafic entrant</div>
+    </div>
+
+    <table>
+        <tr><th>Flux</th><th>Source</th><th>Destination</th><th>Protocole</th><th>Description</th></tr>
+        <tr><td>1</td><td>Client</td><td>Nginx :80</td><td>HTTP</td><td>Redirige en 301 vers HTTPS</td></tr>
+        <tr><td>2</td><td>Client</td><td>Nginx :443</td><td>HTTPS (TLS 1.2/1.3)</td><td>Point d'entree principal</td></tr>
+        <tr><td>3</td><td>Nginx</td><td>Flask :5000</td><td>HTTP (local)</td><td>Panneau d'administration (server_name _)</td></tr>
+        <tr><td>4</td><td>Nginx</td><td>Backend cible</td><td>HTTP/HTTPS</td><td>Trafic proxy selon domaine configure</td></tr>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 3. ARBORESCENCE                                               -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>3. Arborescence du projet</h2>
+    <div class="file-tree">
+reversproxy/<br>
+├── <strong>docker-compose.yml</strong>&nbsp;&nbsp;&nbsp;&nbsp;# Orchestration Docker Compose<br>
+├── <strong>Dockerfile</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Definition de l'image conteneur<br>
+├── <strong>supervisord.conf</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Configuration du gestionnaire de processus<br>
+├── <strong>gen-certs.sh</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Script de generation de certificats SSL<br>
+├── certs/<br>
+│&nbsp;&nbsp;&nbsp;├── <strong>selfsigned.crt</strong>&nbsp;&nbsp;&nbsp;# Certificat X.509 auto-signe<br>
+│&nbsp;&nbsp;&nbsp;└── <strong>selfsigned.key</strong>&nbsp;&nbsp;&nbsp;# Cle privee RSA 2048 bits<br>
+├── nginx/<br>
+│&nbsp;&nbsp;&nbsp;└── <strong>nginx.conf</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Configuration principale Nginx<br>
+└── app/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>app.py</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Application Flask (144 lignes)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <strong>requirements.txt</strong>&nbsp;# Dependances Python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── templates/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <strong>index.html</strong>&nbsp;&nbsp;&nbsp;&nbsp;# Interface web (241 lignes)<br>
+    </div>
+
+    <table>
+        <tr><th>Fichier</th><th>Taille</th><th>Role</th></tr>
+        <tr><td><code>docker-compose.yml</code></td><td>16 lignes</td><td>Definition du service, volumes et ports</td></tr>
+        <tr><td><code>Dockerfile</code></td><td>30 lignes</td><td>Construction de l'image (nginx:1.27-alpine + Python)</td></tr>
+        <tr><td><code>supervisord.conf</code></td><td>24 lignes</td><td>Supervision de Nginx et Gunicorn</td></tr>
+        <tr><td><code>gen-certs.sh</code></td><td>20 lignes</td><td>Generation automatique des certificats SSL</td></tr>
+        <tr><td><code>nginx/nginx.conf</code></td><td>49 lignes</td><td>Serveurs virtuels, TLS, proxy_pass vers Flask</td></tr>
+        <tr><td><code>app/app.py</code></td><td>144 lignes</td><td>Logique metier : CRUD routes + generation Nginx</td></tr>
+        <tr><td><code>app/requirements.txt</code></td><td>2 lignes</td><td>Flask 3.1.0 + Gunicorn 23.0.0</td></tr>
+        <tr><td><code>app/templates/index.html</code></td><td>241 lignes</td><td>Interface SPA (HTML/CSS/JS inline)</td></tr>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 4. INSTALLATION                                               -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>4. Installation et deploiement</h2>
+
+    <h3>4.1 Prerequis</h3>
+    <table>
+        <tr><th>Composant</th><th>Version minimale</th><th>Verification</th></tr>
+        <tr><td>Docker Engine</td><td>20.10+</td><td><code>docker --version</code></td></tr>
+        <tr><td>Docker Compose</td><td>2.0+ (plugin)</td><td><code>docker compose version</code></td></tr>
+        <tr><td>OpenSSL</td><td>1.1+</td><td><code>openssl version</code></td></tr>
+        <tr><td>Bash</td><td>4.0+</td><td><code>bash --version</code></td></tr>
+    </table>
+
+    <div class="info-box">
+        <strong>Note :</strong> L'ensemble des dependances Python (Flask, Gunicorn) sont installees automatiquement
+        dans le conteneur Docker. Aucune installation locale n'est requise.
+    </div>
+
+    <h3>4.2 Generation des certificats SSL</h3>
+    <p>Avant le premier demarrage, generez les certificats auto-signes :</p>
+    <pre><code># Rendre le script executable
+chmod +x gen-certs.sh
+
+# Generer les certificats
+bash gen-certs.sh</code></pre>
+    <p>Le script effectue les operations suivantes :</p>
+    <ol>
+        <li>Cree le repertoire <code>certs/</code> s'il n'existe pas.</li>
+        <li>Verifie si des certificats existent deja (idempotent).</li>
+        <li>Genere une paire cle/certificat RSA 2048 bits, valide 10 ans.</li>
+    </ol>
+    <pre><code># Commande OpenSSL executee par le script :
+openssl req -x509 -nodes -days 3650 \
+    -newkey rsa:2048 \
+    -keyout certs/selfsigned.key \
+    -out certs/selfsigned.crt \
+    -subj "/C=FR/ST=Local/L=Local/O=ReverseProxy/CN=localhost"</code></pre>
+
+    <h3>4.3 Construction et lancement</h3>
+    <pre><code># Construire l'image et demarrer le conteneur
+docker compose up -d --build
+
+# Suivre les logs en temps reel
+docker compose logs -f</code></pre>
+
+    <h3>4.4 Verification du deploiement</h3>
+    <pre><code># Verifier que le conteneur est en cours d'execution
+docker ps --filter name=reverseproxy
+
+# Tester l'acces HTTPS (accepter le certificat auto-signe)
+curl -k https://localhost
+
+# Verifier les processus internes
+docker exec reverseproxy supervisorctl status</code></pre>
+
+    <div class="info-box">
+        <strong>Resultat attendu de <code>supervisorctl status</code> :</strong><br>
+        <code>flask &nbsp;&nbsp; RUNNING &nbsp; pid 12, uptime 0:05:30</code><br>
+        <code>nginx &nbsp;&nbsp; RUNNING &nbsp; pid 11, uptime 0:05:30</code>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 5. DOCKER                                                     -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>5. Configuration Docker</h2>
+
+    <h3>5.1 Dockerfile</h3>
+    <p>L'image est construite a partir de <code>nginx:1.27-alpine</code>, une image legere basee sur Alpine Linux.</p>
+    <pre><code>FROM nginx:1.27-alpine
+
+# Install Python and pip
+RUN apk add --no-cache python3 py3-pip supervisor
+
+# Create app directory
+WORKDIR /app
+
+# Install Python dependencies
+COPY app/requirements.txt .
+RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
+
+# Copy application
+COPY app/ /app/
+
+# Copy nginx config
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Create directories
+RUN mkdir -p /etc/nginx/conf.d /data /etc/nginx/certs
+
+# Create empty proxy.conf
+RUN echo "# No routes configured" > /etc/nginx/conf.d/proxy.conf
+
+# Supervisor config to run both nginx and flask
+COPY supervisord.conf /etc/supervisord.conf
+
+EXPOSE 80 443
+
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]</code></pre>
+
+    <h4>Etapes de construction</h4>
+    <table>
+        <tr><th>Etape</th><th>Description</th><th>Couche Docker</th></tr>
+        <tr><td>1</td><td>Image de base Nginx Alpine</td><td>~25 Mo</td></tr>
+        <tr><td>2</td><td>Installation Python 3, pip, Supervisor</td><td>~50 Mo</td></tr>
+        <tr><td>3</td><td>Installation Flask + Gunicorn</td><td>~15 Mo</td></tr>
+        <tr><td>4</td><td>Copie application + configuration</td><td>~50 Ko</td></tr>
+        <tr><td>5</td><td>Creation des repertoires</td><td>Negligeable</td></tr>
+    </table>
+
+    <h3>5.2 Docker Compose</h3>
+    <pre><code>services:
+  reverseproxy:
+    build: .
+    container_name: reverseproxy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+      - proxy-data:/data
+    environment:
+      - SECRET_KEY=changez-moi-en-production
+
+volumes:
+  proxy-data:</code></pre>
+
+    <h4>Detail des parametres</h4>
+    <table>
+        <tr><th>Parametre</th><th>Valeur</th><th>Description</th></tr>
+        <tr><td><code>build</code></td><td><code>.</code></td><td>Construit l'image depuis le Dockerfile local</td></tr>
+        <tr><td><code>container_name</code></td><td><code>reverseproxy</code></td><td>Nom fixe du conteneur</td></tr>
+        <tr><td><code>restart</code></td><td><code>unless-stopped</code></td><td>Redemarre automatiquement sauf arret manuel</td></tr>
+        <tr><td><code>ports</code></td><td><code>443:443</code></td><td>Expose le port HTTPS sur l'hote</td></tr>
+    </table>
+
+    <h4>Volumes</h4>
+    <table>
+        <tr><th>Volume</th><th>Montage conteneur</th><th>Mode</th><th>Role</th></tr>
+        <tr><td><code>./certs</code></td><td><code>/etc/nginx/certs</code></td><td>Lecture seule (<code>:ro</code>)</td><td>Certificats SSL</td></tr>
+        <tr><td><code>proxy-data</code></td><td><code>/data</code></td><td>Lecture/ecriture</td><td>Persistance de <code>routes.json</code></td></tr>
+    </table>
+
+    <h4>Variables d'environnement</h4>
+    <table>
+        <tr><th>Variable</th><th>Valeur par defaut</th><th>Description</th></tr>
+        <tr><td><code>SECRET_KEY</code></td><td><code>changez-moi-en-production</code></td><td>Cle de chiffrement des sessions Flask et tokens CSRF</td></tr>
+    </table>
+
+    <div class="danger-box">
+        <strong>SECURITE :</strong> La valeur par defaut de <code>SECRET_KEY</code> ne doit JAMAIS etre utilisee
+        en production. Generez une cle aleatoire : <code>python3 -c "import secrets; print(secrets.token_hex(32))"</code>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 6. NGINX                                                      -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>6. Configuration Nginx</h2>
+
+    <h3>6.1 Configuration principale</h3>
+    <pre><code>user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+    sendfile on;
+    keepalive_timeout 65;
+
+    # Panel web d'administration (HTTPS)
+    server {
+        listen 443 ssl default_server;
+        server_name _;
+
+        ssl_certificate /etc/nginx/certs/selfsigned.crt;
+        ssl_certificate_key /etc/nginx/certs/selfsigned.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+
+        location / {
+            proxy_pass http://127.0.0.1:5000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+    # Redirect HTTP -> HTTPS
+    server {
+        listen 80 default_server;
+        server_name _;
+        return 301 https://$host$request_uri;
+    }
+
+    # Include dynamic proxy configs
+    include /etc/nginx/conf.d/*.conf;
+}</code></pre>
+
+    <h4>Description des blocs serveur</h4>
+    <table>
+        <tr><th>Bloc</th><th>Port</th><th>Role</th><th>server_name</th></tr>
+        <tr><td>Administration</td><td>443 (SSL)</td><td>Proxy vers Flask :5000</td><td><code>_</code> (catch-all par defaut)</td></tr>
+        <tr><td>Redirection</td><td>80</td><td>301 HTTP → HTTPS</td><td><code>_</code> (catch-all)</td></tr>
+        <tr><td>Routes dynamiques</td><td>443+ (SSL)</td><td>Proxy vers backends configures</td><td>Domaine specifique</td></tr>
+    </table>
+
+    <h4>En-tetes de proxy transmis</h4>
+    <table>
+        <tr><th>En-tete</th><th>Valeur</th><th>Description</th></tr>
+        <tr><td><code>Host</code></td><td><code>$host</code></td><td>Nom d'hote original de la requete</td></tr>
+        <tr><td><code>X-Real-IP</code></td><td><code>$remote_addr</code></td><td>Adresse IP reelle du client</td></tr>
+        <tr><td><code>X-Forwarded-For</code></td><td><code>$proxy_add_x_forwarded_for</code></td><td>Chaine de proxys traverses</td></tr>
+        <tr><td><code>X-Forwarded-Proto</code></td><td><code>$scheme</code></td><td>Protocole original (http/https)</td></tr>
+    </table>
+
+    <h3>6.2 Generation dynamique des routes</h3>
+    <p>
+        Chaque route configuree via l'interface web genere un bloc <code>server {}</code> dans le fichier
+        <code>/etc/nginx/conf.d/proxy.conf</code>. Ce fichier est entierement regenere a chaque modification.
+    </p>
+
+    <h4>Exemple de configuration generee</h4>
+    <p>Pour une route : domaine <code>app.exemple.com</code> → cible <code>http://192.168.1.50:3000</code> sur le port 443 :</p>
+    <pre><code>server {
+    listen 443 ssl;
+    server_name app.exemple.com;
+
+    ssl_certificate /etc/nginx/certs/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/certs/selfsigned.key;
+
+    location / {
+        proxy_pass http://192.168.1.50:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}</code></pre>
+
+    <div class="info-box">
+        <strong>Support WebSocket :</strong> Chaque route generee inclut automatiquement les en-tetes
+        <code>Upgrade</code> et <code>Connection</code> pour le support natif des WebSockets.
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 7. APPLICATION FLASK                                          -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>7. Application Flask</h2>
+
+    <h3>7.1 Structure de l'application</h3>
+
+    <div class="diagram">
+        <svg width="600" height="360" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg">
+            <!-- App.py central -->
+            <rect x="220" y="20" width="160" height="50" rx="10" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="300" y="42" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">app.py</text>
+            <text x="300" y="58" text-anchor="middle" font-size="9" fill="#bbf7d0">Flask Application</text>
+
+            <!-- Functions -->
+            <rect x="30" y="110" width="140" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="100" y="134" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">load_routes()</text>
+
+            <rect x="190" y="110" width="140" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="260" y="134" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">save_routes()</text>
+
+            <rect x="350" y="110" width="170" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="435" y="134" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">generate_nginx_conf()</text>
+
+            <rect x="540" y="110" width="140" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1" transform="translate(-100,0)"/>
+            <text x="540" y="134" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">reload_nginx()</text>
+
+            <!-- Routes HTTP -->
+            <rect x="30" y="200" width="120" height="50" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+            <text x="90" y="222" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">GET /</text>
+            <text x="90" y="238" text-anchor="middle" font-size="9" fill="#b45309">index()</text>
+
+            <rect x="170" y="200" width="120" height="50" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+            <text x="230" y="222" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">POST /add</text>
+            <text x="230" y="238" text-anchor="middle" font-size="9" fill="#b45309">add_route()</text>
+
+            <rect x="310" y="200" width="140" height="50" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+            <text x="380" y="222" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">POST /edit/&lt;id&gt;</text>
+            <text x="380" y="238" text-anchor="middle" font-size="9" fill="#b45309">edit_route()</text>
+
+            <rect x="470" y="200" width="140" height="50" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+            <text x="540" y="222" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">POST /delete/&lt;id&gt;</text>
+            <text x="540" y="238" text-anchor="middle" font-size="9" fill="#b45309">delete_route()</text>
+
+            <!-- Data stores -->
+            <rect x="80" y="300" width="180" height="40" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
+            <text x="170" y="324" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">/data/routes.json</text>
+
+            <rect x="340" y="300" width="200" height="40" rx="6" fill="#fce7f3" stroke="#ec4899" stroke-width="1"/>
+            <text x="440" y="324" text-anchor="middle" font-size="10" font-weight="600" fill="#9d174d">/etc/nginx/conf.d/proxy.conf</text>
+
+            <!-- Lines -->
+            <line x1="300" y1="70" x2="100" y2="110" stroke="#94a3b8" stroke-width="1"/>
+            <line x1="300" y1="70" x2="260" y2="110" stroke="#94a3b8" stroke-width="1"/>
+            <line x1="300" y1="70" x2="435" y2="110" stroke="#94a3b8" stroke-width="1"/>
+            <line x1="300" y1="70" x2="540" y2="110" stroke="#94a3b8" stroke-width="1"/>
+
+            <line x1="100" y1="150" x2="170" y2="315" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="260" y1="150" x2="170" y2="300" stroke="#22c55e" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="435" y1="150" x2="440" y2="300" stroke="#ec4899" stroke-width="1" stroke-dasharray="4,3"/>
+        </svg>
+        <div class="diagram-caption">Figure 3 — Structure fonctionnelle de l'application Flask</div>
+    </div>
+
+    <h3>7.2 API et routes HTTP</h3>
+    <table>
+        <tr><th>Methode</th><th>Endpoint</th><th>Fonction</th><th>Description</th></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/</code></td><td><code>index()</code></td><td>Affiche le panneau d'administration avec la liste des routes</td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/add</code></td><td><code>add_route()</code></td><td>Ajoute une nouvelle route de proxy</td></tr>
+        <tr><td><span class="badge badge-orange">POST</span></td><td><code>/edit/&lt;id&gt;</code></td><td><code>edit_route()</code></td><td>Modifie une route existante (par index)</td></tr>
+        <tr><td><span class="badge badge-red">POST</span></td><td><code>/delete/&lt;id&gt;</code></td><td><code>delete_route()</code></td><td>Supprime une route existante (par index)</td></tr>
+    </table>
+
+    <h4>Cycle de vie d'une modification</h4>
+    <ol>
+        <li><strong>Reception</strong> : L'utilisateur soumet le formulaire (POST).</li>
+        <li><strong>Validation</strong> : Verification des champs obligatoires (domaine, cible). Ajout automatique du prefixe <code>http://</code> si absent.</li>
+        <li><strong>Persistance</strong> : Mise a jour de <code>/data/routes.json</code>.</li>
+        <li><strong>Generation</strong> : Regeneration complete de <code>/etc/nginx/conf.d/proxy.conf</code>.</li>
+        <li><strong>Validation Nginx</strong> : Execution de <code>nginx -t</code> pour verifier la syntaxe.</li>
+        <li><strong>Rechargement</strong> : Si valide, execution de <code>nginx -s reload</code> (zero downtime).</li>
+        <li><strong>Notification</strong> : Message flash affiche a l'utilisateur (succes ou erreur).</li>
+    </ol>
+
+    <h3>7.3 Gestion des donnees</h3>
+    <h4>Format du fichier routes.json</h4>
+    <pre><code>[
+  {
+    "domain": "app.exemple.com",
+    "target": "http://192.168.1.50:3000",
+    "listen_port": "443"
+  },
+  {
+    "domain": "api.exemple.com",
+    "target": "http://10.0.0.5:8080",
+    "listen_port": "8443"
+  }
+]</code></pre>
+
+    <h4>Schema des champs</h4>
+    <table>
+        <tr><th>Champ</th><th>Type</th><th>Obligatoire</th><th>Defaut</th><th>Description</th></tr>
+        <tr><td><code>domain</code></td><td>string</td><td>Oui</td><td>-</td><td>Nom de domaine ou sous-domaine (server_name)</td></tr>
+        <tr><td><code>target</code></td><td>string (URL)</td><td>Oui</td><td>-</td><td>URL du service backend (proxy_pass)</td></tr>
+        <tr><td><code>listen_port</code></td><td>string (int)</td><td>Non</td><td><code>"443"</code></td><td>Port d'ecoute Nginx pour cette route</td></tr>
+    </table>
+
+    <h3>7.4 Interface utilisateur</h3>
+    <p>
+        L'interface web est une page HTML unique avec CSS et JavaScript inline. Elle utilise un design sombre
+        (dark theme) responsive, inspire de Tailwind CSS.
+    </p>
+
+    <h4>Composants de l'interface</h4>
+    <table>
+        <tr><th>Composant</th><th>Description</th></tr>
+        <tr><td>Titre</td><td>En-tete "Reverse Proxy Manager" en bleu (#38bdf8)</td></tr>
+        <tr><td>Messages flash</td><td>Notifications de succes (vert) ou d'erreur (rouge)</td></tr>
+        <tr><td>Formulaire d'ajout</td><td>3 champs : Domaine, Cible, Port + bouton "Ajouter"</td></tr>
+        <tr><td>Tableau des routes</td><td>Liste des routes avec colonnes : #, Domaine, Cible, Port, Actions</td></tr>
+        <tr><td>Actions par route</td><td>Boutons "Modifier" (edition en ligne) et "Supprimer" (avec confirmation)</td></tr>
+        <tr><td>Etat vide</td><td>Message "Aucune redirection configuree" si aucune route</td></tr>
+    </table>
+
+    <div class="diagram">
+        <svg width="650" height="380" viewBox="0 0 650 380" xmlns="http://www.w3.org/2000/svg">
+            <!-- Browser frame -->
+            <rect x="30" y="10" width="590" height="360" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
+            <!-- Title bar -->
+            <rect x="30" y="10" width="590" height="30" rx="12" fill="#1e293b"/>
+            <rect x="30" y="28" width="590" height="12" fill="#1e293b"/>
+            <circle cx="52" cy="25" r="6" fill="#ef4444"/>
+            <circle cx="72" cy="25" r="6" fill="#f59e0b"/>
+            <circle cx="92" cy="25" r="6" fill="#22c55e"/>
+            <text x="325" y="29" text-anchor="middle" font-size="10" fill="#94a3b8">https://localhost</text>
+
+            <!-- Title -->
+            <text x="325" y="68" text-anchor="middle" font-size="16" font-weight="700" fill="#38bdf8">Reverse Proxy Manager</text>
+
+            <!-- Add form box -->
+            <rect x="60" y="82" width="530" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+            <text x="80" y="100" font-size="10" font-weight="600" fill="#94a3b8">Ajouter une redirection</text>
+            <!-- Input fields -->
+            <rect x="70" y="110" width="160" height="28" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+            <text x="80" y="128" font-size="9" fill="#64748b">exemple.com</text>
+            <rect x="240" y="110" width="170" height="28" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+            <text x="250" y="128" font-size="9" fill="#64748b">http://192.168.1.10:8080</text>
+            <rect x="420" y="110" width="60" height="28" rx="4" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+            <text x="440" y="128" font-size="9" fill="#64748b">443</text>
+            <rect x="490" y="110" width="80" height="28" rx="4" fill="#0ea5e9"/>
+            <text x="530" y="128" text-anchor="middle" font-size="10" font-weight="600" fill="#fff">Ajouter</text>
+
+            <!-- Labels -->
+            <text x="70" y="108" font-size="7" fill="#94a3b8">Domaine / Host</text>
+            <text x="240" y="108" font-size="7" fill="#94a3b8">Cible (IP:port ou URL)</text>
+            <text x="420" y="108" font-size="7" fill="#94a3b8">Port</text>
+
+            <!-- Table -->
+            <rect x="60" y="175" width="530" height="180" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+            <!-- Header -->
+            <rect x="60" y="175" width="530" height="28" rx="8" fill="#334155"/>
+            <rect x="60" y="190" width="530" height="13" fill="#334155"/>
+            <text x="80" y="193" font-size="8" font-weight="600" fill="#94a3b8">#</text>
+            <text x="120" y="193" font-size="8" font-weight="600" fill="#94a3b8">DOMAINE</text>
+            <text x="270" y="193" font-size="8" font-weight="600" fill="#94a3b8">CIBLE</text>
+            <text x="430" y="193" font-size="8" font-weight="600" fill="#94a3b8">PORT</text>
+            <text x="500" y="193" font-size="8" font-weight="600" fill="#94a3b8">ACTIONS</text>
+
+            <!-- Row 1 -->
+            <text x="80" y="222" font-size="9" fill="#e2e8f0">1</text>
+            <text x="120" y="222" font-size="9" fill="#e2e8f0">app.exemple.com</text>
+            <text x="270" y="222" font-size="9" fill="#e2e8f0">http://192.168.1.50:3000</text>
+            <rect x="425" y="210" width="36" height="18" rx="3" fill="#1e3a5f"/>
+            <text x="443" y="223" text-anchor="middle" font-size="8" font-weight="600" fill="#38bdf8">443</text>
+            <rect x="480" y="210" width="48" height="18" rx="3" fill="#f59e0b"/>
+            <text x="504" y="222" text-anchor="middle" font-size="8" font-weight="600" fill="#000">Modifier</text>
+            <rect x="533" y="210" width="48" height="18" rx="3" fill="#dc2626"/>
+            <text x="557" y="222" text-anchor="middle" font-size="8" font-weight="600" fill="#fff">Supprimer</text>
+            <line x1="60" y1="235" x2="590" y2="235" stroke="#334155" stroke-width="0.5"/>
+
+            <!-- Row 2 -->
+            <text x="80" y="252" font-size="9" fill="#e2e8f0">2</text>
+            <text x="120" y="252" font-size="9" fill="#e2e8f0">api.exemple.com</text>
+            <text x="270" y="252" font-size="9" fill="#e2e8f0">http://10.0.0.5:8080</text>
+            <rect x="425" y="240" width="42" height="18" rx="3" fill="#1e3a5f"/>
+            <text x="446" y="253" text-anchor="middle" font-size="8" font-weight="600" fill="#38bdf8">8443</text>
+            <rect x="480" y="240" width="48" height="18" rx="3" fill="#f59e0b"/>
+            <text x="504" y="252" text-anchor="middle" font-size="8" font-weight="600" fill="#000">Modifier</text>
+            <rect x="533" y="240" width="48" height="18" rx="3" fill="#dc2626"/>
+            <text x="557" y="252" text-anchor="middle" font-size="8" font-weight="600" fill="#fff">Supprimer</text>
+            <line x1="60" y1="265" x2="590" y2="265" stroke="#334155" stroke-width="0.5"/>
+
+            <!-- Row 3 -->
+            <text x="80" y="282" font-size="9" fill="#e2e8f0">3</text>
+            <text x="120" y="282" font-size="9" fill="#e2e8f0">git.local</text>
+            <text x="270" y="282" font-size="9" fill="#e2e8f0">http://172.17.0.3:3000</text>
+            <rect x="425" y="270" width="36" height="18" rx="3" fill="#1e3a5f"/>
+            <text x="443" y="283" text-anchor="middle" font-size="8" font-weight="600" fill="#38bdf8">443</text>
+            <rect x="480" y="270" width="48" height="18" rx="3" fill="#f59e0b"/>
+            <text x="504" y="282" text-anchor="middle" font-size="8" font-weight="600" fill="#000">Modifier</text>
+            <rect x="533" y="270" width="48" height="18" rx="3" fill="#dc2626"/>
+            <text x="557" y="282" text-anchor="middle" font-size="8" font-weight="600" fill="#fff">Supprimer</text>
+        </svg>
+        <div class="diagram-caption">Figure 4 — Maquette de l'interface web d'administration</div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 8. SUPERVISOR                                                 -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>8. Gestion des processus (Supervisor)</h2>
+    <p>
+        Supervisor est le processus principal (PID 1) du conteneur. Il gere le cycle de vie de deux processus enfants :
+        Nginx et Flask/Gunicorn.
+    </p>
+
+    <pre><code>[supervisord]
+nodaemon=true
+logfile=/var/log/supervisord.log
+pidfile=/var/run/supervisord.pid
+
+[program:nginx]
+command=nginx -g "daemon off;"
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:flask]
+command=gunicorn -w 2 -b 127.0.0.1:5000 app:app
+directory=/app
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0</code></pre>
+
+    <h4>Detail des processus supervises</h4>
+    <table>
+        <tr><th>Programme</th><th>Commande</th><th>Redemarrage auto</th><th>Logs</th></tr>
+        <tr><td><code>nginx</code></td><td><code>nginx -g "daemon off;"</code></td><td>Oui</td><td>stdout/stderr → Docker logs</td></tr>
+        <tr><td><code>flask</code></td><td><code>gunicorn -w 2 -b 127.0.0.1:5000 app:app</code></td><td>Oui</td><td>stdout/stderr → Docker logs</td></tr>
+    </table>
+
+    <h4>Parametres Gunicorn</h4>
+    <table>
+        <tr><th>Parametre</th><th>Valeur</th><th>Description</th></tr>
+        <tr><td><code>-w 2</code></td><td>2 workers</td><td>Nombre de processus de travail (adapte au panneau d'admin)</td></tr>
+        <tr><td><code>-b 127.0.0.1:5000</code></td><td>localhost:5000</td><td>Ecoute locale uniquement (securite)</td></tr>
+        <tr><td><code>app:app</code></td><td>Module:Instance</td><td>Module <code>app.py</code>, instance Flask <code>app</code></td></tr>
+    </table>
+
+    <div class="info-box">
+        <strong>Pourquoi <code>nodaemon=true</code> ?</strong> Docker attend que le processus PID 1 reste au premier plan.
+        Sans cette option, Supervisor se daemoniserait et le conteneur s'arreterait immediatement.
+    </div>
+
+    <h4>Commandes utiles</h4>
+    <pre><code># Verifier le statut des processus
+docker exec reverseproxy supervisorctl status
+
+# Redemarrer uniquement Nginx
+docker exec reverseproxy supervisorctl restart nginx
+
+# Redemarrer uniquement Flask
+docker exec reverseproxy supervisorctl restart flask
+
+# Consulter les logs
+docker logs reverseproxy</code></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- 9. SECURITE SSL/TLS                                           -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>9. Securite SSL/TLS</h2>
+
+    <h3>9.1 Certificats auto-signes</h3>
+    <table>
+        <tr><th>Propriete</th><th>Valeur</th></tr>
+        <tr><td>Type</td><td>X.509 v3 auto-signe</td></tr>
+        <tr><td>Algorithme de cle</td><td>RSA 2048 bits</td></tr>
+        <tr><td>Algorithme de signature</td><td>SHA-256 avec RSA</td></tr>
+        <tr><td>Validite</td><td>10 ans (3650 jours)</td></tr>
+        <tr><td>Common Name (CN)</td><td><code>localhost</code></td></tr>
+        <tr><td>Organisation (O)</td><td><code>ReverseProxy</code></td></tr>
+        <tr><td>Pays (C)</td><td><code>FR</code></td></tr>
+        <tr><td>Chemin du certificat</td><td><code>certs/selfsigned.crt</code></td></tr>
+        <tr><td>Chemin de la cle</td><td><code>certs/selfsigned.key</code></td></tr>
+    </table>
+
+    <h3>9.2 Protocoles et chiffrement</h3>
+    <table>
+        <tr><th>Parametre</th><th>Valeur</th><th>Commentaire</th></tr>
+        <tr><td>Protocoles actives</td><td>TLSv1.2, TLSv1.3</td><td>TLS 1.0 et 1.1 desactives (obsoletes)</td></tr>
+        <tr><td>Mode certificat</td><td>Lecture seule</td><td>Monte en <code>:ro</code> depuis l'hote</td></tr>
+        <tr><td>Partage certificat</td><td>Unique</td><td>Meme certificat pour admin et routes dynamiques</td></tr>
+    </table>
+
+    <div class="warn-box">
+        <strong>Avertissement :</strong> Les certificats auto-signes declenchent un avertissement de securite dans les
+        navigateurs. Pour un deploiement en production, remplacez-les par des certificats signes par une autorite
+        de certification reconnue (ex : Let's Encrypt).
+    </div>
+
+    <div class="diagram">
+        <svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="30" width="130" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="85" y="55" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Client</text>
+            <text x="85" y="72" text-anchor="middle" font-size="9" fill="#64748b">TLS Handshake</text>
+
+            <line x1="150" y1="60" x2="230" y2="60" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowBlue3)"/>
+            <text x="190" y="52" text-anchor="middle" font-size="8" fill="#0ea5e9">ClientHello</text>
+            <text x="190" y="76" text-anchor="middle" font-size="8" fill="#0ea5e9">TLS 1.2/1.3</text>
+
+            <rect x="230" y="20" width="150" height="80" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="305" y="45" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Nginx</text>
+            <text x="305" y="62" text-anchor="middle" font-size="9" fill="#bae6fd">TLS Termination</text>
+            <text x="305" y="78" text-anchor="middle" font-size="9" fill="#bae6fd">selfsigned.crt</text>
+
+            <line x1="380" y1="60" x2="440" y2="60" stroke="#22c55e" stroke-width="2" marker-end="url(#arrowGreen3)"/>
+            <text x="410" y="52" text-anchor="middle" font-size="8" fill="#16a34a">HTTP</text>
+            <text x="410" y="76" text-anchor="middle" font-size="8" fill="#16a34a">(dechiffre)</text>
+
+            <rect x="440" y="30" width="130" height="60" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+            <text x="505" y="55" text-anchor="middle" font-size="11" font-weight="600" fill="#166534">Backend</text>
+            <text x="505" y="72" text-anchor="middle" font-size="9" fill="#16a34a">Service cible</text>
+
+            <text x="300" y="140" text-anchor="middle" font-size="10" fill="#334155">La terminaison TLS s'effectue au niveau de Nginx.</text>
+            <text x="300" y="158" text-anchor="middle" font-size="10" fill="#334155">Le trafic interne vers les backends transite en HTTP non chiffre.</text>
+            <text x="300" y="176" text-anchor="middle" font-size="9" fill="#64748b">(securise si les backends sont sur le meme reseau prive)</text>
+
+            <defs>
+                <marker id="arrowBlue3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
+                <marker id="arrowGreen3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
+            </defs>
+        </svg>
+        <div class="diagram-caption">Figure 5 — Terminaison TLS au niveau du reverse proxy</div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 10. GUIDE D'UTILISATION                                       -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>10. Guide d'utilisation</h2>
+
+    <h3>10.1 Ajouter une route</h3>
+    <ol>
+        <li>Accedez au panneau d'administration : <code>https://&lt;IP-du-serveur&gt;</code></li>
+        <li>Dans le formulaire "Ajouter une redirection" :</li>
+    </ol>
+    <table>
+        <tr><th>Champ</th><th>Exemple</th><th>Description</th></tr>
+        <tr><td>Domaine / Host</td><td><code>app.mondomaine.fr</code></td><td>Le nom de domaine que Nginx ecoutera</td></tr>
+        <tr><td>Cible (IP:port ou URL)</td><td><code>http://192.168.1.50:3000</code></td><td>URL du service backend (prefixe <code>http://</code> ajoute automatiquement)</td></tr>
+        <tr><td>Port d'ecoute</td><td><code>443</code></td><td>Port sur lequel Nginx ecoute pour cette route (defaut : 443)</td></tr>
+    </table>
+    <ol start="3">
+        <li>Cliquez sur <strong>"Ajouter"</strong>.</li>
+        <li>Un message de confirmation s'affiche. Nginx est automatiquement recharge.</li>
+    </ol>
+
+    <div class="info-box">
+        <strong>Astuce :</strong> Si vous specifiez un port different de 443, pensez a l'exposer dans le
+        <code>docker-compose.yml</code> (section <code>ports</code>) et a redemarrer le conteneur.
+    </div>
+
+    <h3>10.2 Modifier une route</h3>
+    <ol>
+        <li>Dans le tableau des routes, cliquez sur le bouton <strong>"Modifier"</strong> de la route souhaitee.</li>
+        <li>Les cellules du tableau deviennent editables (champs de saisie en ligne).</li>
+        <li>Modifiez les valeurs souhaitees (domaine, cible, port).</li>
+        <li>Cliquez sur <strong>"Sauver"</strong> pour appliquer les modifications.</li>
+        <li>Cliquez sur <strong>"Annuler"</strong> pour abandonner les modifications.</li>
+    </ol>
+
+    <h3>10.3 Supprimer une route</h3>
+    <ol>
+        <li>Dans le tableau des routes, cliquez sur le bouton <strong>"Supprimer"</strong> de la route souhaitee.</li>
+        <li>Une boite de dialogue de confirmation apparait : "Supprimer cette route ?".</li>
+        <li>Confirmez pour supprimer. Nginx est automatiquement recharge.</li>
+    </ol>
+
+    <div class="warn-box">
+        <strong>Attention :</strong> La suppression est immediate et irreversible. Aucun historique des
+        modifications n'est conserve. Pensez a sauvegarder le fichier <code>routes.json</code> regulierement.
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- 11. MAINTENANCE                                               -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>11. Maintenance et operations</h2>
+
+    <h3>Commandes d'administration courantes</h3>
+    <table>
+        <tr><th>Action</th><th>Commande</th></tr>
+        <tr><td>Demarrer le service</td><td><code>docker compose up -d</code></td></tr>
+        <tr><td>Arreter le service</td><td><code>docker compose down</code></td></tr>
+        <tr><td>Reconstruire l'image</td><td><code>docker compose up -d --build</code></td></tr>
+        <tr><td>Consulter les logs</td><td><code>docker compose logs -f</code></td></tr>
+        <tr><td>Statut des processus</td><td><code>docker exec reverseproxy supervisorctl status</code></td></tr>
+        <tr><td>Redemarrer Nginx</td><td><code>docker exec reverseproxy supervisorctl restart nginx</code></td></tr>
+        <tr><td>Tester la config Nginx</td><td><code>docker exec reverseproxy nginx -t</code></td></tr>
+        <tr><td>Acceder au shell</td><td><code>docker exec -it reverseproxy /bin/sh</code></td></tr>
+    </table>
+
+    <h3>Sauvegarde et restauration</h3>
+    <h4>Sauvegarder les routes</h4>
+    <pre><code># Copier le fichier de routes depuis le volume Docker
+docker cp reverseproxy:/data/routes.json ./backup-routes.json</code></pre>
+
+    <h4>Restaurer les routes</h4>
+    <pre><code># Copier le fichier de sauvegarde dans le conteneur
+docker cp ./backup-routes.json reverseproxy:/data/routes.json
+
+# Regenerer la configuration Nginx et recharger
+docker exec reverseproxy sh -c "cd /app && python3 -c \
+  'from app import load_routes, generate_nginx_conf, reload_nginx; \
+   routes = load_routes(); generate_nginx_conf(routes); reload_nginx()'"</code></pre>
+
+    <h3>Renouvellement des certificats</h3>
+    <pre><code># Supprimer les anciens certificats
+rm certs/selfsigned.crt certs/selfsigned.key
+
+# Regenerer
+bash gen-certs.sh
+
+# Redemarrer pour prendre en compte
+docker compose restart</code></pre>
+
+    <h3>Mise a jour de l'application</h3>
+    <pre><code># Reconstruire avec les dernieres modifications
+docker compose down
+docker compose up -d --build</code></pre>
+</div>
+
+<!-- ============================================================ -->
+<!-- 12. SECURITE PRODUCTION                                       -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>12. Securite et recommandations de production</h2>
+
+    <h3>Points de securite actuels</h3>
+    <table>
+        <tr><th>Element</th><th>Statut</th><th>Description</th></tr>
+        <tr><td>Chiffrement TLS</td><td><span class="badge badge-green">OK</span></td><td>TLS 1.2/1.3 active, protocoles obsoletes desactives</td></tr>
+        <tr><td>Ecoute Flask</td><td><span class="badge badge-green">OK</span></td><td>Gunicorn ecoute uniquement sur localhost (127.0.0.1)</td></tr>
+        <tr><td>Validation Nginx</td><td><span class="badge badge-green">OK</span></td><td><code>nginx -t</code> avant chaque rechargement</td></tr>
+        <tr><td>Validation des champs</td><td><span class="badge badge-green">OK</span></td><td>Champs obligatoires verifies cote serveur</td></tr>
+        <tr><td>Volumes lecture seule</td><td><span class="badge badge-green">OK</span></td><td>Certificats montes en <code>:ro</code></td></tr>
+        <tr><td>Redirection HTTP</td><td><span class="badge badge-green">OK</span></td><td>Tout le trafic HTTP redirige vers HTTPS</td></tr>
+        <tr><td>Support WebSocket</td><td><span class="badge badge-green">OK</span></td><td>En-tetes Upgrade/Connection inclus</td></tr>
+    </table>
+
+    <h3>Ameliorations recommandees pour la production</h3>
+
+    <div class="danger-box">
+        <strong>CRITIQUE — Authentification :</strong> Le panneau d'administration n'a aucune authentification.
+        Toute personne ayant acces au port 443 dispose d'un controle total sur les routes.
+        Implementez au minimum une authentification HTTP Basic ou un systeme de login.
+    </div>
+
+    <div class="danger-box">
+        <strong>CRITIQUE — Cle secrete :</strong> Remplacez immediatement la valeur par defaut de
+        <code>SECRET_KEY</code> par une valeur aleatoire forte.
+    </div>
+
+    <table>
+        <tr><th>Priorite</th><th>Amelioration</th><th>Description</th></tr>
+        <tr><td><span class="badge badge-red">Critique</span></td><td>Authentification</td><td>Ajouter un systeme d'authentification au panneau d'admin</td></tr>
+        <tr><td><span class="badge badge-red">Critique</span></td><td>SECRET_KEY</td><td>Utiliser une cle aleatoire unique en production</td></tr>
+        <tr><td><span class="badge badge-orange">Haute</span></td><td>Certificats CA</td><td>Utiliser des certificats signes (Let's Encrypt)</td></tr>
+        <tr><td><span class="badge badge-orange">Haute</span></td><td>Limitation de debit</td><td>Ajouter <code>limit_req</code> dans Nginx contre le DDoS</td></tr>
+        <tr><td><span class="badge badge-blue">Moyenne</span></td><td>HTTPS backends</td><td>Chiffrer le trafic entre Nginx et les backends</td></tr>
+        <tr><td><span class="badge badge-blue">Moyenne</span></td><td>Logs structures</td><td>Format JSON pour les logs (integration SIEM)</td></tr>
+        <tr><td><span class="badge badge-blue">Moyenne</span></td><td>Health checks</td><td>Ajouter des verifications de sante des backends</td></tr>
+        <tr><td><span class="badge badge-green">Basse</span></td><td>Sauvegarde automatique</td><td>Cron de backup du fichier routes.json</td></tr>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- 13. ANNEXES                                                   -->
+<!-- ============================================================ -->
+<div class="section">
+    <h2>13. Annexes</h2>
+
+    <h3>Annexe A — Code source complet : app.py</h3>
+    <pre><code>import json
+import os
+import subprocess
+from flask import Flask, render_template, request, redirect, url_for, flash
+
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "change-me-in-production")
+
+CONFIG_FILE = "/data/routes.json"
+
+
+def load_routes():
+    if os.path.exists(CONFIG_FILE):
+        with open(CONFIG_FILE) as f:
+            return json.load(f)
+    return []
+
+
+def save_routes(routes):
+    os.makedirs(os.path.dirname(CONFIG_FILE), exist_ok=True)
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(routes, f, indent=2)
+
+
+def generate_nginx_conf(routes):
+    """Generate nginx upstream config from routes."""
+    conf_path = "/etc/nginx/conf.d/proxy.conf"
+    lines = []
+    for route in routes:
+        domain = route["domain"]
+        target = route["target"]
+        listen_port = route.get("listen_port", "443")
+        lines.append(f"""server {{
+    listen {listen_port} ssl;
+    server_name {domain};
+
+    ssl_certificate /etc/nginx/certs/selfsigned.crt;
+    ssl_certificate_key /etc/nginx/certs/selfsigned.key;
+
+    location / {{
+        proxy_pass {target};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }}
+}}
+""")
+    with open(conf_path, "w") as f:
+        f.write("\n".join(lines) if lines else "# No routes configured\n")
+
+
+def reload_nginx():
+    try:
+        subprocess.run(["nginx", "-t"], check=True,
+                       capture_output=True, text=True)
+        subprocess.run(["nginx", "-s", "reload"], check=True,
+                       capture_output=True, text=True)
+        return True, "Nginx recharge avec succes."
+    except subprocess.CalledProcessError as e:
+        return False, f"Erreur Nginx: {e.stderr}"
+
+
+@app.route("/")
+def index():
+    routes = load_routes()
+    return render_template("index.html", routes=routes)
+
+
+@app.route("/add", methods=["POST"])
+def add_route():
+    domain = request.form.get("domain", "").strip()
+    target = request.form.get("target", "").strip()
+    listen_port = request.form.get("listen_port", "443").strip()
+
+    if not domain or not target:
+        flash("Le domaine et la cible sont obligatoires.", "error")
+        return redirect(url_for("index"))
+
+    if not target.startswith(("http://", "https://")):
+        target = "http://" + target
+
+    routes = load_routes()
+    routes.append({
+        "domain": domain,
+        "target": target,
+        "listen_port": listen_port,
+    })
+    save_routes(routes)
+    generate_nginx_conf(routes)
+    ok, msg = reload_nginx()
+    flash(msg, "success" if ok else "error")
+    return redirect(url_for("index"))
+
+
+@app.route("/delete/&lt;int:route_id&gt;", methods=["POST"])
+def delete_route(route_id):
+    routes = load_routes()
+    if 0 &lt;= route_id &lt; len(routes):
+        removed = routes.pop(route_id)
+        save_routes(routes)
+        generate_nginx_conf(routes)
+        ok, msg = reload_nginx()
+        flash(f"Route {removed['domain']} supprimee. {msg}",
+              "success" if ok else "error")
+    else:
+        flash("Route introuvable.", "error")
+    return redirect(url_for("index"))
+
+
+@app.route("/edit/&lt;int:route_id&gt;", methods=["POST"])
+def edit_route(route_id):
+    routes = load_routes()
+    if 0 &lt;= route_id &lt; len(routes):
+        domain = request.form.get("domain", "").strip()
+        target = request.form.get("target", "").strip()
+        listen_port = request.form.get("listen_port", "443").strip()
+
+        if not domain or not target:
+            flash("Le domaine et la cible sont obligatoires.", "error")
+            return redirect(url_for("index"))
+
+        if not target.startswith(("http://", "https://")):
+            target = "http://" + target
+
+        routes[route_id] = {
+            "domain": domain,
+            "target": target,
+            "listen_port": listen_port,
+        }
+        save_routes(routes)
+        generate_nginx_conf(routes)
+        ok, msg = reload_nginx()
+        flash(msg, "success" if ok else "error")
+    else:
+        flash("Route introuvable.", "error")
+    return redirect(url_for("index"))
+
+
+if __name__ == "__main__":
+    generate_nginx_conf(load_routes())
+    app.run(host="0.0.0.0", port=5000)</code></pre>
+
+    <h3 class="page-break">Annexe B — Code source complet : index.html</h3>
+    <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Reverse Proxy Manager&lt;/title&gt;
+    &lt;style&gt;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a; color: #e2e8f0; min-height: 100vh;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+        h1 { text-align: center; font-size: 1.8rem; margin-bottom: 2rem; color: #38bdf8; }
+        .flash { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.9rem; }
+        .flash.success { background: #065f46; color: #6ee7b7; }
+        .flash.error { background: #7f1d1d; color: #fca5a5; }
+        /* ... (voir fichier complet dans le projet) ... */
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="container"&gt;
+        &lt;h1&gt;Reverse Proxy Manager&lt;/h1&gt;
+        {%- with messages = get_flashed_messages(with_categories=true) -%}
+        {%- for category, message in messages -%}
+        &lt;div class="flash {{ category }}"&gt;{{ message }}&lt;/div&gt;
+        {%- endfor -%}
+        {%- endwith -%}
+
+        &lt;!-- Formulaire d'ajout de route --&gt;
+        &lt;div class="add-form"&gt;
+            &lt;h2&gt;Ajouter une redirection&lt;/h2&gt;
+            &lt;form method="POST" action="{{ url_for('add_route') }}"&gt;
+                &lt;!-- Champs: domain, target, listen_port --&gt;
+            &lt;/form&gt;
+        &lt;/div&gt;
+
+        &lt;!-- Tableau des routes configurees --&gt;
+        &lt;table class="routes-table"&gt;
+            &lt;!-- En-tete + boucle Jinja2 sur les routes --&gt;
+        &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        function startEdit(id, domain, target, port) { /* Edition en ligne */ }
+        function saveEdit(id) { /* Soumission via formulaire dynamique */ }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+    <h3 class="page-break">Annexe C — Fichiers de configuration complets</h3>
+
+    <h4>C.1 — nginx.conf</h4>
+    <pre><code>user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log warn;
+pid /var/run/nginx.pid;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log /var/log/nginx/access.log main;
+    sendfile on;
+    keepalive_timeout 65;
+
+    server {
+        listen 443 ssl default_server;
+        server_name _;
+        ssl_certificate /etc/nginx/certs/selfsigned.crt;
+        ssl_certificate_key /etc/nginx/certs/selfsigned.key;
+        ssl_protocols TLSv1.2 TLSv1.3;
+
+        location / {
+            proxy_pass http://127.0.0.1:5000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+
+    server {
+        listen 80 default_server;
+        server_name _;
+        return 301 https://$host$request_uri;
+    }
+
+    include /etc/nginx/conf.d/*.conf;
+}</code></pre>
+
+    <h4>C.2 — supervisord.conf</h4>
+    <pre><code>[supervisord]
+nodaemon=true
+logfile=/var/log/supervisord.log
+pidfile=/var/run/supervisord.pid
+
+[program:nginx]
+command=nginx -g "daemon off;"
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+
+[program:flask]
+command=gunicorn -w 2 -b 127.0.0.1:5000 app:app
+directory=/app
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0</code></pre>
+
+    <h4>C.3 — docker-compose.yml</h4>
+    <pre><code>services:
+  reverseproxy:
+    build: .
+    container_name: reverseproxy
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:ro
+      - proxy-data:/data
+    environment:
+      - SECRET_KEY=changez-moi-en-production
+
+volumes:
+  proxy-data:</code></pre>
+
+    <h4>C.4 — Dockerfile</h4>
+    <pre><code>FROM nginx:1.27-alpine
+RUN apk add --no-cache python3 py3-pip supervisor
+WORKDIR /app
+COPY app/requirements.txt .
+RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
+COPY app/ /app/
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+RUN mkdir -p /etc/nginx/conf.d /data /etc/nginx/certs
+RUN echo "# No routes configured" > /etc/nginx/conf.d/proxy.conf
+COPY supervisord.conf /etc/supervisord.conf
+EXPOSE 80 443
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]</code></pre>
+
+    <h4>C.5 — gen-certs.sh</h4>
+    <pre><code>#!/bin/bash
+set -e
+CERT_DIR="./certs"
+mkdir -p "$CERT_DIR"
+
+if [ -f "$CERT_DIR/selfsigned.crt" ] && [ -f "$CERT_DIR/selfsigned.key" ]; then
+    echo "Certificats SSL deja presents dans $CERT_DIR/, rien a faire."
+    exit 0
+fi
+
+echo "Generation des certificats SSL auto-signes..."
+openssl req -x509 -nodes -days 3650 \
+    -newkey rsa:2048 \
+    -keyout "$CERT_DIR/selfsigned.key" \
+    -out "$CERT_DIR/selfsigned.crt" \
+    -subj "/C=FR/ST=Local/L=Local/O=ReverseProxy/CN=localhost"
+
+echo "Certificats generes dans $CERT_DIR/"</code></pre>
+
+    <h4>C.6 — requirements.txt</h4>
+    <pre><code>flask==3.1.0
+gunicorn==23.0.0</code></pre>
+
+    <h3 class="page-break">Annexe D — Schema JSON des routes</h3>
+    <pre><code>{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Routes de reverse proxy",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["domain", "target"],
+    "properties": {
+      "domain": {
+        "type": "string",
+        "description": "Nom de domaine ou sous-domaine (server_name Nginx)",
+        "examples": ["app.exemple.com", "api.monsite.fr"]
+      },
+      "target": {
+        "type": "string",
+        "format": "uri",
+        "description": "URL du service backend (proxy_pass)",
+        "examples": ["http://192.168.1.50:3000", "https://10.0.0.5:8443"]
+      },
+      "listen_port": {
+        "type": "string",
+        "pattern": "^[0-9]{1,5}$",
+        "default": "443",
+        "description": "Port d'ecoute Nginx pour cette route (1-65535)"
+      }
+    },
+    "additionalProperties": false
+  }
+}</code></pre>
+
+    <h3 class="page-break">Annexe E — Glossaire</h3>
+    <table>
+        <tr><th>Terme</th><th>Definition</th></tr>
+        <tr><td><strong>Reverse Proxy</strong></td><td>Serveur intermediaire qui recoit les requetes des clients et les transmet aux serveurs backend. Il masque l'architecture interne et centralise la terminaison TLS.</td></tr>
+        <tr><td><strong>Nginx</strong></td><td>Serveur web haute performance utilise ici comme reverse proxy et terminateur TLS.</td></tr>
+        <tr><td><strong>Flask</strong></td><td>Micro-framework web Python utilise pour l'interface d'administration.</td></tr>
+        <tr><td><strong>Gunicorn</strong></td><td>Serveur WSGI Python qui execute l'application Flask en mode production avec plusieurs workers.</td></tr>
+        <tr><td><strong>Supervisor</strong></td><td>Systeme de controle de processus qui gere et surveille plusieurs services au sein d'un meme conteneur.</td></tr>
+        <tr><td><strong>TLS (Transport Layer Security)</strong></td><td>Protocole cryptographique assurant la confidentialite et l'integrite des communications reseau.</td></tr>
+        <tr><td><strong>Certificat auto-signe</strong></td><td>Certificat X.509 signe par sa propre cle privee, sans autorite de certification tierce.</td></tr>
+        <tr><td><strong>WSGI</strong></td><td>Web Server Gateway Interface — standard Python pour la communication entre serveurs web et applications.</td></tr>
+        <tr><td><strong>proxy_pass</strong></td><td>Directive Nginx qui transmet une requete a un serveur backend specifie.</td></tr>
+        <tr><td><strong>server_name</strong></td><td>Directive Nginx qui determine quel bloc serveur traite une requete en fonction du nom d'hote.</td></tr>
+        <tr><td><strong>WebSocket</strong></td><td>Protocole de communication bidirectionnelle en temps reel sur une seule connexion TCP.</td></tr>
+        <tr><td><strong>Volume Docker</strong></td><td>Mecanisme de persistance des donnees au-dela du cycle de vie d'un conteneur.</td></tr>
+        <tr><td><strong>Alpine Linux</strong></td><td>Distribution Linux ultra-legere (~5 Mo) couramment utilisee comme base pour les images Docker.</td></tr>
+    </table>
+
+    <div style="text-align: center; margin-top: 60px; padding: 30px; color: #94a3b8; font-size: 10pt;">
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
+        <strong>Reverse Proxy Manager</strong> — Documentation technique v1.0<br>
+        Generee le 8 avril 2026<br>
+        Tous droits reserves.
+    </div>
+</div>
+
+</body>
+</html>
