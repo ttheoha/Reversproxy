@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse Proxy Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+            color: #38bdf8;
+        }
+        .btn-admin {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: #334155;
+            color: #e2e8f0;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid #475569;
+            transition: all 0.2s;
+        }
+        .btn-admin:hover {
+            background: #475569;
+            border-color: #64748b;
+        }
+        .btn-admin svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Tiles grid */
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* Tile card */
+        .tile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            background: #1e293b;
+            border-radius: 16px;
+            border: 1px solid #334155;
+            padding: 1.8rem 1.2rem;
+            text-decoration: none;
+            color: #e2e8f0;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .tile::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0ea5e9, #6366f1);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .tile:hover {
+            border-color: #0ea5e9;
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+        }
+        .tile:hover::before { opacity: 1; }
+
+        .tile-logo {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            object-fit: contain;
+            background: #334155;
+            padding: 6px;
+        }
+        .tile-logo-default {
+            width: 64px;
+            height: 64px;
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #0ea5e9, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .tile-logo-default svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .tile-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 0.4rem;
+        }
+
+        .tile-url {
+            font-size: 0.75rem;
+            color: #64748b;
+            word-break: break-all;
+            max-width: 100%;
+        }
+
+        /* Empty state */
+        .empty {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+        .empty svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+        }
+        .empty p {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        .empty .sub {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        @media (max-width: 600px) {
+            .tiles { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
+            .tile { padding: 1.2rem 0.8rem; }
+            .tile-logo, .tile-logo-default { width: 48px; height: 48px; }
+            .header { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Reverse Proxy Manager</h1>
+            <a href="/admin" class="btn-admin">
+                <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+                Administration
+            </a>
+        </div>
+
+        {% if tiles %}
+        <div class="tiles">
+            {% for tile in tiles %}
+            <a href="{{ tile.url }}" class="tile" target="_blank" rel="noopener">
+                {% if tile.logo %}
+                <img src="/logos/{{ tile.logo }}" class="tile-logo" alt="{{ tile.name }}">
+                {% else %}
+                <div class="tile-logo-default">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                    </svg>
+                </div>
+                {% endif %}
+                <div class="tile-name">{{ tile.name }}</div>
+                <div class="tile-url">{{ tile.url }}</div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <p>Aucun service disponible</p>
+            <p class="sub">Les tuiles seront ajoutees par l'administrateur.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

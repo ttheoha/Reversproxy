@@ -10,6 +10,7 @@ services:
       - proxy-data:/data
     environment:
       - SECRET_KEY=changez-moi-en-production
+      - ADMIN_PASSWORD=admin
 
 volumes:
   proxy-data:
