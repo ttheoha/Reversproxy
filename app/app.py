@@ -14,6 +14,7 @@ TILES_FILE = "/data/tiles.json"
 LOGOS_DIR = "/data/logos"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin")
 
+BLOCK_HISTORY_FILE = "/data/block_history.json"
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "svg", "webp", "ico"}
 
 # Rate limiting: {ip: {"attempts": int, "blocked_until": float}}
@@ -21,6 +22,31 @@ login_attempts = {}
 
 MAX_ATTEMPTS = 6
 BLOCK_DURATION = 600  # 10 minutes
+
+
+def load_block_history():
+    if os.path.exists(BLOCK_HISTORY_FILE):
+        with open(BLOCK_HISTORY_FILE) as f:
+            return json.load(f)
+    return []
+
+
+def save_block_history(history):
+    os.makedirs(os.path.dirname(BLOCK_HISTORY_FILE), exist_ok=True)
+    with open(BLOCK_HISTORY_FILE, "w") as f:
+        json.dump(history, f, indent=2)
+
+
+def record_block_event(ip, reason="6 tentatives echouees"):
+    history = load_block_history()
+    history.insert(0, {
+        "ip": ip,
+        "date": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
+        "reason": reason,
+    })
+    # Garder les 200 derniers evenements
+    history = history[:200]
+    save_block_history(history)
 
 
 def get_client_ip():
@@ -43,6 +69,7 @@ def record_failed_attempt(ip):
     login_attempts[ip]["attempts"] += 1
     if login_attempts[ip]["attempts"] >= MAX_ATTEMPTS:
         login_attempts[ip]["blocked_until"] = time.time() + BLOCK_DURATION
+        record_block_event(ip)
 
 
 def clear_attempts(ip):
@@ -192,13 +219,50 @@ def serve_logo(filename):
 
 # --- Admin ---
 
+def get_blocked_ips():
+    now = time.time()
+    blocked = []
+    for ip, info in list(login_attempts.items()):
+        if info.get("blocked_until") and now < info["blocked_until"]:
+            remaining = int(info["blocked_until"] - now)
+            blocked.append({
+                "ip": ip,
+                "attempts": info["attempts"],
+                "remaining": remaining,
+                "remaining_min": remaining // 60,
+                "remaining_sec": remaining % 60,
+            })
+    return blocked
+
+
 @app.route("/admin")
 @login_required
 def admin():
     routes = load_routes()
     tiles = load_tiles()
     tiles.sort(key=lambda t: t.get("position", 999))
-    return render_template("index.html", routes=routes, tiles=tiles)
+    blocked_ips = get_blocked_ips()
+    block_history = load_block_history()
+    return render_template("index.html", routes=routes, tiles=tiles, blocked_ips=blocked_ips, block_history=block_history)
+
+
+@app.route("/unblock/<path:ip>", methods=["POST"])
+@login_required
+def unblock_ip(ip):
+    if ip in login_attempts:
+        del login_attempts[ip]
+        flash(f"IP {ip} debloquee.", "success")
+    else:
+        flash(f"IP {ip} non trouvee.", "error")
+    return redirect(url_for("admin"))
+
+
+@app.route("/clear-history", methods=["POST"])
+@login_required
+def clear_history():
+    save_block_history([])
+    flash("Historique des blocages efface.", "success")
+    return redirect(url_for("admin"))
 
 
 # --- Proxy route CRUD ---

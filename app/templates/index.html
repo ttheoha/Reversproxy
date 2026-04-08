@@ -191,6 +191,77 @@
         {% endfor %}
         {% endwith %}
 
+        <!-- ===== SECTION IP BLOQUEES ===== -->
+        {% if blocked_ips %}
+        <div class="section" style="border-color:#dc2626;">
+            <div class="section-title" style="color:#fca5a5; border-bottom-color:#7f1d1d;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                </svg>
+                IP bloquees ({{ blocked_ips|length }})
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="background:#7f1d1d;">Adresse IP</th>
+                        <th style="background:#7f1d1d;">Tentatives</th>
+                        <th style="background:#7f1d1d;">Temps restant</th>
+                        <th style="background:#7f1d1d;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in blocked_ips %}
+                    <tr>
+                        <td><code style="background:#7f1d1d; color:#fca5a5;">{{ entry.ip }}</code></td>
+                        <td>{{ entry.attempts }} echecs</td>
+                        <td>{{ entry.remaining_min }}m {{ entry.remaining_sec }}s</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('unblock_ip', ip=entry.ip) }}">
+                                <button type="submit" class="btn" style="background:#22c55e; color:#fff; padding:0.4rem 0.8rem; font-size:0.8rem;">Debloquer</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- ===== HISTORIQUE DES BLOCAGES ===== -->
+        {% if block_history %}
+        <div class="section" style="border-color:#f59e0b;">
+            <div class="section-title" style="border-bottom-color:#78350f;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Historique des blocages ({{ block_history|length }})
+                <form method="POST" action="{{ url_for('clear_history') }}" style="margin-left:auto;" onsubmit="return confirm('Effacer tout l\'historique ?')">
+                    <button type="submit" class="btn btn-delete" style="font-size:0.75rem;">Effacer l'historique</button>
+                </form>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="background:#78350f;">Date</th>
+                        <th style="background:#78350f;">Adresse IP</th>
+                        <th style="background:#78350f;">Raison</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in block_history %}
+                    <tr>
+                        <td style="white-space:nowrap;">{{ entry.date }}</td>
+                        <td><code>{{ entry.ip }}</code></td>
+                        <td>{{ entry.reason }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
         <!-- ===== SECTION TUILES ===== -->
         <div class="section">
             <div class="section-title">

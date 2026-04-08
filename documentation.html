@@ -2,34 +2,16 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Documentation - Reverse Proxy Manager</title>
+    <title>Documentation - Reverse Proxy Manager v2.1</title>
     <style>
-        @page {
-            size: A4;
-            margin: 20mm 18mm 25mm 18mm;
-        }
-        body {
-            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-            font-size: 11pt;
-            line-height: 1.6;
-            color: #1a1a2e;
-            background: #fff;
-        }
-        .cover {
-            page-break-after: always;
-            text-align: center;
-            padding-top: 100px;
-        }
-        .cover h1 { font-size: 36pt; color: #0ea5e9; margin-bottom: 10px; letter-spacing: -1px; }
+        @page { size: A4; margin: 20mm 18mm 25mm 18mm; }
+        body { font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-size: 11pt; line-height: 1.6; color: #1a1a2e; background: #fff; }
+        .cover { page-break-after: always; text-align: center; padding-top: 100px; }
+        .cover h1 { font-size: 36pt; color: #0ea5e9; margin-bottom: 10px; }
         .cover .subtitle { font-size: 16pt; color: #475569; margin-bottom: 60px; }
         .cover .meta { font-size: 11pt; color: #64748b; line-height: 2; }
-        .cover .logo-box {
-            display: inline-block; width: 120px; height: 120px;
-            background: linear-gradient(135deg, #0ea5e9, #6366f1);
-            border-radius: 24px; margin-bottom: 40px; position: relative;
-        }
+        .cover .logo-box { display: inline-block; width: 120px; height: 120px; background: linear-gradient(135deg, #0ea5e9, #6366f1); border-radius: 24px; margin-bottom: 40px; position: relative; }
         .cover .logo-box svg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-
         .toc { page-break-after: always; }
         .toc h2 { font-size: 20pt; color: #0ea5e9; border-bottom: 3px solid #0ea5e9; padding-bottom: 8px; margin-bottom: 20px; }
         .toc ul { list-style: none; padding: 0; }
@@ -37,52 +19,42 @@
         .toc li .num { display: inline-block; width: 35px; font-weight: 700; color: #0ea5e9; }
         .toc li.sub { padding-left: 35px; font-size: 10pt; color: #475569; }
         .toc li.sub .num { width: 45px; }
-
         h2 { font-size: 18pt; color: #0ea5e9; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; margin-top: 30px; margin-bottom: 15px; page-break-after: avoid; }
         h3 { font-size: 14pt; color: #334155; margin-top: 22px; margin-bottom: 10px; page-break-after: avoid; }
         h4 { font-size: 12pt; color: #475569; margin-top: 16px; margin-bottom: 8px; }
         p { margin-bottom: 10px; }
-
         table { width: 100%; border-collapse: collapse; margin: 12px 0 18px 0; font-size: 10pt; page-break-inside: avoid; }
         th { background: #0ea5e9; color: #fff; padding: 8px 10px; text-align: left; font-weight: 600; }
         td { padding: 7px 10px; border-bottom: 1px solid #e2e8f0; }
         tr:nth-child(even) td { background: #f8fafc; }
-
-        code { font-family: 'Consolas', 'Fira Code', monospace; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; color: #0f172a; }
+        code { font-family: 'Consolas', monospace; background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 9.5pt; color: #0f172a; }
         pre { background: #0f172a; color: #e2e8f0; padding: 14px 18px; border-radius: 8px; font-size: 9pt; line-height: 1.5; overflow-x: auto; margin: 12px 0 18px 0; page-break-inside: avoid; }
         pre code { background: none; padding: 0; color: #e2e8f0; font-size: 9pt; }
-
         .info-box { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 10pt; }
         .info-box strong { color: #1d4ed8; }
         .warn-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 10pt; }
         .warn-box strong { color: #92400e; }
         .danger-box { background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; font-size: 10pt; }
         .danger-box strong { color: #991b1b; }
-
         .diagram { text-align: center; margin: 20px 0; page-break-inside: avoid; }
         .diagram svg { max-width: 100%; }
         .diagram-caption { font-size: 9pt; color: #64748b; font-style: italic; margin-top: 6px; }
-
         .section { page-break-before: always; }
         .section:first-of-type { page-break-before: avoid; }
         ul, ol { margin-bottom: 10px; padding-left: 22px; }
         li { margin-bottom: 4px; }
-
         .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 9pt; font-weight: 600; }
         .badge-blue { background: #dbeafe; color: #1d4ed8; }
         .badge-green { background: #dcfce7; color: #166534; }
         .badge-orange { background: #ffedd5; color: #9a3412; }
         .badge-red { background: #fee2e2; color: #991b1b; }
-
         .file-tree { font-family: 'Consolas', monospace; font-size: 9.5pt; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; line-height: 1.7; margin: 12px 0; }
         .page-break { page-break-before: always; }
     </style>
 </head>
 <body>
 
-<!-- ============================================================ -->
-<!-- PAGE DE COUVERTURE                                           -->
-<!-- ============================================================ -->
+<!-- COUVERTURE -->
 <div class="cover">
     <div class="logo-box">
         <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
@@ -98,9 +70,9 @@
     </div>
     <h1>Reverse Proxy Manager</h1>
     <div class="subtitle">Documentation Technique Exhaustive</div>
-    <hr style="border: none; border-top: 2px solid #e2e8f0; width: 200px; margin: 40px auto;">
+    <hr style="border:none; border-top:2px solid #e2e8f0; width:200px; margin:40px auto;">
     <div class="meta">
-        <strong>Version :</strong> 2.0<br>
+        <strong>Version :</strong> 2.1<br>
         <strong>Date :</strong> 8 avril 2026<br>
         <strong>Auteur :</strong> Equipe d'infrastructure<br>
         <strong>Classification :</strong> Documentation interne<br>
@@ -108,23 +80,16 @@
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- TABLE DES MATIERES                                           -->
-<!-- ============================================================ -->
+<!-- TABLE DES MATIERES -->
 <div class="toc">
     <h2>Table des matieres</h2>
     <ul>
-        <li><span class="num">1</span> Introduction et objectifs du projet</li>
+        <li><span class="num">1</span> Introduction et objectifs</li>
         <li><span class="num">2</span> Architecture globale</li>
-        <li class="sub"><span class="num">2.1</span> Vue d'ensemble</li>
-        <li class="sub"><span class="num">2.2</span> Diagramme d'architecture</li>
-        <li class="sub"><span class="num">2.3</span> Flux reseau</li>
+        <li class="sub"><span class="num">2.1</span> Diagramme d'architecture</li>
+        <li class="sub"><span class="num">2.2</span> Flux reseau et applicatif</li>
         <li><span class="num">3</span> Arborescence du projet</li>
         <li><span class="num">4</span> Installation et deploiement</li>
-        <li class="sub"><span class="num">4.1</span> Prerequis</li>
-        <li class="sub"><span class="num">4.2</span> Generation des certificats SSL</li>
-        <li class="sub"><span class="num">4.3</span> Construction et lancement</li>
-        <li class="sub"><span class="num">4.4</span> Verification du deploiement</li>
         <li><span class="num">5</span> Configuration Docker</li>
         <li class="sub"><span class="num">5.1</span> Dockerfile</li>
         <li class="sub"><span class="num">5.2</span> Docker Compose</li>
@@ -132,14 +97,14 @@
         <li class="sub"><span class="num">6.1</span> Configuration principale</li>
         <li class="sub"><span class="num">6.2</span> Generation dynamique des routes</li>
         <li><span class="num">7</span> Application Flask</li>
-        <li class="sub"><span class="num">7.1</span> Structure et modules</li>
-        <li class="sub"><span class="num">7.2</span> API et routes HTTP</li>
-        <li class="sub"><span class="num">7.3</span> Gestion des routes proxy</li>
-        <li class="sub"><span class="num">7.4</span> Gestion des tuiles</li>
+        <li class="sub"><span class="num">7.1</span> API et routes HTTP</li>
+        <li class="sub"><span class="num">7.2</span> Gestion des routes proxy</li>
+        <li class="sub"><span class="num">7.3</span> Gestion des tuiles</li>
         <li><span class="num">8</span> Authentification et securite d'acces</li>
         <li class="sub"><span class="num">8.1</span> Systeme de login</li>
-        <li class="sub"><span class="num">8.2</span> Blocage d'IP par force brute</li>
-        <li class="sub"><span class="num">8.3</span> Protection des routes</li>
+        <li class="sub"><span class="num">8.2</span> Blocage IP anti-brute-force</li>
+        <li class="sub"><span class="num">8.3</span> Historique des blocages</li>
+        <li class="sub"><span class="num">8.4</span> Gestion des IP bloquees (admin)</li>
         <li><span class="num">9</span> Interface utilisateur</li>
         <li class="sub"><span class="num">9.1</span> Page d'accueil publique (tuiles)</li>
         <li class="sub"><span class="num">9.2</span> Page de connexion</li>
@@ -147,120 +112,92 @@
         <li><span class="num">10</span> Gestion des processus (Supervisor)</li>
         <li><span class="num">11</span> Securite SSL/TLS</li>
         <li><span class="num">12</span> Guide d'utilisation</li>
-        <li class="sub"><span class="num">12.1</span> Gerer les tuiles</li>
-        <li class="sub"><span class="num">12.2</span> Gerer les routes proxy</li>
         <li><span class="num">13</span> Maintenance et operations</li>
         <li><span class="num">14</span> Recommandations de production</li>
         <li><span class="num">15</span> Annexes</li>
-        <li class="sub"><span class="num">A</span> Code source — app.py</li>
-        <li class="sub"><span class="num">B</span> Templates HTML</li>
-        <li class="sub"><span class="num">C</span> Fichiers de configuration</li>
-        <li class="sub"><span class="num">D</span> Schemas JSON</li>
-        <li class="sub"><span class="num">E</span> Glossaire</li>
+        <li class="sub"><span class="num">A</span> Schemas JSON</li>
+        <li class="sub"><span class="num">B</span> Fichiers de configuration</li>
+        <li class="sub"><span class="num">C</span> Glossaire</li>
     </ul>
 </div>
 
-<!-- ============================================================ -->
-<!-- 1. INTRODUCTION                                               -->
-<!-- ============================================================ -->
+<!-- 1. INTRODUCTION -->
 <div class="section">
-    <h2>1. Introduction et objectifs du projet</h2>
-    <p>Le <strong>Reverse Proxy Manager</strong> est une solution auto-hebergee permettant la gestion dynamique de regles de reverse proxy Nginx via une interface web intuitive. L'ensemble fonctionne dans un unique conteneur Docker.</p>
-
+    <h2>1. Introduction et objectifs</h2>
+    <p>Le <strong>Reverse Proxy Manager</strong> est une solution auto-hebergee de gestion dynamique de reverse proxy Nginx via interface web. L'application fonctionne dans un conteneur Docker unique.</p>
     <h3>Objectifs</h3>
     <ul>
-        <li><strong>Simplifier</strong> la configuration de reverse proxy sans editer manuellement les fichiers Nginx.</li>
-        <li><strong>Centraliser</strong> la gestion des redirections dans une interface unique accessible via HTTPS.</li>
+        <li><strong>Simplifier</strong> la configuration de reverse proxy sans editer les fichiers Nginx.</li>
         <li><strong>Presenter</strong> les services disponibles sous forme de tuiles cliquables sur une page d'accueil publique.</li>
-        <li><strong>Securiser</strong> l'administration par mot de passe avec protection anti-brute-force.</li>
+        <li><strong>Securiser</strong> l'administration par mot de passe avec protection anti-brute-force et historique des blocages.</li>
         <li><strong>Automatiser</strong> la validation et le rechargement de Nginx apres chaque modification.</li>
-        <li><strong>Persister</strong> les configurations entre les redemarrages grace a un volume Docker dedie.</li>
+        <li><strong>Persister</strong> toutes les donnees (routes, tuiles, logos, historique) dans un volume Docker.</li>
     </ul>
-
     <h3>Stack technique</h3>
     <table>
         <tr><th>Composant</th><th>Technologie</th><th>Version</th><th>Role</th></tr>
         <tr><td>Reverse Proxy</td><td>Nginx</td><td>1.27 (Alpine)</td><td>Terminaison TLS, routage HTTP(S)</td></tr>
         <tr><td>Application web</td><td>Flask</td><td>3.1.0</td><td>Interface d'administration et page d'accueil</td></tr>
         <tr><td>Serveur WSGI</td><td>Gunicorn</td><td>23.0.0</td><td>Serveur d'application Python</td></tr>
-        <tr><td>Gestionnaire de processus</td><td>Supervisor</td><td>Alpine pkg</td><td>Orchestration des services internes</td></tr>
+        <tr><td>Gestionnaire de processus</td><td>Supervisor</td><td>Alpine pkg</td><td>Orchestration Nginx + Flask</td></tr>
         <tr><td>Conteneurisation</td><td>Docker + Compose</td><td>-</td><td>Deploiement et isolation</td></tr>
     </table>
-
     <h3>Pages de l'application</h3>
     <table>
         <tr><th>Page</th><th>URL</th><th>Acces</th><th>Description</th></tr>
         <tr><td>Accueil</td><td><code>/</code></td><td>Public</td><td>Grille de tuiles cliquables vers les services</td></tr>
-        <tr><td>Connexion</td><td><code>/login</code></td><td>Public</td><td>Formulaire de mot de passe avec blocage IP</td></tr>
-        <tr><td>Administration</td><td><code>/admin</code></td><td>Protege</td><td>Gestion des tuiles et des routes proxy</td></tr>
-        <tr><td>Deconnexion</td><td><code>/logout</code></td><td>Protege</td><td>Ferme la session et redirige vers /login</td></tr>
+        <tr><td>Connexion</td><td><code>/login</code></td><td>Public</td><td>Formulaire mot de passe avec blocage IP</td></tr>
+        <tr><td>Administration</td><td><code>/admin</code></td><td>Protege</td><td>Gestion tuiles, routes, IP bloquees, historique</td></tr>
+        <tr><td>Deconnexion</td><td><code>/logout</code></td><td>Session</td><td>Ferme la session</td></tr>
     </table>
 </div>
 
-<!-- ============================================================ -->
-<!-- 2. ARCHITECTURE                                               -->
-<!-- ============================================================ -->
+<!-- 2. ARCHITECTURE -->
 <div class="section">
     <h2>2. Architecture globale</h2>
-
-    <h3>2.1 Vue d'ensemble</h3>
-    <p>L'architecture repose sur un conteneur Docker unique hebergeant deux processus geres par Supervisor : Nginx (reverse proxy) et Gunicorn/Flask (application web). L'application expose une page d'accueil publique avec des tuiles de services et un panneau d'administration protege par mot de passe.</p>
-
-    <h3>2.2 Diagramme d'architecture</h3>
+    <h3>2.1 Diagramme d'architecture</h3>
     <div class="diagram">
         <svg width="720" height="560" viewBox="0 0 720 560" xmlns="http://www.w3.org/2000/svg">
             <rect x="140" y="80" width="440" height="460" rx="16" fill="#f0f9ff" stroke="#0ea5e9" stroke-width="2" stroke-dasharray="8,4"/>
             <text x="360" y="110" text-anchor="middle" font-size="14" font-weight="700" fill="#0ea5e9">Conteneur Docker : reverseproxy</text>
-
             <rect x="170" y="130" width="380" height="50" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
             <text x="360" y="160" text-anchor="middle" font-size="12" font-weight="600" fill="#4338ca">Supervisor (PID 1)</text>
-
-            <rect x="170" y="210" width="180" height="120" rx="10" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <rect x="170" y="210" width="180" height="100" rx="10" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
             <text x="260" y="240" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Nginx 1.27</text>
-            <text x="260" y="260" text-anchor="middle" font-size="10" fill="#bae6fd">Port 443 (HTTPS)</text>
-            <text x="260" y="276" text-anchor="middle" font-size="10" fill="#bae6fd">Port 80 (redirect)</text>
-            <text x="260" y="296" text-anchor="middle" font-size="10" fill="#bae6fd">TLS 1.2 / 1.3</text>
-            <text x="260" y="316" text-anchor="middle" font-size="9" fill="#e0f2fe">default_server + conf.d/*.conf</text>
-
-            <rect x="390" y="210" width="180" height="120" rx="10" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="260" y="258" text-anchor="middle" font-size="10" fill="#bae6fd">Port 443 (HTTPS) / 80 (redir)</text>
+            <text x="260" y="276" text-anchor="middle" font-size="10" fill="#bae6fd">TLS 1.2 / 1.3</text>
+            <text x="260" y="296" text-anchor="middle" font-size="9" fill="#e0f2fe">conf.d/*.conf dynamique</text>
+            <rect x="390" y="210" width="180" height="100" rx="10" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
             <text x="480" y="236" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">Flask / Gunicorn</text>
-            <text x="480" y="256" text-anchor="middle" font-size="10" fill="#bbf7d0">127.0.0.1:5000</text>
-            <text x="480" y="276" text-anchor="middle" font-size="10" fill="#bbf7d0">Page accueil (tuiles)</text>
-            <text x="480" y="292" text-anchor="middle" font-size="10" fill="#bbf7d0">Login + Admin</text>
-            <text x="480" y="310" text-anchor="middle" font-size="9" fill="#dcfce7">Genere proxy.conf</text>
-
+            <text x="480" y="254" text-anchor="middle" font-size="10" fill="#bbf7d0">127.0.0.1:5000</text>
+            <text x="480" y="272" text-anchor="middle" font-size="10" fill="#bbf7d0">Accueil + Login + Admin</text>
+            <text x="480" y="292" text-anchor="middle" font-size="9" fill="#dcfce7">Tuiles, Routes, Securite</text>
             <line x1="260" y1="180" x2="260" y2="210" stroke="#6366f1" stroke-width="1.5" marker-end="url(#aV)"/>
             <line x1="480" y1="180" x2="480" y2="210" stroke="#6366f1" stroke-width="1.5" marker-end="url(#aV)"/>
-            <path d="M350 270 L390 270" stroke="#334155" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aG)"/>
-            <text x="370" y="264" text-anchor="middle" font-size="8" fill="#64748b">proxy_pass</text>
-
-            <rect x="350" y="370" width="200" height="40" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
-            <text x="450" y="395" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">/etc/nginx/conf.d/proxy.conf</text>
-            <line x1="480" y1="330" x2="480" y2="370" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#aO)"/>
-            <path d="M350 390 L260 390 L260 330" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aO)"/>
-
-            <rect x="170" y="440" width="130" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
-            <text x="235" y="465" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">routes.json</text>
-
-            <rect x="320" y="440" width="120" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
-            <text x="380" y="465" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">tiles.json</text>
-
-            <rect x="460" y="440" width="100" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
-            <text x="510" y="465" text-anchor="middle" font-size="10" font-weight="600" fill="#1d4ed8">logos/</text>
-
-            <text x="360" y="508" text-anchor="middle" font-size="9" fill="#3b82f6">Volume: proxy-data (/data)</text>
-
+            <path d="M350 260 L390 260" stroke="#334155" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aG)"/>
+            <text x="370" y="254" text-anchor="middle" font-size="8" fill="#64748b">proxy_pass</text>
+            <rect x="350" y="350" width="200" height="35" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+            <text x="450" y="373" text-anchor="middle" font-size="10" font-weight="600" fill="#92400e">/etc/nginx/conf.d/proxy.conf</text>
+            <line x1="480" y1="310" x2="480" y2="350" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#aO)"/>
+            <path d="M350 367 L260 367 L260 310" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#aO)"/>
+            <rect x="160" y="420" width="110" height="35" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="215" y="442" text-anchor="middle" font-size="9" font-weight="600" fill="#1d4ed8">routes.json</text>
+            <rect x="280" y="420" width="100" height="35" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="330" y="442" text-anchor="middle" font-size="9" font-weight="600" fill="#1d4ed8">tiles.json</text>
+            <rect x="390" y="420" width="80" height="35" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+            <text x="430" y="442" text-anchor="middle" font-size="9" font-weight="600" fill="#1d4ed8">logos/</text>
+            <rect x="480" y="420" width="100" height="35" rx="6" fill="#fef2f2" stroke="#ef4444" stroke-width="1"/>
+            <text x="530" y="438" text-anchor="middle" font-size="8" font-weight="600" fill="#991b1b">block_history</text>
+            <text x="530" y="450" text-anchor="middle" font-size="8" fill="#991b1b">.json</text>
+            <text x="370" y="485" text-anchor="middle" font-size="9" fill="#3b82f6">Volume: proxy-data (/data)</text>
             <rect x="10" y="230" width="100" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
             <text x="60" y="256" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Clients</text>
             <text x="60" y="274" text-anchor="middle" font-size="9" fill="#64748b">Navigateurs</text>
             <line x1="110" y1="260" x2="170" y2="260" stroke="#0ea5e9" stroke-width="2" marker-end="url(#aB)"/>
-
-            <rect x="620" y="220" width="90" height="80" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-            <text x="665" y="250" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Services</text>
-            <text x="665" y="268" text-anchor="middle" font-size="9" fill="#64748b">Backend 1</text>
-            <text x="665" y="284" text-anchor="middle" font-size="9" fill="#64748b">Backend N</text>
+            <rect x="620" y="230" width="90" height="60" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="665" y="256" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Backends</text>
+            <text x="665" y="272" text-anchor="middle" font-size="9" fill="#64748b">Services</text>
             <line x1="580" y1="260" x2="620" y2="260" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#aG)"/>
-
             <defs>
                 <marker id="aB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
                 <marker id="aV" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#6366f1"/></marker>
@@ -268,139 +205,105 @@
                 <marker id="aO" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f59e0b"/></marker>
             </defs>
         </svg>
-        <div class="diagram-caption">Figure 1 — Architecture interne du conteneur Reverse Proxy Manager v2</div>
+        <div class="diagram-caption">Figure 1 — Architecture interne du conteneur (v2.1 avec historique de blocage)</div>
     </div>
 
-    <h3>2.3 Flux reseau</h3>
+    <h3>2.2 Flux reseau et applicatif</h3>
     <div class="diagram">
-        <svg width="700" height="320" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="110" width="100" height="70" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-            <text x="70" y="140" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Client</text>
-            <text x="70" y="158" text-anchor="middle" font-size="9" fill="#64748b">Navigateur</text>
-
-            <line x1="120" y1="125" x2="200" y2="125" stroke="#ef4444" stroke-width="2" marker-end="url(#aR)"/>
-            <text x="160" y="117" text-anchor="middle" font-size="9" fill="#ef4444">HTTP :80</text>
-            <rect x="200" y="100" width="130" height="42" rx="8" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
-            <text x="265" y="118" text-anchor="middle" font-size="10" font-weight="600" fill="#991b1b">301 Redirect</text>
-            <text x="265" y="134" text-anchor="middle" font-size="9" fill="#dc2626">HTTP &#8594; HTTPS</text>
-
-            <line x1="120" y1="160" x2="200" y2="160" stroke="#0ea5e9" stroke-width="2" marker-end="url(#aB2)"/>
-            <text x="160" y="178" text-anchor="middle" font-size="9" fill="#0ea5e9">HTTPS :443</text>
-            <rect x="200" y="150" width="130" height="55" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
-            <text x="265" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Nginx</text>
-            <text x="265" y="192" text-anchor="middle" font-size="9" fill="#bae6fd">TLS + Routing</text>
-
-            <line x1="330" y1="165" x2="420" y2="130" stroke="#22c55e" stroke-width="1.5" marker-end="url(#aGr)"/>
-            <text x="390" y="138" font-size="8" fill="#16a34a">/ (accueil)</text>
-
-            <line x1="330" y1="175" x2="420" y2="175" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#aP)"/>
-            <text x="375" y="168" font-size="8" fill="#7c3aed">/admin</text>
-
-            <line x1="330" y1="185" x2="420" y2="220" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#aOr)"/>
-            <text x="390" y="214" font-size="8" fill="#92400e">/login</text>
-
-            <rect x="420" y="110" width="140" height="48" rx="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
-            <text x="490" y="131" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Page Accueil</text>
-            <text x="490" y="148" text-anchor="middle" font-size="9" fill="#bbf7d0">Tuiles (public)</text>
-
-            <rect x="420" y="165" width="140" height="28" rx="8" fill="#8b5cf6" stroke="#7c3aed" stroke-width="1.5"/>
-            <text x="490" y="183" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Admin (protege)</text>
-
-            <rect x="420" y="200" width="140" height="48" rx="8" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
-            <text x="490" y="221" text-anchor="middle" font-size="10" font-weight="700" fill="#000">Login</text>
-            <text x="490" y="238" text-anchor="middle" font-size="9" fill="#78350f">Blocage IP (6 ech.)</text>
-
-            <line x1="330" y1="195" x2="420" y2="270" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#aGy)"/>
-            <text x="360" y="248" font-size="8" fill="#64748b">domain X</text>
-            <rect x="420" y="255" width="140" height="40" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-            <text x="490" y="278" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Backend proxy</text>
-
+        <svg width="680" height="300" viewBox="0 0 680 300" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="100" width="100" height="60" rx="10" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="70" y="126" text-anchor="middle" font-size="11" font-weight="600" fill="#334155">Client</text>
+            <text x="70" y="144" text-anchor="middle" font-size="9" fill="#64748b">Navigateur</text>
+            <line x1="120" y1="115" x2="190" y2="115" stroke="#ef4444" stroke-width="1.5" marker-end="url(#r1)"/>
+            <text x="155" y="108" text-anchor="middle" font-size="8" fill="#ef4444">:80</text>
+            <rect x="190" y="95" width="110" height="35" rx="6" fill="#fee2e2" stroke="#ef4444" stroke-width="1"/>
+            <text x="245" y="117" text-anchor="middle" font-size="9" font-weight="600" fill="#991b1b">301 &#8594; HTTPS</text>
+            <line x1="120" y1="145" x2="190" y2="145" stroke="#0ea5e9" stroke-width="2" marker-end="url(#r2)"/>
+            <text x="155" y="160" text-anchor="middle" font-size="8" fill="#0ea5e9">:443</text>
+            <rect x="190" y="138" width="110" height="50" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="245" y="158" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Nginx</text>
+            <text x="245" y="176" text-anchor="middle" font-size="9" fill="#bae6fd">TLS + Routing</text>
+            <line x1="300" y1="148" x2="380" y2="115" stroke="#22c55e" stroke-width="1.5" marker-end="url(#r3)"/>
+            <text x="350" y="124" font-size="8" fill="#16a34a">/</text>
+            <line x1="300" y1="158" x2="380" y2="158" stroke="#8b5cf6" stroke-width="1.5" marker-end="url(#r4)"/>
+            <text x="340" y="152" font-size="8" fill="#7c3aed">/admin</text>
+            <line x1="300" y1="168" x2="380" y2="200" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#r5)"/>
+            <text x="350" y="196" font-size="8" fill="#92400e">/login</text>
+            <rect x="380" y="95" width="130" height="38" rx="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="445" y="112" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Accueil</text>
+            <text x="445" y="126" text-anchor="middle" font-size="8" fill="#bbf7d0">Tuiles (public)</text>
+            <rect x="380" y="140" width="130" height="38" rx="8" fill="#8b5cf6" stroke="#7c3aed" stroke-width="1.5"/>
+            <text x="445" y="156" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Admin (protege)</text>
+            <text x="445" y="170" text-anchor="middle" font-size="8" fill="#ddd6fe">Tuiles + Routes + IP + Histo</text>
+            <rect x="380" y="185" width="130" height="38" rx="8" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+            <text x="445" y="202" text-anchor="middle" font-size="10" font-weight="700" fill="#000">Login</text>
+            <text x="445" y="216" text-anchor="middle" font-size="8" fill="#78350f">Blocage 6 ech. / 10 min</text>
+            <line x1="300" y1="178" x2="380" y2="252" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#r6)"/>
+            <text x="330" y="228" font-size="8" fill="#64748b">domaine X</text>
+            <rect x="380" y="235" width="130" height="35" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="445" y="257" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Backend proxy</text>
             <defs>
-                <marker id="aR" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ef4444"/></marker>
-                <marker id="aB2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
-                <marker id="aGr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
-                <marker id="aP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#8b5cf6"/></marker>
-                <marker id="aOr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f59e0b"/></marker>
-                <marker id="aGy" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker>
+                <marker id="r1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ef4444"/></marker>
+                <marker id="r2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
+                <marker id="r3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
+                <marker id="r4" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#8b5cf6"/></marker>
+                <marker id="r5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#f59e0b"/></marker>
+                <marker id="r6" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker>
             </defs>
         </svg>
         <div class="diagram-caption">Figure 2 — Flux reseau et routage applicatif</div>
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 3. ARBORESCENCE                                               -->
-<!-- ============================================================ -->
+<!-- 3. ARBORESCENCE -->
 <div class="section">
     <h2>3. Arborescence du projet</h2>
     <div class="file-tree">
 reversproxy/<br>
-&#9500;&#9472;&#9472; <strong>docker-compose.yml</strong>&nbsp;&nbsp;&nbsp;&nbsp;# Orchestration Docker Compose<br>
-&#9500;&#9472;&#9472; <strong>Dockerfile</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Definition de l'image conteneur<br>
-&#9500;&#9472;&#9472; <strong>supervisord.conf</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Configuration Supervisor<br>
-&#9500;&#9472;&#9472; <strong>gen-certs.sh</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Script generation certificats SSL<br>
-&#9500;&#9472;&#9472; <strong>documentation.pdf</strong>&nbsp;&nbsp;&nbsp;&nbsp;# Cette documentation<br>
-&#9500;&#9472;&#9472; certs/<br>
-&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <strong>selfsigned.crt</strong>&nbsp;&nbsp;&nbsp;# Certificat X.509 auto-signe<br>
-&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <strong>selfsigned.key</strong>&nbsp;&nbsp;&nbsp;# Cle privee RSA 2048 bits<br>
-&#9500;&#9472;&#9472; nginx/<br>
-&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <strong>nginx.conf</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Configuration principale Nginx<br>
+&#9500;&#9472;&#9472; docker-compose.yml, Dockerfile, supervisord.conf<br>
+&#9500;&#9472;&#9472; gen-certs.sh, documentation.pdf<br>
+&#9500;&#9472;&#9472; certs/ (selfsigned.crt, selfsigned.key)<br>
+&#9500;&#9472;&#9472; nginx/nginx.conf<br>
 &#9492;&#9472;&#9472; app/<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <strong>app.py</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Application Flask (387 lignes)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <strong>requirements.txt</strong>&nbsp;# Dependances Python<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; templates/<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <strong>home.html</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Page d'accueil publique (tuiles)<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <strong>login.html</strong>&nbsp;&nbsp;&nbsp;&nbsp;# Page de connexion<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <strong>index.html</strong>&nbsp;&nbsp;&nbsp;&nbsp;# Panneau d'administration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; app.py (451 lignes)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; requirements.txt<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; templates/ (home.html, login.html, index.html)
     </div>
-
-    <h4>Donnees persistees dans le volume <code>/data</code></h4>
+    <h4>Donnees persistees (volume <code>/data</code>)</h4>
     <table>
-        <tr><th>Fichier / Dossier</th><th>Description</th></tr>
-        <tr><td><code>/data/routes.json</code></td><td>Routes de reverse proxy (domaine, cible, port)</td></tr>
-        <tr><td><code>/data/tiles.json</code></td><td>Configuration des tuiles (nom, URL, logo, position)</td></tr>
-        <tr><td><code>/data/logos/</code></td><td>Images de logos uploadees pour les tuiles</td></tr>
+        <tr><th>Fichier</th><th>Description</th></tr>
+        <tr><td><code>routes.json</code></td><td>Routes de reverse proxy (domaine, cible, port)</td></tr>
+        <tr><td><code>tiles.json</code></td><td>Tuiles de la page d'accueil (nom, URL, logo, position)</td></tr>
+        <tr><td><code>logos/</code></td><td>Images uploadees pour les tuiles</td></tr>
+        <tr><td><code>block_history.json</code></td><td>Historique des IP bloquees (200 derniers evenements)</td></tr>
     </table>
 </div>
 
-<!-- ============================================================ -->
-<!-- 4. INSTALLATION                                               -->
-<!-- ============================================================ -->
+<!-- 4. INSTALLATION -->
 <div class="section">
     <h2>4. Installation et deploiement</h2>
-
-    <h3>4.1 Prerequis</h3>
+    <h3>Prerequis</h3>
     <table>
         <tr><th>Composant</th><th>Version minimale</th><th>Verification</th></tr>
         <tr><td>Docker Engine</td><td>20.10+</td><td><code>docker --version</code></td></tr>
-        <tr><td>Docker Compose</td><td>2.0+ (plugin)</td><td><code>docker compose version</code></td></tr>
+        <tr><td>Docker Compose</td><td>2.0+</td><td><code>docker compose version</code></td></tr>
         <tr><td>OpenSSL</td><td>1.1+</td><td><code>openssl version</code></td></tr>
     </table>
+    <h3>Demarrage rapide</h3>
+    <pre><code># 1. Generer les certificats SSL
+chmod +x gen-certs.sh && bash gen-certs.sh
 
-    <h3>4.2 Generation des certificats SSL</h3>
-    <pre><code>chmod +x gen-certs.sh
-bash gen-certs.sh</code></pre>
-
-    <h3>4.3 Construction et lancement</h3>
-    <pre><code># Construire et demarrer
+# 2. Construire et demarrer
 docker compose up -d --build
 
-# Suivre les logs
-docker compose logs -f</code></pre>
-
-    <h3>4.4 Verification du deploiement</h3>
-    <pre><code>docker ps --filter name=reverseproxy
-curl -k https://localhost          # Page d'accueil (tuiles)
-curl -k https://localhost/login    # Page de connexion
-curl -k https://localhost/admin    # Redirige vers /login</code></pre>
+# 3. Verifier
+curl -k https://localhost        # Page d'accueil
+curl -k https://localhost/login  # Page de connexion</code></pre>
 </div>
 
-<!-- ============================================================ -->
-<!-- 5. DOCKER                                                     -->
-<!-- ============================================================ -->
+<!-- 5. DOCKER -->
 <div class="section">
     <h2>5. Configuration Docker</h2>
-
     <h3>5.1 Dockerfile</h3>
     <pre><code>FROM nginx:1.27-alpine
 RUN apk add --no-cache python3 py3-pip supervisor
@@ -437,533 +340,287 @@ volumes:
     <table>
         <tr><th>Variable</th><th>Defaut</th><th>Description</th></tr>
         <tr><td><code>SECRET_KEY</code></td><td><code>changez-moi-en-production</code></td><td>Cle de chiffrement des sessions Flask</td></tr>
-        <tr><td><code>ADMIN_PASSWORD</code></td><td><code>admin</code></td><td>Mot de passe d'acces au panneau d'administration</td></tr>
+        <tr><td><code>ADMIN_PASSWORD</code></td><td><code>admin</code></td><td>Mot de passe du panneau d'administration</td></tr>
     </table>
-
-    <div class="danger-box">
-        <strong>SECURITE :</strong> Les valeurs par defaut de <code>SECRET_KEY</code> et <code>ADMIN_PASSWORD</code>
-        doivent imperativement etre changees en production.
-    </div>
+    <div class="danger-box"><strong>SECURITE :</strong> Changez imperativement ces deux valeurs en production.</div>
 
     <h4>Volumes</h4>
     <table>
         <tr><th>Volume</th><th>Montage</th><th>Mode</th><th>Contenu</th></tr>
         <tr><td><code>./certs</code></td><td><code>/etc/nginx/certs</code></td><td>Lecture seule</td><td>Certificats SSL</td></tr>
-        <tr><td><code>proxy-data</code></td><td><code>/data</code></td><td>Lecture/ecriture</td><td>routes.json, tiles.json, logos/</td></tr>
+        <tr><td><code>proxy-data</code></td><td><code>/data</code></td><td>Lecture/ecriture</td><td>routes.json, tiles.json, logos/, block_history.json</td></tr>
     </table>
 </div>
 
-<!-- ============================================================ -->
-<!-- 6. NGINX                                                      -->
-<!-- ============================================================ -->
+<!-- 6. NGINX -->
 <div class="section">
     <h2>6. Configuration Nginx</h2>
-
     <h3>6.1 Configuration principale</h3>
-    <pre><code>user nginx;
-worker_processes auto;
-error_log /var/log/nginx/error.log warn;
-pid /var/run/nginx.pid;
-
-events { worker_connections 1024; }
-
-http {
-    include /etc/nginx/mime.types;
-    default_type application/octet-stream;
-    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
-                    '$status $body_bytes_sent "$http_referer" '
-                    '"$http_user_agent"';
-    access_log /var/log/nginx/access.log main;
-    sendfile on;
-    keepalive_timeout 65;
-
-    # Administration + Accueil (HTTPS, default)
-    server {
-        listen 443 ssl default_server;
-        server_name _;
-        ssl_certificate /etc/nginx/certs/selfsigned.crt;
-        ssl_certificate_key /etc/nginx/certs/selfsigned.key;
-        ssl_protocols TLSv1.2 TLSv1.3;
-
-        location / {
-            proxy_pass http://127.0.0.1:5000;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-    }
-
-    # Redirect HTTP -&gt; HTTPS
-    server {
-        listen 80 default_server;
-        server_name _;
-        return 301 https://$host$request_uri;
-    }
-
-    # Routes dynamiques
-    include /etc/nginx/conf.d/*.conf;
-}</code></pre>
+    <p>Le fichier <code>nginx.conf</code> definit trois blocs serveur :</p>
+    <table>
+        <tr><th>Bloc</th><th>Port</th><th>Role</th><th>server_name</th></tr>
+        <tr><td>Administration + Accueil</td><td>443 (SSL, default)</td><td>Proxy vers Flask :5000</td><td><code>_</code> (catch-all)</td></tr>
+        <tr><td>Redirection HTTP</td><td>80</td><td>301 HTTP &#8594; HTTPS</td><td><code>_</code></td></tr>
+        <tr><td>Routes dynamiques</td><td>443+ (SSL)</td><td>Proxy vers backends</td><td>Domaine configure</td></tr>
+    </table>
+    <h4>En-tetes proxy transmis</h4>
+    <table>
+        <tr><th>En-tete</th><th>Valeur</th><th>Description</th></tr>
+        <tr><td><code>Host</code></td><td><code>$host</code></td><td>Nom d'hote original</td></tr>
+        <tr><td><code>X-Real-IP</code></td><td><code>$remote_addr</code></td><td>IP reelle du client</td></tr>
+        <tr><td><code>X-Forwarded-For</code></td><td><code>$proxy_add_x_forwarded_for</code></td><td>Chaine de proxys</td></tr>
+        <tr><td><code>X-Forwarded-Proto</code></td><td><code>$scheme</code></td><td>Protocole original</td></tr>
+    </table>
 
     <h3>6.2 Generation dynamique des routes</h3>
-    <p>Chaque route cree un bloc <code>server {}</code> dans <code>/etc/nginx/conf.d/proxy.conf</code> avec support WebSocket natif :</p>
-    <pre><code>server {
-    listen 443 ssl;
-    server_name app.exemple.com;
-    ssl_certificate /etc/nginx/certs/selfsigned.crt;
-    ssl_certificate_key /etc/nginx/certs/selfsigned.key;
-
-    location / {
-        proxy_pass http://192.168.1.50:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}</code></pre>
-
-    <div class="info-box">
-        <strong>Port 80 :</strong> Si une route utilise le port 80, les directives SSL sont automatiquement omises pour eviter les conflits avec le bloc de redirection HTTP&#8594;HTTPS.
-    </div>
+    <p>Chaque route genere un bloc <code>server {}</code> dans <code>/etc/nginx/conf.d/proxy.conf</code> avec support WebSocket natif (<code>Upgrade</code>/<code>Connection</code>). Si le port d'ecoute est 80, les directives SSL sont automatiquement omises.</p>
 </div>
 
-<!-- ============================================================ -->
-<!-- 7. APPLICATION FLASK                                          -->
-<!-- ============================================================ -->
+<!-- 7. APPLICATION FLASK -->
 <div class="section">
     <h2>7. Application Flask</h2>
-
-    <h3>7.1 Structure et modules</h3>
-    <div class="diagram">
-        <svg width="620" height="320" viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg">
-            <rect x="230" y="10" width="160" height="45" rx="10" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
-            <text x="310" y="30" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">app.py (387 lignes)</text>
-            <text x="310" y="46" text-anchor="middle" font-size="9" fill="#bbf7d0">Flask Application</text>
-
-            <rect x="10" y="85" width="130" height="60" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
-            <text x="75" y="107" text-anchor="middle" font-size="9" font-weight="700" fill="#1d4ed8">Authentification</text>
-            <text x="75" y="121" text-anchor="middle" font-size="8" fill="#3b82f6">login / logout</text>
-            <text x="75" y="133" text-anchor="middle" font-size="8" fill="#3b82f6">blocage IP</text>
-
-            <rect x="160" y="85" width="130" height="60" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
-            <text x="225" y="107" text-anchor="middle" font-size="9" font-weight="700" fill="#92400e">Routes Proxy</text>
-            <text x="225" y="121" text-anchor="middle" font-size="8" fill="#b45309">CRUD routes</text>
-            <text x="225" y="133" text-anchor="middle" font-size="8" fill="#b45309">nginx conf gen</text>
-
-            <rect x="310" y="85" width="130" height="60" rx="6" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
-            <text x="375" y="107" text-anchor="middle" font-size="9" font-weight="700" fill="#4338ca">Tuiles</text>
-            <text x="375" y="121" text-anchor="middle" font-size="8" fill="#6366f1">CRUD tuiles</text>
-            <text x="375" y="133" text-anchor="middle" font-size="8" fill="#6366f1">upload logos</text>
-
-            <rect x="460" y="85" width="140" height="60" rx="6" fill="#fce7f3" stroke="#ec4899" stroke-width="1"/>
-            <text x="530" y="107" text-anchor="middle" font-size="9" font-weight="700" fill="#9d174d">Pages publiques</text>
-            <text x="530" y="121" text-anchor="middle" font-size="8" fill="#ec4899">home (tuiles)</text>
-            <text x="530" y="133" text-anchor="middle" font-size="8" fill="#ec4899">serve logos</text>
-
-            <rect x="10" y="190" width="195" height="35" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
-            <text x="108" y="212" text-anchor="middle" font-size="9" font-weight="600" fill="#166534">/data/routes.json</text>
-            <rect x="215" y="190" width="195" height="35" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
-            <text x="312" y="212" text-anchor="middle" font-size="9" font-weight="600" fill="#166534">/data/tiles.json</text>
-            <rect x="420" y="190" width="180" height="35" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
-            <text x="510" y="212" text-anchor="middle" font-size="9" font-weight="600" fill="#166534">/data/logos/*.{png,jpg,svg...}</text>
-
-            <rect x="10" y="260" width="195" height="35" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
-            <text x="108" y="282" text-anchor="middle" font-size="9" font-weight="600" fill="#92400e">/etc/nginx/conf.d/proxy.conf</text>
-        </svg>
-        <div class="diagram-caption">Figure 3 — Modules fonctionnels de l'application Flask</div>
-    </div>
-
-    <h3>7.2 API et routes HTTP</h3>
+    <h3>7.1 API et routes HTTP</h3>
     <table>
         <tr><th>Methode</th><th>Endpoint</th><th>Auth</th><th>Description</th></tr>
-        <tr><td><span class="badge badge-green">GET</span></td><td><code>/</code></td><td>Non</td><td>Page d'accueil publique avec grille de tuiles</td></tr>
-        <tr><td><span class="badge badge-green">GET</span></td><td><code>/logos/&lt;fichier&gt;</code></td><td>Non</td><td>Sert les images de logos uploadees</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/</code></td><td>Non</td><td>Page d'accueil avec grille de tuiles</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/logos/&lt;fichier&gt;</code></td><td>Non</td><td>Sert les images de logos</td></tr>
         <tr><td><span class="badge badge-green">GET</span></td><td><code>/login</code></td><td>Non</td><td>Formulaire de connexion</td></tr>
-        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/login</code></td><td>Non</td><td>Authentification par mot de passe</td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/login</code></td><td>Non</td><td>Authentification</td></tr>
         <tr><td><span class="badge badge-green">GET</span></td><td><code>/logout</code></td><td>Session</td><td>Deconnexion</td></tr>
-        <tr><td><span class="badge badge-green">GET</span></td><td><code>/admin</code></td><td>Oui</td><td>Panneau d'administration</td></tr>
+        <tr><td><span class="badge badge-green">GET</span></td><td><code>/admin</code></td><td>Oui</td><td>Panneau d'administration complet</td></tr>
         <tr><td><span class="badge badge-blue">POST</span></td><td><code>/add</code></td><td>Oui</td><td>Ajouter une route proxy</td></tr>
         <tr><td><span class="badge badge-blue">POST</span></td><td><code>/edit/&lt;id&gt;</code></td><td>Oui</td><td>Modifier une route proxy</td></tr>
         <tr><td><span class="badge badge-red">POST</span></td><td><code>/delete/&lt;id&gt;</code></td><td>Oui</td><td>Supprimer une route proxy</td></tr>
-        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/tile/add</code></td><td>Oui</td><td>Ajouter une tuile (avec upload logo)</td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/tile/add</code></td><td>Oui</td><td>Ajouter une tuile (+ upload logo)</td></tr>
         <tr><td><span class="badge badge-blue">POST</span></td><td><code>/tile/edit/&lt;id&gt;</code></td><td>Oui</td><td>Modifier une tuile</td></tr>
-        <tr><td><span class="badge badge-red">POST</span></td><td><code>/tile/delete/&lt;id&gt;</code></td><td>Oui</td><td>Supprimer une tuile (et son logo)</td></tr>
+        <tr><td><span class="badge badge-red">POST</span></td><td><code>/tile/delete/&lt;id&gt;</code></td><td>Oui</td><td>Supprimer une tuile</td></tr>
+        <tr><td><span class="badge badge-blue">POST</span></td><td><code>/unblock/&lt;ip&gt;</code></td><td>Oui</td><td>Debloquer une IP</td></tr>
+        <tr><td><span class="badge badge-red">POST</span></td><td><code>/clear-history</code></td><td>Oui</td><td>Effacer l'historique des blocages</td></tr>
     </table>
 
-    <h3>7.3 Gestion des routes proxy</h3>
-    <h4>Schema d'une route</h4>
+    <h3>7.2 Gestion des routes proxy</h3>
     <table>
         <tr><th>Champ</th><th>Type</th><th>Obligatoire</th><th>Defaut</th><th>Description</th></tr>
-        <tr><td><code>domain</code></td><td>string</td><td>Oui</td><td>-</td><td>Nom de domaine (server_name Nginx)</td></tr>
+        <tr><td><code>domain</code></td><td>string</td><td>Oui</td><td>-</td><td>Nom de domaine (server_name)</td></tr>
         <tr><td><code>target</code></td><td>string (URL)</td><td>Oui</td><td>-</td><td>URL du backend (proxy_pass)</td></tr>
-        <tr><td><code>listen_port</code></td><td>string</td><td>Non</td><td><code>"443"</code></td><td>Port d'ecoute Nginx</td></tr>
+        <tr><td><code>listen_port</code></td><td>string</td><td>Non</td><td>"443"</td><td>Port d'ecoute Nginx</td></tr>
     </table>
 
-    <h3>7.4 Gestion des tuiles</h3>
-    <h4>Schema d'une tuile</h4>
+    <h3>7.3 Gestion des tuiles</h3>
     <table>
         <tr><th>Champ</th><th>Type</th><th>Obligatoire</th><th>Description</th></tr>
-        <tr><td><code>id</code></td><td>string (8 hex)</td><td>Auto</td><td>Identifiant unique genere automatiquement</td></tr>
+        <tr><td><code>id</code></td><td>string (8 hex)</td><td>Auto</td><td>Identifiant unique</td></tr>
         <tr><td><code>name</code></td><td>string</td><td>Oui</td><td>Nom affiche sur la tuile</td></tr>
         <tr><td><code>url</code></td><td>string (URL)</td><td>Oui</td><td>URL de redirection au clic</td></tr>
-        <tr><td><code>position</code></td><td>integer</td><td>Non (defaut 0)</td><td>Ordre d'affichage (tri croissant)</td></tr>
-        <tr><td><code>logo</code></td><td>string (filename)</td><td>Non</td><td>Nom du fichier image uploade</td></tr>
+        <tr><td><code>position</code></td><td>integer</td><td>Non (0)</td><td>Ordre d'affichage (tri croissant)</td></tr>
+        <tr><td><code>logo</code></td><td>string (filename)</td><td>Non</td><td>Fichier image uploade (PNG, JPG, SVG, WebP, GIF, ICO)</td></tr>
     </table>
-
-    <h4>Formats d'image acceptes</h4>
-    <p><code>PNG</code>, <code>JPG/JPEG</code>, <code>GIF</code>, <code>SVG</code>, <code>WebP</code>, <code>ICO</code></p>
-
-    <h4>Cycle de vie d'un logo</h4>
-    <ol>
-        <li>L'image est uploadee via le formulaire (enctype multipart/form-data).</li>
-        <li>Le fichier est renomme avec un UUID unique pour eviter les collisions.</li>
-        <li>Il est stocke dans <code>/data/logos/</code> (volume persistent).</li>
-        <li>Lors de la modification, l'ancien logo est supprime si un nouveau est uploade.</li>
-        <li>Lors de la suppression d'une tuile, le logo associe est supprime.</li>
-    </ol>
 </div>
 
-<!-- ============================================================ -->
-<!-- 8. AUTHENTIFICATION                                           -->
-<!-- ============================================================ -->
+<!-- 8. AUTHENTIFICATION -->
 <div class="section">
     <h2>8. Authentification et securite d'acces</h2>
 
     <h3>8.1 Systeme de login</h3>
-    <p>L'administration est protegee par un mot de passe unique configure via la variable d'environnement <code>ADMIN_PASSWORD</code>. L'authentification utilise les sessions Flask (cookie signe par <code>SECRET_KEY</code>).</p>
+    <p>L'administration est protegee par un mot de passe configure via <code>ADMIN_PASSWORD</code>. L'authentification utilise les sessions Flask signees par <code>SECRET_KEY</code>.</p>
 
     <div class="diagram">
-        <svg width="600" height="280" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="30" width="120" height="45" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-            <text x="80" y="50" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Utilisateur</text>
-            <text x="80" y="65" text-anchor="middle" font-size="9" fill="#64748b">GET /admin</text>
-
-            <line x1="140" y1="52" x2="200" y2="52" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#aGx)"/>
-
-            <rect x="200" y="25" width="140" height="55" rx="8" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
-            <text x="270" y="48" text-anchor="middle" font-size="10" font-weight="700" fill="#000">Session valide ?</text>
-            <text x="270" y="65" text-anchor="middle" font-size="9" fill="#78350f">@login_required</text>
-
-            <line x1="340" y1="40" x2="420" y2="40" stroke="#22c55e" stroke-width="1.5" marker-end="url(#aGrx)"/>
-            <text x="380" y="33" font-size="9" fill="#16a34a">Oui</text>
-
-            <rect x="420" y="18" width="150" height="45" rx="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
-            <text x="495" y="38" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Panneau Admin</text>
-            <text x="495" y="53" text-anchor="middle" font-size="9" fill="#bbf7d0">/admin</text>
-
-            <line x1="270" y1="80" x2="270" y2="110" stroke="#ef4444" stroke-width="1.5" marker-end="url(#aRx)"/>
-            <text x="285" y="100" font-size="9" fill="#ef4444">Non</text>
-
-            <rect x="200" y="110" width="140" height="45" rx="8" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"/>
-            <text x="270" y="130" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Redirect /login</text>
-            <text x="270" y="145" text-anchor="middle" font-size="9" fill="#fecaca">302 Found</text>
-
-            <line x1="270" y1="155" x2="270" y2="180" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#aGx)"/>
-
-            <rect x="190" y="180" width="160" height="45" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
-            <text x="270" y="200" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">IP bloquee ?</text>
-            <text x="270" y="215" text-anchor="middle" font-size="9" fill="#bae6fd">6 echecs = 10 min</text>
-
-            <line x1="350" y1="202" x2="420" y2="202" stroke="#ef4444" stroke-width="1.5" marker-end="url(#aRx)"/>
-            <text x="385" y="195" font-size="9" fill="#ef4444">Oui</text>
-            <rect x="420" y="182" width="150" height="40" rx="8" fill="#7f1d1d" stroke="#dc2626" stroke-width="1"/>
-            <text x="495" y="206" text-anchor="middle" font-size="10" font-weight="600" fill="#fca5a5">Acces refuse</text>
-
-            <line x1="270" y1="225" x2="270" y2="248" stroke="#22c55e" stroke-width="1.5" marker-end="url(#aGrx)"/>
-            <text x="285" y="240" font-size="9" fill="#16a34a">Non</text>
-            <rect x="200" y="248" width="140" height="30" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
-            <text x="270" y="268" text-anchor="middle" font-size="10" fill="#334155">Formulaire login</text>
-
+        <svg width="580" height="260" viewBox="0 0 580 260" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="25" width="110" height="40" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="75" y="42" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Utilisateur</text>
+            <text x="75" y="56" text-anchor="middle" font-size="8" fill="#64748b">GET /admin</text>
+            <line x1="130" y1="45" x2="190" y2="45" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#f1)"/>
+            <rect x="190" y="20" width="130" height="50" rx="8" fill="#f59e0b" stroke="#d97706" stroke-width="1.5"/>
+            <text x="255" y="42" text-anchor="middle" font-size="10" font-weight="700" fill="#000">Session OK ?</text>
+            <text x="255" y="58" text-anchor="middle" font-size="8" fill="#78350f">@login_required</text>
+            <line x1="320" y1="35" x2="390" y2="35" stroke="#22c55e" stroke-width="1.5" marker-end="url(#f2)"/>
+            <text x="355" y="28" font-size="8" fill="#16a34a">Oui</text>
+            <rect x="390" y="15" width="140" height="40" rx="8" fill="#22c55e" stroke="#16a34a" stroke-width="1.5"/>
+            <text x="460" y="33" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Panneau Admin</text>
+            <text x="460" y="47" text-anchor="middle" font-size="8" fill="#bbf7d0">IP + Histo + Tuiles + Routes</text>
+            <line x1="255" y1="70" x2="255" y2="100" stroke="#ef4444" stroke-width="1.5" marker-end="url(#f3)"/>
+            <text x="268" y="90" font-size="8" fill="#ef4444">Non</text>
+            <rect x="190" y="100" width="130" height="35" rx="8" fill="#ef4444" stroke="#dc2626" stroke-width="1.5"/>
+            <text x="255" y="122" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">Redirect /login</text>
+            <line x1="255" y1="135" x2="255" y2="160" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#f1)"/>
+            <rect x="180" y="160" width="150" height="40" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="255" y="178" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">IP bloquee ?</text>
+            <text x="255" y="192" text-anchor="middle" font-size="8" fill="#bae6fd">6 echecs = 10 min</text>
+            <line x1="330" y1="180" x2="390" y2="180" stroke="#ef4444" stroke-width="1.5" marker-end="url(#f3)"/>
+            <text x="360" y="173" font-size="8" fill="#ef4444">Oui</text>
+            <rect x="390" y="162" width="140" height="38" rx="8" fill="#7f1d1d" stroke="#dc2626" stroke-width="1"/>
+            <text x="460" y="178" text-anchor="middle" font-size="10" font-weight="600" fill="#fca5a5">Acces refuse</text>
+            <text x="460" y="192" text-anchor="middle" font-size="8" fill="#fca5a5">+ log dans historique</text>
+            <line x1="255" y1="200" x2="255" y2="225" stroke="#22c55e" stroke-width="1.5" marker-end="url(#f2)"/>
+            <text x="268" y="216" font-size="8" fill="#16a34a">Non</text>
+            <rect x="190" y="225" width="130" height="28" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+            <text x="255" y="244" text-anchor="middle" font-size="10" fill="#334155">Formulaire login</text>
             <defs>
-                <marker id="aGx" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker>
-                <marker id="aGrx" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
-                <marker id="aRx" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ef4444"/></marker>
+                <marker id="f1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#94a3b8"/></marker>
+                <marker id="f2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
+                <marker id="f3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#ef4444"/></marker>
             </defs>
         </svg>
-        <div class="diagram-caption">Figure 4 — Flux d'authentification</div>
+        <div class="diagram-caption">Figure 3 — Flux d'authentification avec historisation des blocages</div>
     </div>
 
-    <h3>8.2 Blocage d'IP par force brute</h3>
+    <h3>8.2 Blocage IP anti-brute-force</h3>
     <table>
         <tr><th>Parametre</th><th>Valeur</th><th>Description</th></tr>
         <tr><td>Tentatives max</td><td><strong>6</strong></td><td>Nombre d'echecs avant blocage</td></tr>
-        <tr><td>Duree de blocage</td><td><strong>10 minutes</strong> (600 s)</td><td>Temps de blocage de l'IP</td></tr>
+        <tr><td>Duree de blocage</td><td><strong>10 minutes</strong> (600 s)</td><td>Duree pendant laquelle l'IP est refusee</td></tr>
         <tr><td>Compteur affiche</td><td>Oui</td><td>"X tentative(s) restante(s)" a chaque echec</td></tr>
         <tr><td>Reset</td><td>Automatique</td><td>Compteur remis a zero apres connexion reussie</td></tr>
-        <tr><td>Detection IP</td><td><code>X-Real-IP</code> ou <code>remote_addr</code></td><td>Compatible avec les proxys en amont</td></tr>
+        <tr><td>Detection IP</td><td><code>X-Real-IP</code> / <code>remote_addr</code></td><td>Compatible proxys en amont</td></tr>
     </table>
 
-    <h3>8.3 Protection des routes</h3>
+    <h3>8.3 Historique des blocages</h3>
+    <p>Chaque blocage d'IP est enregistre dans <code>/data/block_history.json</code>, un fichier persiste sur le volume Docker. L'historique survit aux redemarrages du conteneur.</p>
+    <table>
+        <tr><th>Propriete</th><th>Valeur</th></tr>
+        <tr><td>Fichier de stockage</td><td><code>/data/block_history.json</code></td></tr>
+        <tr><td>Capacite</td><td>200 derniers evenements (FIFO)</td></tr>
+        <tr><td>Declenchement</td><td>Automatique a chaque blocage d'IP (6e echec)</td></tr>
+        <tr><td>Persistance</td><td>Volume Docker <code>proxy-data</code>, survit aux redemarrages</td></tr>
+        <tr><td>Purge</td><td>Bouton "Effacer l'historique" dans l'admin</td></tr>
+    </table>
+
+    <h4>Schema d'un evenement</h4>
+    <pre><code>{
+  "ip": "10.50.194.26",
+  "date": "2026-04-08 14:12:45",
+  "reason": "6 tentatives echouees"
+}</code></pre>
+
+    <h3>8.4 Gestion des IP bloquees (admin)</h3>
+    <p>Le panneau d'administration affiche deux sections de securite :</p>
+    <table>
+        <tr><th>Section</th><th>Couleur</th><th>Visibilite</th><th>Contenu</th></tr>
+        <tr><td>IP bloquees (actives)</td><td>Rouge</td><td>Uniquement si des IP sont bloquees</td><td>IP, tentatives, temps restant, bouton "Debloquer"</td></tr>
+        <tr><td>Historique des blocages</td><td>Orange</td><td>Uniquement si l'historique contient des evenements</td><td>Date, IP, raison, bouton "Effacer l'historique"</td></tr>
+    </table>
+
+    <h4>Protection des routes</h4>
     <table>
         <tr><th>Route</th><th>Protection</th></tr>
-        <tr><td><code>/</code> (accueil)</td><td>Aucune — page publique</td></tr>
-        <tr><td><code>/logos/*</code></td><td>Aucune — fichiers statiques publics</td></tr>
+        <tr><td><code>/</code>, <code>/logos/*</code></td><td>Aucune — pages publiques</td></tr>
         <tr><td><code>/login</code></td><td>Blocage IP apres 6 echecs</td></tr>
-        <tr><td><code>/admin</code></td><td>Decorateur <code>@login_required</code></td></tr>
-        <tr><td><code>/add</code>, <code>/edit/*</code>, <code>/delete/*</code></td><td>Decorateur <code>@login_required</code></td></tr>
-        <tr><td><code>/tile/add</code>, <code>/tile/edit/*</code>, <code>/tile/delete/*</code></td><td>Decorateur <code>@login_required</code></td></tr>
+        <tr><td><code>/admin</code>, <code>/add</code>, <code>/edit/*</code>, <code>/delete/*</code></td><td><code>@login_required</code></td></tr>
+        <tr><td><code>/tile/*</code></td><td><code>@login_required</code></td></tr>
+        <tr><td><code>/unblock/*</code>, <code>/clear-history</code></td><td><code>@login_required</code></td></tr>
     </table>
 </div>
 
-<!-- ============================================================ -->
-<!-- 9. INTERFACE UTILISATEUR                                      -->
-<!-- ============================================================ -->
+<!-- 9. INTERFACE -->
 <div class="section">
     <h2>9. Interface utilisateur</h2>
-
-    <h3>9.1 Page d'accueil publique (tuiles)</h3>
-    <p>La page d'accueil (<code>/</code>) affiche une grille responsive de tuiles cliquables. Chaque tuile represente un service et redirige vers son URL dans un nouvel onglet.</p>
-
-    <div class="diagram">
-        <svg width="650" height="340" viewBox="0 0 650 340" xmlns="http://www.w3.org/2000/svg">
-            <rect x="30" y="10" width="590" height="320" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-            <rect x="30" y="10" width="590" height="30" rx="12" fill="#1e293b"/>
-            <rect x="30" y="28" width="590" height="12" fill="#1e293b"/>
-            <circle cx="52" cy="25" r="6" fill="#ef4444"/><circle cx="72" cy="25" r="6" fill="#f59e0b"/><circle cx="92" cy="25" r="6" fill="#22c55e"/>
-            <text x="325" y="29" text-anchor="middle" font-size="10" fill="#94a3b8">https://localhost</text>
-
-            <text x="120" y="68" font-size="16" font-weight="700" fill="#38bdf8">Reverse Proxy Manager</text>
-            <rect x="470" y="52" width="120" height="26" rx="6" fill="#334155" stroke="#475569" stroke-width="1"/>
-            <text x="530" y="70" text-anchor="middle" font-size="9" font-weight="600" fill="#e2e8f0">Administration</text>
-
-            <!-- Tuile 1 -->
-            <rect x="60" y="95" width="165" height="130" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-            <rect x="115" y="110" width="55" height="55" rx="12" fill="linear-gradient(135deg, #0ea5e9, #6366f1)"/>
-            <rect x="115" y="110" width="55" height="55" rx="12" fill="#0ea5e9"/>
-            <text x="142" y="142" text-anchor="middle" font-size="22" fill="#fff">N</text>
-            <text x="142" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#f1f5f9">Nextcloud</text>
-            <text x="142" y="200" text-anchor="middle" font-size="7" fill="#64748b">https://cloud.local</text>
-
-            <!-- Tuile 2 -->
-            <rect x="240" y="95" width="165" height="130" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-            <rect x="295" y="110" width="55" height="55" rx="12" fill="#22c55e"/>
-            <text x="322" y="142" text-anchor="middle" font-size="22" fill="#fff">G</text>
-            <text x="322" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#f1f5f9">Gitea</text>
-            <text x="322" y="200" text-anchor="middle" font-size="7" fill="#64748b">https://git.local</text>
-
-            <!-- Tuile 3 -->
-            <rect x="420" y="95" width="165" height="130" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-            <rect x="475" y="110" width="55" height="55" rx="12" fill="#8b5cf6"/>
-            <text x="502" y="142" text-anchor="middle" font-size="22" fill="#fff">J</text>
-            <text x="502" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#f1f5f9">Jellyfin</text>
-            <text x="502" y="200" text-anchor="middle" font-size="7" fill="#64748b">https://media.local</text>
-
-            <!-- Tuile 4 -->
-            <rect x="60" y="240" width="165" height="70" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-            <rect x="80" y="254" width="38" height="38" rx="8" fill="#f59e0b"/>
-            <text x="99" y="278" text-anchor="middle" font-size="16" fill="#fff">P</text>
-            <text x="162" y="272" text-anchor="middle" font-size="10" font-weight="700" fill="#f1f5f9">Portainer</text>
-            <text x="162" y="286" text-anchor="middle" font-size="7" fill="#64748b">https://docker.local</text>
-        </svg>
-        <div class="diagram-caption">Figure 5 — Maquette de la page d'accueil avec tuiles</div>
-    </div>
+    <h3>9.1 Page d'accueil publique</h3>
+    <p>Grille responsive de tuiles cliquables. Chaque tuile affiche le logo (ou globe par defaut), le nom du service et l'URL. Clic = ouverture dans un nouvel onglet. Bouton "Administration" en haut a droite.</p>
 
     <h3>9.2 Page de connexion</h3>
-    <p>Page centree avec icone cadenas, champ mot de passe et gestion des erreurs (tentatives restantes, IP bloquee).</p>
+    <p>Page centree avec icone cadenas, champ mot de passe. Affiche le nombre de tentatives restantes ou le message de blocage avec countdown.</p>
 
     <h3>9.3 Panneau d'administration</h3>
-    <p>Deux sections distinctes :</p>
-    <table>
-        <tr><th>Section</th><th>Description</th></tr>
-        <tr><td>Gestion des tuiles</td><td>Formulaire d'ajout (nom, URL, logo, position) + tableau avec edition en ligne et suppression</td></tr>
-        <tr><td>Routes de reverse proxy</td><td>Formulaire d'ajout (domaine, cible, port) + tableau avec edition en ligne et suppression</td></tr>
-    </table>
-
+    <p>Le panneau <code>/admin</code> comporte 4 sections (affichees conditionnellement) :</p>
     <div class="diagram">
-        <svg width="650" height="360" viewBox="0 0 650 360" xmlns="http://www.w3.org/2000/svg">
-            <rect x="30" y="10" width="590" height="340" rx="12" fill="#0f172a" stroke="#334155" stroke-width="2"/>
-            <rect x="30" y="10" width="590" height="30" rx="12" fill="#1e293b"/>
-            <rect x="30" y="28" width="590" height="12" fill="#1e293b"/>
-            <circle cx="52" cy="25" r="6" fill="#ef4444"/><circle cx="72" cy="25" r="6" fill="#f59e0b"/><circle cx="92" cy="25" r="6" fill="#22c55e"/>
-            <text x="325" y="29" text-anchor="middle" font-size="10" fill="#94a3b8">https://localhost/admin</text>
-
-            <text x="80" y="65" font-size="16" font-weight="700" fill="#38bdf8">Administration</text>
-            <rect x="480" y="50" width="60" height="22" rx="4" fill="#334155"/><text x="510" y="65" text-anchor="middle" font-size="8" fill="#e2e8f0">Accueil</text>
-            <rect x="548" y="50" width="60" height="22" rx="4" fill="#dc2626"/><text x="578" y="65" text-anchor="middle" font-size="8" fill="#fff">Deconnexion</text>
-
-            <!-- Section Tuiles -->
-            <rect x="50" y="82" width="570" height="120" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-            <text x="70" y="102" font-size="11" font-weight="700" fill="#f1f5f9">Gestion des tuiles (page d'accueil)</text>
-            <line x1="50" y1="108" x2="620" y2="108" stroke="#334155" stroke-width="0.5"/>
-            <!-- Form -->
-            <rect x="60" y="114" width="110" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="70" y="128" font-size="7" fill="#64748b">Nom</text>
-            <rect x="178" y="114" width="130" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="188" y="128" font-size="7" fill="#64748b">URL redirection</text>
-            <rect x="316" y="114" width="100" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="326" y="128" font-size="7" fill="#64748b">Logo (fichier)</text>
-            <rect x="424" y="114" width="50" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="434" y="128" font-size="7" fill="#64748b">Pos.</text>
-            <rect x="482" y="114" width="55" height="22" rx="4" fill="#0ea5e9"/>
-            <text x="509" y="128" text-anchor="middle" font-size="8" font-weight="600" fill="#fff">Ajouter</text>
-            <!-- Table row -->
-            <rect x="60" y="144" width="548" height="22" rx="0" fill="#334155"/>
-            <text x="75" y="158" font-size="7" fill="#94a3b8">POS.</text>
-            <text x="110" y="158" font-size="7" fill="#94a3b8">LOGO</text>
-            <text x="170" y="158" font-size="7" fill="#94a3b8">NOM</text>
-            <text x="310" y="158" font-size="7" fill="#94a3b8">URL</text>
-            <text x="520" y="158" font-size="7" fill="#94a3b8">ACTIONS</text>
-            <text x="75" y="180" font-size="8" fill="#e2e8f0">0</text>
-            <rect x="105" y="170" width="18" height="18" rx="4" fill="#0ea5e9"/>
-            <text x="170" y="182" font-size="8" fill="#e2e8f0">Nextcloud</text>
-            <text x="310" y="182" font-size="8" fill="#38bdf8">https://cloud.local</text>
-            <rect x="500" y="172" width="38" height="15" rx="3" fill="#f59e0b"/><text x="519" y="183" text-anchor="middle" font-size="7" font-weight="600" fill="#000">Modifier</text>
-            <rect x="543" y="172" width="40" height="15" rx="3" fill="#dc2626"/><text x="563" y="183" text-anchor="middle" font-size="7" font-weight="600" fill="#fff">Supprimer</text>
-
-            <!-- Section Routes -->
-            <rect x="50" y="215" width="570" height="120" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
-            <text x="70" y="235" font-size="11" font-weight="700" fill="#f1f5f9">Routes de reverse proxy (Nginx)</text>
-            <line x1="50" y1="241" x2="620" y2="241" stroke="#334155" stroke-width="0.5"/>
-            <rect x="60" y="248" width="140" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="70" y="262" font-size="7" fill="#64748b">Domaine</text>
-            <rect x="208" y="248" width="160" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="218" y="262" font-size="7" fill="#64748b">Cible (IP:port)</text>
-            <rect x="376" y="248" width="55" height="22" rx="4" fill="#0f172a" stroke="#475569" stroke-width="0.5"/>
-            <text x="386" y="262" font-size="7" fill="#64748b">Port</text>
-            <rect x="439" y="248" width="55" height="22" rx="4" fill="#0ea5e9"/>
-            <text x="466" y="262" text-anchor="middle" font-size="8" font-weight="600" fill="#fff">Ajouter</text>
-            <rect x="60" y="278" width="548" height="22" rx="0" fill="#334155"/>
-            <text x="75" y="292" font-size="7" fill="#94a3b8">#</text>
-            <text x="120" y="292" font-size="7" fill="#94a3b8">DOMAINE</text>
-            <text x="280" y="292" font-size="7" fill="#94a3b8">CIBLE</text>
-            <text x="430" y="292" font-size="7" fill="#94a3b8">PORT</text>
-            <text x="520" y="292" font-size="7" fill="#94a3b8">ACTIONS</text>
-            <text x="75" y="315" font-size="8" fill="#e2e8f0">1</text>
-            <text x="120" y="315" font-size="8" fill="#e2e8f0">app.exemple.com</text>
-            <text x="280" y="315" font-size="8" fill="#e2e8f0">http://192.168.1.50:3000</text>
-            <rect x="425" y="305" width="28" height="15" rx="3" fill="#1e3a5f"/><text x="439" y="316" text-anchor="middle" font-size="7" font-weight="600" fill="#38bdf8">443</text>
-            <rect x="500" y="305" width="38" height="15" rx="3" fill="#f59e0b"/><text x="519" y="316" text-anchor="middle" font-size="7" font-weight="600" fill="#000">Modifier</text>
-            <rect x="543" y="305" width="40" height="15" rx="3" fill="#dc2626"/><text x="563" y="316" text-anchor="middle" font-size="7" font-weight="600" fill="#fff">Supprimer</text>
+        <svg width="500" height="320" viewBox="0 0 500 320" xmlns="http://www.w3.org/2000/svg">
+            <text x="250" y="25" text-anchor="middle" font-size="14" font-weight="700" fill="#38bdf8">Panneau d'administration (/admin)</text>
+            <!-- Section 1: IP bloquees -->
+            <rect x="30" y="45" width="440" height="50" rx="8" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+            <text x="50" y="67" font-size="11" font-weight="700" fill="#991b1b">IP bloquees (actives)</text>
+            <text x="50" y="83" font-size="9" fill="#dc2626">Tableau: IP, tentatives, countdown, bouton Debloquer</text>
+            <text x="400" y="75" text-anchor="middle" font-size="8" fill="#ef4444">conditionnel</text>
+            <!-- Section 2: Historique -->
+            <rect x="30" y="105" width="440" height="50" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="50" y="127" font-size="11" font-weight="700" fill="#92400e">Historique des blocages</text>
+            <text x="50" y="143" font-size="9" fill="#b45309">Tableau: date, IP, raison | Bouton Effacer l'historique</text>
+            <text x="400" y="135" text-anchor="middle" font-size="8" fill="#f59e0b">conditionnel</text>
+            <!-- Section 3: Tuiles -->
+            <rect x="30" y="165" width="440" height="60" rx="8" fill="#e0e7ff" stroke="#6366f1" stroke-width="1.5"/>
+            <text x="50" y="187" font-size="11" font-weight="700" fill="#4338ca">Gestion des tuiles (page d'accueil)</text>
+            <text x="50" y="203" font-size="9" fill="#6366f1">Formulaire: nom, URL, logo (upload), position</text>
+            <text x="50" y="217" font-size="9" fill="#6366f1">Tableau: position, logo, nom, URL, boutons Modifier/Supprimer</text>
+            <!-- Section 4: Routes -->
+            <rect x="30" y="235" width="440" height="60" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+            <text x="50" y="257" font-size="11" font-weight="700" fill="#166534">Routes de reverse proxy (Nginx)</text>
+            <text x="50" y="273" font-size="9" fill="#16a34a">Formulaire: domaine, cible, port</text>
+            <text x="50" y="287" font-size="9" fill="#16a34a">Tableau: #, domaine, cible, port, boutons Modifier/Supprimer</text>
         </svg>
-        <div class="diagram-caption">Figure 6 — Maquette du panneau d'administration</div>
+        <div class="diagram-caption">Figure 4 — Structure du panneau d'administration</div>
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 10. SUPERVISOR                                                -->
-<!-- ============================================================ -->
+<!-- 10. SUPERVISOR -->
 <div class="section">
     <h2>10. Gestion des processus (Supervisor)</h2>
-    <pre><code>[supervisord]
-nodaemon=true
-logfile=/var/log/supervisord.log
-pidfile=/var/run/supervisord.pid
-
-[program:nginx]
-command=nginx -g "daemon off;"
-autostart=true
-autorestart=true
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0
-
-[program:flask]
-command=gunicorn -w 2 -b 127.0.0.1:5000 app:app
-directory=/app
-autostart=true
-autorestart=true
-stdout_logfile=/dev/stdout
-stdout_logfile_maxbytes=0
-stderr_logfile=/dev/stderr
-stderr_logfile_maxbytes=0</code></pre>
-
     <table>
         <tr><th>Programme</th><th>Commande</th><th>Redemarrage auto</th></tr>
         <tr><td><code>nginx</code></td><td><code>nginx -g "daemon off;"</code></td><td>Oui</td></tr>
         <tr><td><code>flask</code></td><td><code>gunicorn -w 2 -b 127.0.0.1:5000 app:app</code></td><td>Oui</td></tr>
     </table>
+    <div class="info-box"><strong>nodaemon=true</strong> : Supervisor reste au premier plan (PID 1) pour que le conteneur Docker ne s'arrete pas.</div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 11. SSL/TLS                                                   -->
-<!-- ============================================================ -->
+<!-- 11. SSL/TLS -->
 <div class="section">
     <h2>11. Securite SSL/TLS</h2>
     <table>
         <tr><th>Propriete</th><th>Valeur</th></tr>
         <tr><td>Type</td><td>X.509 v3 auto-signe</td></tr>
-        <tr><td>Algorithme de cle</td><td>RSA 2048 bits</td></tr>
-        <tr><td>Signature</td><td>SHA-256</td></tr>
+        <tr><td>Cle</td><td>RSA 2048 bits, SHA-256</td></tr>
         <tr><td>Validite</td><td>10 ans (3650 jours)</td></tr>
-        <tr><td>CN</td><td><code>localhost</code></td></tr>
-        <tr><td>Protocoles actives</td><td>TLSv1.2, TLSv1.3</td></tr>
+        <tr><td>CN</td><td>localhost</td></tr>
+        <tr><td>Protocoles</td><td>TLSv1.2, TLSv1.3</td></tr>
     </table>
-
     <div class="diagram">
-        <svg width="600" height="130" viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg">
-            <rect x="20" y="30" width="120" height="50" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
-            <text x="80" y="52" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Client</text>
-            <text x="80" y="68" text-anchor="middle" font-size="9" fill="#64748b">TLS 1.2/1.3</text>
-            <line x1="140" y1="55" x2="220" y2="55" stroke="#0ea5e9" stroke-width="2" marker-end="url(#aBf)"/>
-            <text x="180" y="48" text-anchor="middle" font-size="8" fill="#0ea5e9">HTTPS</text>
-            <rect x="220" y="25" width="160" height="60" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
-            <text x="300" y="50" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Nginx</text>
-            <text x="300" y="68" text-anchor="middle" font-size="9" fill="#bae6fd">TLS Termination</text>
-            <line x1="380" y1="55" x2="440" y2="55" stroke="#22c55e" stroke-width="2" marker-end="url(#aGf)"/>
-            <text x="410" y="48" text-anchor="middle" font-size="8" fill="#16a34a">HTTP</text>
-            <rect x="440" y="30" width="130" height="50" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
-            <text x="505" y="52" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">Backend</text>
-            <text x="505" y="68" text-anchor="middle" font-size="9" fill="#16a34a">Service cible</text>
-            <text x="300" y="110" text-anchor="middle" font-size="9" fill="#64748b">Terminaison TLS au niveau Nginx — trafic interne en HTTP</text>
+        <svg width="560" height="90" viewBox="0 0 560 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="20" width="110" height="45" rx="8" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+            <text x="65" y="40" text-anchor="middle" font-size="10" font-weight="600" fill="#334155">Client</text>
+            <text x="65" y="54" text-anchor="middle" font-size="8" fill="#64748b">TLS 1.2/1.3</text>
+            <line x1="120" y1="42" x2="190" y2="42" stroke="#0ea5e9" stroke-width="2" marker-end="url(#s1)"/>
+            <text x="155" y="36" text-anchor="middle" font-size="8" fill="#0ea5e9">HTTPS</text>
+            <rect x="190" y="15" width="150" height="55" rx="8" fill="#0ea5e9" stroke="#0284c7" stroke-width="1.5"/>
+            <text x="265" y="38" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Nginx</text>
+            <text x="265" y="55" text-anchor="middle" font-size="9" fill="#bae6fd">TLS Termination</text>
+            <line x1="340" y1="42" x2="400" y2="42" stroke="#22c55e" stroke-width="2" marker-end="url(#s2)"/>
+            <text x="370" y="36" text-anchor="middle" font-size="8" fill="#16a34a">HTTP</text>
+            <rect x="400" y="20" width="130" height="45" rx="8" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+            <text x="465" y="40" text-anchor="middle" font-size="10" font-weight="600" fill="#166534">Backend</text>
+            <text x="465" y="54" text-anchor="middle" font-size="8" fill="#16a34a">Service cible</text>
             <defs>
-                <marker id="aBf" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
-                <marker id="aGf" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
+                <marker id="s1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#0ea5e9"/></marker>
+                <marker id="s2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#22c55e"/></marker>
             </defs>
         </svg>
-        <div class="diagram-caption">Figure 7 — Terminaison TLS</div>
+        <div class="diagram-caption">Figure 5 — Terminaison TLS</div>
     </div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 12. GUIDE D'UTILISATION                                       -->
-<!-- ============================================================ -->
+<!-- 12. GUIDE -->
 <div class="section">
     <h2>12. Guide d'utilisation</h2>
-
-    <h3>12.1 Gerer les tuiles</h3>
-    <h4>Ajouter une tuile</h4>
+    <h3>Gerer les tuiles</h3>
     <ol>
         <li>Connectez-vous sur <code>/admin</code>.</li>
-        <li>Dans "Gestion des tuiles", remplissez :</li>
+        <li>Section "Gestion des tuiles" : remplir nom, URL, logo (optionnel), position.</li>
+        <li>Cliquer <strong>Ajouter</strong>. La tuile apparait immediatement sur <code>/</code>.</li>
+        <li><strong>Modifier</strong> : edition en ligne (nom, URL, position). <strong>Supprimer</strong> : avec confirmation.</li>
     </ol>
-    <table>
-        <tr><th>Champ</th><th>Exemple</th><th>Description</th></tr>
-        <tr><td>Nom</td><td><code>Nextcloud</code></td><td>Nom affiche sur la tuile</td></tr>
-        <tr><td>URL de redirection</td><td><code>https://cloud.mondomaine.fr</code></td><td>Lien ouvert au clic (nouvel onglet)</td></tr>
-        <tr><td>Logo</td><td><em>nextcloud.png</em></td><td>Image optionnelle (PNG, JPG, SVG...)</td></tr>
-        <tr><td>Position</td><td><code>1</code></td><td>Ordre d'affichage (0 = premier)</td></tr>
-    </table>
-    <ol start="3">
-        <li>Cliquez sur <strong>Ajouter</strong>. La tuile apparait immediatement sur la page d'accueil.</li>
+    <h3>Gerer les routes proxy</h3>
+    <ol>
+        <li>Section "Routes de reverse proxy" : remplir domaine, cible, port.</li>
+        <li>Cliquer <strong>Ajouter</strong>. Nginx est valide (<code>nginx -t</code>) et recharge automatiquement.</li>
     </ol>
-
-    <h4>Modifier / Supprimer une tuile</h4>
-    <ul>
-        <li><strong>Modifier :</strong> Bouton "Modifier" → edition en ligne du nom, URL et position. Cliquer "Sauver".</li>
-        <li><strong>Supprimer :</strong> Bouton "Supprimer" avec confirmation. Le logo est automatiquement supprime.</li>
-    </ul>
-
-    <h3>12.2 Gerer les routes proxy</h3>
-    <h4>Ajouter une route</h4>
-    <table>
-        <tr><th>Champ</th><th>Exemple</th><th>Description</th></tr>
-        <tr><td>Domaine</td><td><code>app.mondomaine.fr</code></td><td>server_name Nginx</td></tr>
-        <tr><td>Cible</td><td><code>http://192.168.1.50:3000</code></td><td>URL du backend</td></tr>
-        <tr><td>Port</td><td><code>443</code></td><td>Port d'ecoute (defaut 443)</td></tr>
-    </table>
-
-    <div class="info-box">
-        <strong>Rappel :</strong> Les tuiles et les routes proxy sont <strong>independantes</strong>. Une tuile peut pointer vers n'importe quelle URL, pas necessairement un service proxye.
-    </div>
+    <h3>Gerer la securite (IP)</h3>
+    <ol>
+        <li><strong>IP bloquees</strong> (section rouge) : voir les IP actuellement bloquees, temps restant, bouton <strong>Debloquer</strong>.</li>
+        <li><strong>Historique</strong> (section orange) : consulter tous les blocages passes avec date, IP et raison.</li>
+        <li>Bouton <strong>Effacer l'historique</strong> pour purger le journal (avec confirmation).</li>
+    </ol>
+    <div class="info-box"><strong>Rappel :</strong> Les tuiles et les routes proxy sont <strong>independantes</strong>. Une tuile peut pointer vers n'importe quelle URL.</div>
 </div>
 
-<!-- ============================================================ -->
-<!-- 13. MAINTENANCE                                               -->
-<!-- ============================================================ -->
+<!-- 13. MAINTENANCE -->
 <div class="section">
     <h2>13. Maintenance et operations</h2>
     <table>
@@ -973,136 +630,95 @@ stderr_logfile_maxbytes=0</code></pre>
         <tr><td>Reconstruire</td><td><code>docker compose up -d --build</code></td></tr>
         <tr><td>Logs</td><td><code>docker compose logs -f</code></td></tr>
         <tr><td>Shell</td><td><code>docker exec -it reverseproxy /bin/sh</code></td></tr>
+        <tr><td>Changer le mot de passe</td><td>Modifier <code>ADMIN_PASSWORD</code> dans docker-compose.yml + <code>docker compose down && docker compose up -d</code></td></tr>
     </table>
-
-    <h3>Sauvegarde</h3>
-    <pre><code># Sauvegarder toutes les donnees
+    <h3>Sauvegarde et restauration</h3>
+    <pre><code># Sauvegarder toutes les donnees (routes, tuiles, logos, historique)
 docker cp reverseproxy:/data ./backup-data/
 
 # Restaurer
 docker cp ./backup-data/. reverseproxy:/data/
 docker compose restart</code></pre>
-
-    <h3>Changer le mot de passe admin</h3>
-    <pre><code># Modifier ADMIN_PASSWORD dans docker-compose.yml
-# puis redemarrer :
-docker compose down && docker compose up -d</code></pre>
 </div>
 
-<!-- ============================================================ -->
-<!-- 14. RECOMMANDATIONS PRODUCTION                                -->
-<!-- ============================================================ -->
+<!-- 14. RECOMMANDATIONS -->
 <div class="section">
     <h2>14. Recommandations de production</h2>
-
     <table>
         <tr><th>Priorite</th><th>Action</th><th>Description</th></tr>
         <tr><td><span class="badge badge-red">Critique</span></td><td>ADMIN_PASSWORD</td><td>Changer le mot de passe par defaut</td></tr>
         <tr><td><span class="badge badge-red">Critique</span></td><td>SECRET_KEY</td><td>Generer une cle aleatoire : <code>python3 -c "import secrets; print(secrets.token_hex(32))"</code></td></tr>
-        <tr><td><span class="badge badge-orange">Haute</span></td><td>Certificats CA</td><td>Utiliser Let's Encrypt au lieu de certificats auto-signes</td></tr>
-        <tr><td><span class="badge badge-orange">Haute</span></td><td>Limitation de debit</td><td>Ajouter <code>limit_req</code> dans Nginx</td></tr>
-        <tr><td><span class="badge badge-blue">Moyenne</span></td><td>Restreindre l'acces admin</td><td>Limiter /admin a un reseau IP specifique via Nginx</td></tr>
-        <tr><td><span class="badge badge-blue">Moyenne</span></td><td>Logs structures</td><td>Format JSON pour integration SIEM</td></tr>
-        <tr><td><span class="badge badge-green">Basse</span></td><td>Backup automatique</td><td>Cron de sauvegarde du volume /data</td></tr>
+        <tr><td><span class="badge badge-orange">Haute</span></td><td>Certificats CA</td><td>Utiliser Let's Encrypt</td></tr>
+        <tr><td><span class="badge badge-orange">Haute</span></td><td>Rate limiting</td><td>Ajouter <code>limit_req</code> dans Nginx</td></tr>
+        <tr><td><span class="badge badge-blue">Moyenne</span></td><td>Restreindre /admin</td><td>Limiter par IP dans Nginx</td></tr>
+        <tr><td><span class="badge badge-green">Basse</span></td><td>Backup auto</td><td>Cron de sauvegarde du volume /data</td></tr>
     </table>
-
     <h3>Points de securite actuels</h3>
     <table>
         <tr><th>Element</th><th>Statut</th></tr>
-        <tr><td>Chiffrement TLS 1.2/1.3</td><td><span class="badge badge-green">OK</span></td></tr>
-        <tr><td>Authentification admin par mot de passe</td><td><span class="badge badge-green">OK</span></td></tr>
-        <tr><td>Blocage IP anti-brute-force (6 echecs / 10 min)</td><td><span class="badge badge-green">OK</span></td></tr>
-        <tr><td>Flask ecoute localhost uniquement</td><td><span class="badge badge-green">OK</span></td></tr>
-        <tr><td>Validation nginx -t avant rechargement</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>TLS 1.2/1.3</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Authentification admin</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Blocage IP anti-brute-force (6/10min)</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Historique des blocages persiste</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Deblocage manuel des IP</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Flask localhost uniquement</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Validation nginx -t avant reload</td><td><span class="badge badge-green">OK</span></td></tr>
         <tr><td>Certificats montes en lecture seule</td><td><span class="badge badge-green">OK</span></td></tr>
-        <tr><td>Redirection HTTP → HTTPS</td><td><span class="badge badge-green">OK</span></td></tr>
+        <tr><td>Redirection HTTP &#8594; HTTPS</td><td><span class="badge badge-green">OK</span></td></tr>
         <tr><td>Support WebSocket natif</td><td><span class="badge badge-green">OK</span></td></tr>
-        <tr><td>Page d'accueil publique (separation des roles)</td><td><span class="badge badge-green">OK</span></td></tr>
     </table>
 </div>
 
-<!-- ============================================================ -->
-<!-- 15. ANNEXES                                                   -->
-<!-- ============================================================ -->
+<!-- 15. ANNEXES -->
 <div class="section">
     <h2>15. Annexes</h2>
 
-    <h3>Annexe A — Code source : app.py (387 lignes)</h3>
-    <p>Voir le fichier complet dans le depot Git : <code>app/app.py</code></p>
-    <p>Modules principaux :</p>
-    <ul>
-        <li><strong>Lignes 1-15</strong> : Imports, configuration (fichiers, mots de passe, extensions)</li>
-        <li><strong>Lignes 17-55</strong> : Systeme d'authentification (blocage IP, decorateur login_required)</li>
-        <li><strong>Lignes 57-93</strong> : Fonctions utilitaires (load/save routes et tiles, validation fichiers)</li>
-        <li><strong>Lignes 96-136</strong> : Generation de la configuration Nginx et rechargement</li>
-        <li><strong>Lignes 139-177</strong> : Routes d'authentification (login, logout)</li>
-        <li><strong>Lignes 179-201</strong> : Pages publiques (home, logos)</li>
-        <li><strong>Lignes 203-275</strong> : CRUD routes proxy</li>
-        <li><strong>Lignes 278-381</strong> : CRUD tuiles (avec upload de logos)</li>
-    </ul>
+    <h3>Annexe A — Schemas JSON</h3>
+    <h4>routes.json</h4>
+    <pre><code>[
+  { "domain": "app.exemple.com", "target": "http://192.168.1.50:3000", "listen_port": "443" }
+]</code></pre>
+    <h4>tiles.json</h4>
+    <pre><code>[
+  { "id": "a1b2c3d4", "name": "Nextcloud", "url": "https://cloud.local", "position": 0, "logo": "8f3a2b1c.png" }
+]</code></pre>
+    <h4>block_history.json</h4>
+    <pre><code>[
+  { "ip": "10.50.194.26", "date": "2026-04-08 14:12:45", "reason": "6 tentatives echouees" },
+  { "ip": "192.168.1.100", "date": "2026-04-07 09:33:12", "reason": "6 tentatives echouees" }
+]</code></pre>
 
-    <h3 class="page-break">Annexe B — Templates HTML</h3>
-    <table>
-        <tr><th>Template</th><th>Lignes</th><th>Description</th></tr>
-        <tr><td><code>home.html</code></td><td>201</td><td>Page d'accueil publique avec grille de tuiles responsive</td></tr>
-        <tr><td><code>login.html</code></td><td>155</td><td>Formulaire de connexion avec gestion des erreurs et blocage</td></tr>
-        <tr><td><code>index.html</code></td><td>397</td><td>Panneau d'administration : tuiles + routes proxy avec edition en ligne</td></tr>
-    </table>
-
-    <h3>Annexe C — Fichiers de configuration</h3>
+    <h3 class="page-break">Annexe B — Fichiers de configuration</h3>
     <table>
         <tr><th>Fichier</th><th>Description</th></tr>
-        <tr><td><code>docker-compose.yml</code></td><td>Service reverseproxy, volumes, variables d'environnement</td></tr>
+        <tr><td><code>docker-compose.yml</code></td><td>Service, volumes, variables d'environnement (SECRET_KEY, ADMIN_PASSWORD)</td></tr>
         <tr><td><code>Dockerfile</code></td><td>Image nginx:1.27-alpine + Python + Supervisor</td></tr>
         <tr><td><code>supervisord.conf</code></td><td>Gestion processus Nginx + Gunicorn</td></tr>
         <tr><td><code>nginx/nginx.conf</code></td><td>Serveurs virtuels, TLS, proxy vers Flask</td></tr>
-        <tr><td><code>gen-certs.sh</code></td><td>Generation certificats auto-signes RSA 2048 bits</td></tr>
-        <tr><td><code>app/requirements.txt</code></td><td><code>flask==3.1.0</code> + <code>gunicorn==23.0.0</code></td></tr>
+        <tr><td><code>gen-certs.sh</code></td><td>Generation certificats auto-signes RSA 2048</td></tr>
+        <tr><td><code>app/requirements.txt</code></td><td><code>flask==3.1.0</code>, <code>gunicorn==23.0.0</code></td></tr>
     </table>
 
-    <h3>Annexe D — Schemas JSON</h3>
-    <h4>routes.json</h4>
-    <pre><code>[
-  {
-    "domain": "app.exemple.com",
-    "target": "http://192.168.1.50:3000",
-    "listen_port": "443"
-  }
-]</code></pre>
-
-    <h4>tiles.json</h4>
-    <pre><code>[
-  {
-    "id": "a1b2c3d4",
-    "name": "Nextcloud",
-    "url": "https://cloud.mondomaine.fr",
-    "position": 0,
-    "logo": "8f3a2b1c9d4e5f6a.png"
-  }
-]</code></pre>
-
-    <h3 class="page-break">Annexe E — Glossaire</h3>
+    <h3 class="page-break">Annexe C — Glossaire</h3>
     <table>
         <tr><th>Terme</th><th>Definition</th></tr>
-        <tr><td><strong>Reverse Proxy</strong></td><td>Serveur intermediaire qui recoit les requetes clients et les transmet aux backends.</td></tr>
-        <tr><td><strong>Tuile</strong></td><td>Element visuel cliquable sur la page d'accueil, representant un service avec son logo.</td></tr>
-        <tr><td><strong>Nginx</strong></td><td>Serveur web haute performance utilise comme reverse proxy et terminateur TLS.</td></tr>
-        <tr><td><strong>Flask</strong></td><td>Micro-framework web Python pour l'interface d'administration.</td></tr>
+        <tr><td><strong>Reverse Proxy</strong></td><td>Serveur intermediaire entre clients et backends, centralisant TLS et routage.</td></tr>
+        <tr><td><strong>Tuile</strong></td><td>Element visuel cliquable sur la page d'accueil representant un service.</td></tr>
+        <tr><td><strong>Brute-force</strong></td><td>Attaque par essais repetitifs, contree par le blocage IP apres 6 echecs.</td></tr>
+        <tr><td><strong>Historique de blocage</strong></td><td>Journal persiste des IP bloquees avec horodatage, consultable dans l'admin.</td></tr>
+        <tr><td><strong>Nginx</strong></td><td>Serveur web haute performance, reverse proxy et terminateur TLS.</td></tr>
+        <tr><td><strong>Flask</strong></td><td>Micro-framework Python pour l'interface web.</td></tr>
         <tr><td><strong>Gunicorn</strong></td><td>Serveur WSGI Python executant Flask en production.</td></tr>
-        <tr><td><strong>Supervisor</strong></td><td>Gestionnaire de processus assurant le fonctionnement simultane de Nginx et Flask.</td></tr>
-        <tr><td><strong>TLS</strong></td><td>Protocole cryptographique pour la confidentialite des communications.</td></tr>
-        <tr><td><strong>Brute-force</strong></td><td>Attaque par essais repetitifs de mots de passe, contree ici par le blocage IP.</td></tr>
-        <tr><td><strong>WSGI</strong></td><td>Standard Python pour la communication serveur web / application.</td></tr>
-        <tr><td><strong>proxy_pass</strong></td><td>Directive Nginx transmettant une requete a un backend.</td></tr>
-        <tr><td><strong>server_name</strong></td><td>Directive Nginx routant les requetes selon le nom d'hote.</td></tr>
-        <tr><td><strong>WebSocket</strong></td><td>Protocole bidirectionnel temps reel supporte nativement par les routes generees.</td></tr>
-        <tr><td><strong>Volume Docker</strong></td><td>Persistance des donnees (routes, tuiles, logos) au-dela du cycle de vie du conteneur.</td></tr>
+        <tr><td><strong>Supervisor</strong></td><td>Gestionnaire de processus dans le conteneur (PID 1).</td></tr>
+        <tr><td><strong>TLS</strong></td><td>Protocole cryptographique (Transport Layer Security).</td></tr>
+        <tr><td><strong>WebSocket</strong></td><td>Protocole bidirectionnel supporte nativement par les routes generees.</td></tr>
+        <tr><td><strong>Volume Docker</strong></td><td>Persistance des donnees au-dela du cycle de vie du conteneur.</td></tr>
     </table>
 
-    <div style="text-align: center; margin-top: 60px; padding: 30px; color: #94a3b8; font-size: 10pt;">
-        <hr style="border: none; border-top: 1px solid #e2e8f0; margin-bottom: 20px;">
-        <strong>Reverse Proxy Manager v2.0</strong> — Documentation technique<br>
-        Generee le 8 avril 2026<br>
+    <div style="text-align:center; margin-top:60px; padding:30px; color:#94a3b8; font-size:10pt;">
+        <hr style="border:none; border-top:1px solid #e2e8f0; margin-bottom:20px;">
+        <strong>Reverse Proxy Manager v2.1</strong> — Documentation technique<br>
+        Generee le 8 avril 2026
     </div>
 </div>
 
