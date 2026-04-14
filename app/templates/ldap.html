@@ -4,55 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuration LDAP / SSO — Reverse Proxy Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f5f0eb;
-            color: #2c2420;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #292524;
+            color: #e7e5e4;
             min-height: 100vh;
-            background-image:
-                radial-gradient(ellipse at 20% 50%, rgba(180, 142, 78, 0.06) 0%, transparent 50%);
         }
         .container { max-width: 720px; margin: 0 auto; padding: 2.5rem 2rem; }
 
         h1 {
-            font-family: 'Playfair Display', serif;
             font-size: 1.8rem;
-            color: #2c2420;
-            font-weight: 600;
+            color: #f97316;
+            font-weight: 700;
             letter-spacing: 0.02em;
         }
 
-        .flash {
-            padding: 0.75rem 1rem;
-            border-radius: 2px;
-            margin-bottom: 1.2rem;
-            font-size: 0.85rem;
-        }
-        .flash.success { background: #f0f8f2; color: #3d7a4a; border: 1px solid rgba(61, 122, 74, 0.15); }
-        .flash.error { background: #fef2f0; color: #b5544a; border: 1px solid rgba(181, 84, 74, 0.15); }
+        .flash { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.2rem; font-size: 0.85rem; }
+        .flash.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .flash.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
 
         .section {
-            background: #ffffff;
-            border-radius: 2px;
+            background: #44403c;
+            border-radius: 12px;
             padding: 2rem;
             margin-bottom: 2rem;
-            border: 1px solid rgba(180, 142, 78, 0.12);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #57534e;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
         .section-title {
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            font-family: 'Playfair Display', serif;
             font-size: 1.05rem;
-            font-weight: 600;
-            color: #2c2420;
+            font-weight: 700;
+            color: #f97316;
             margin-bottom: 1.5rem;
             padding-bottom: 0.8rem;
-            border-bottom: 1px solid rgba(180, 142, 78, 0.12);
+            border-bottom: 1px solid #57534e;
         }
         .section-title svg { width: 20px; height: 20px; }
 
@@ -65,27 +55,28 @@
         .form-group { display: flex; flex-direction: column; }
         .form-group label {
             font-size: 0.7rem;
-            color: #8a7d6b;
+            color: #a8a29e;
             margin-bottom: 0.4rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            font-weight: 500;
+            font-weight: 600;
         }
         .form-group input, .form-group select {
             width: 100%;
             padding: 0.7rem 0.9rem;
-            border-radius: 2px;
-            border: 1px solid #ddd5cb;
-            background: #faf8f5;
-            color: #2c2420;
+            border-radius: 8px;
+            border: 1px solid #78716c;
+            background: #57534e;
+            color: #f5f5f4;
             font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
-            transition: border-color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: #b48e4e; }
+        .form-group input::placeholder { color: #a8a29e; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3); }
         .form-help {
             font-size: 0.72rem;
-            color: #9a8e80;
+            color: #78716c;
             margin-top: 0.3rem;
             line-height: 1.4;
         }
@@ -96,7 +87,7 @@
             gap: 0.8rem;
             margin-bottom: 1.5rem;
         }
-        .toggle-row label { font-size: 0.85rem; color: #2c2420; font-weight: 500; }
+        .toggle-row label { font-size: 0.85rem; color: #e7e5e4; font-weight: 500; }
         .toggle {
             position: relative;
             width: 44px;
@@ -108,24 +99,23 @@
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: #ece7e0;
+            background: #57534e;
             border-radius: 24px;
-            border: 1px solid #ddd5cb;
-            transition: 0.3s;
+            border: 1px solid #78716c;
+            transition: 0.2s;
         }
         .toggle-slider::before {
             content: '';
             position: absolute;
             height: 18px; width: 18px;
             left: 2px; bottom: 2px;
-            background: #fff;
+            background: #a8a29e;
             border-radius: 50%;
-            transition: 0.3s;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: 0.2s;
         }
         .toggle input:checked + .toggle-slider {
-            background: #b48e4e;
-            border-color: #a07a3e;
+            background: #f97316;
+            border-color: #ea580c;
         }
         .toggle input:checked + .toggle-slider::before {
             transform: translateX(20px);
@@ -135,41 +125,40 @@
         .btn {
             padding: 0.7rem 1.8rem;
             border: none;
-            border-radius: 2px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .btn-primary {
-            background: #b48e4e;
+            background: #f97316;
             color: #fff;
-            border: 1px solid #b48e4e;
         }
-        .btn-primary:hover { background: #a07a3e; }
+        .btn-primary:hover { background: #ea580c; }
         .btn-secondary {
             background: transparent;
-            color: #8a7d6b;
-            border: 1px solid #ddd5cb;
+            color: #a8a29e;
+            border: 1px solid #57534e;
         }
-        .btn-secondary:hover { color: #b48e4e; border-color: rgba(180, 142, 78, 0.35); }
+        .btn-secondary:hover { color: #f97316; border-color: rgba(249, 115, 22, 0.35); }
 
         .nav-link {
             padding: 0.5rem 1.2rem;
-            color: #8a7d6b;
-            border-radius: 2px;
+            color: #e7e5e4;
+            border-radius: 8px;
             text-decoration: none;
             font-size: 0.7rem;
             font-weight: 600;
-            border: 1px solid #ddd5cb;
-            transition: all 0.3s;
+            border: 1px solid #57534e;
+            transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
-        .nav-link:hover { color: #b48e4e; border-color: rgba(180, 142, 78, 0.35); }
+        .nav-link:hover { color: #f97316; border-color: rgba(249, 115, 22, 0.35); }
 
         .header-bar {
             display: flex;
@@ -177,23 +166,23 @@
             align-items: center;
             margin-bottom: 2.5rem;
             padding-bottom: 1.5rem;
-            border-bottom: 1px solid rgba(180, 142, 78, 0.15);
+            border-bottom: 1px solid #44403c;
         }
         .actions-bar {
             display: flex;
             gap: 0.75rem;
             margin-top: 2rem;
             padding-top: 1.5rem;
-            border-top: 1px solid rgba(180, 142, 78, 0.08);
+            border-top: 1px solid #57534e;
         }
         .info-box {
-            background: #faf8f5;
-            border: 1px solid rgba(180, 142, 78, 0.1);
-            border-radius: 2px;
+            background: #1c1917;
+            border: 1px solid #57534e;
+            border-radius: 8px;
             padding: 1rem 1.2rem;
             margin-bottom: 1.5rem;
             font-size: 0.8rem;
-            color: #6b6155;
+            color: #a8a29e;
             line-height: 1.6;
         }
 
@@ -222,7 +211,7 @@
         <form method="POST" action="{{ url_for('ldap_save') }}">
             <div class="section">
                 <div class="section-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#b48e4e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                         <circle cx="9" cy="7" r="4"/>
                         <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
@@ -301,7 +290,7 @@
         <!-- Test LDAP connection -->
         <div class="section">
             <div class="section-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#b48e4e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
                 </svg>
                 Tester la connexion LDAP

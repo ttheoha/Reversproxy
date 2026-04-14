@@ -1,15 +1,15 @@
 services:
   reverseproxy:
     build: .
-    container_name: reverseproxy
+    container_name: reverseproxy_th
     restart: unless-stopped
     ports:
-      - "443:443"
+      - "888:443"
     volumes:
       - proxy-data:/data
     environment:
       - SECRET_KEY=changez-moi-en-production
-      - ADMIN_PASSWORD=admin
+      - ADMIN_PASSWORD=root
 
 volumes:
   proxy-data:

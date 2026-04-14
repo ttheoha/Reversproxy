@@ -4,43 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reverse Proxy Manager</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f5f0eb;
-            color: #2c2420;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #292524;
+            color: #e7e5e4;
             min-height: 100vh;
-            background-image:
-                radial-gradient(ellipse at 30% 20%, rgba(180, 142, 78, 0.06) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(180, 142, 78, 0.04) 0%, transparent 50%);
         }
         .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
 
         .header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(180, 142, 78, 0.15);
+            margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid #44403c;
         }
         .header h1 {
-            font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 600;
-            color: #2c2420; letter-spacing: 0.02em;
+            font-size: 1.8rem; font-weight: 700;
+            color: #f97316; letter-spacing: 0.02em;
         }
         .btn-admin {
             display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem;
-            background: transparent; color: #b48e4e; border-radius: 2px; text-decoration: none;
-            font-size: 0.75rem; font-weight: 600; border: 1px solid rgba(180, 142, 78, 0.35);
-            transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.12em;
+            background: transparent; color: #e7e5e4; border-radius: 8px; text-decoration: none;
+            font-size: 0.75rem; font-weight: 600; border: 1px solid #57534e;
+            transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.12em;
         }
-        .btn-admin:hover { background: #b48e4e; color: #fff; }
+        .btn-admin:hover { background: #f97316; color: #fff; border-color: #f97316; }
         .btn-admin svg { width: 16px; height: 16px; }
 
-        /* Section title on homepage */
         .home-section { margin-bottom: 2.5rem; }
         .home-section-title {
-            font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 600;
-            color: #2c2420; margin-bottom: 1.2rem; padding-bottom: 0.6rem;
-            border-bottom: 1px solid rgba(180, 142, 78, 0.12); letter-spacing: 0.02em;
+            font-size: 1.15rem; font-weight: 700;
+            color: #f97316; margin-bottom: 1.2rem; padding-bottom: 0.6rem;
+            border-bottom: 1px solid #44403c; letter-spacing: 0.02em;
         }
 
         .tiles {
@@ -48,47 +43,42 @@
         }
         .tile {
             display: flex; flex-direction: column; align-items: center; text-align: center;
-            background: #ffffff; border-radius: 2px; border: 1px solid rgba(180, 142, 78, 0.12);
-            padding: 2.2rem 1.5rem; text-decoration: none; color: #2c2420;
-            transition: all 0.35s ease; position: relative;
-        }
-        .tile::before {
-            content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 2px; background: #b48e4e; opacity: 0; transition: all 0.35s;
+            background: #44403c; border-radius: 12px; border: 1px solid #57534e;
+            padding: 2.2rem 1.5rem; text-decoration: none; color: #e7e5e4;
+            transition: all 0.2s ease; position: relative;
         }
         .tile:hover {
-            border-color: rgba(180, 142, 78, 0.3); transform: translateY(-3px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+            border-color: rgba(249, 115, 22, 0.5); transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
         }
-        .tile:hover::before { opacity: 1; width: 60px; }
 
         .tile-logo {
-            width: 60px; height: 60px; border-radius: 2px; margin-bottom: 1.2rem;
-            object-fit: contain; background: #faf8f5; padding: 8px;
+            width: 60px; height: 60px; border-radius: 8px; margin-bottom: 1.2rem;
+            object-fit: contain; background: #57534e; padding: 8px;
         }
         .tile-logo-default {
-            width: 60px; height: 60px; border-radius: 2px; margin-bottom: 1.2rem;
-            background: linear-gradient(135deg, #b48e4e, #c9a462);
+            width: 60px; height: 60px; border-radius: 8px; margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #f97316, #fb923c);
             display: flex; align-items: center; justify-content: center;
         }
         .tile-logo-default svg { width: 28px; height: 28px; }
 
         .tile-name {
-            font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600;
-            color: #2c2420; margin-bottom: 0.5rem;
+            font-size: 1.05rem; font-weight: 700;
+            color: #f5f5f4; margin-bottom: 0.5rem;
         }
-        .tile-url { font-size: 0.7rem; color: #9a8e80; word-break: break-all; max-width: 100%; letter-spacing: 0.02em; }
+        .tile-url { font-size: 0.7rem; color: #78716c; word-break: break-all; max-width: 100%; letter-spacing: 0.02em; }
 
         .empty {
-            text-align: center; padding: 5rem 2rem; color: #9a8e80;
+            text-align: center; padding: 5rem 2rem; color: #78716c;
         }
         .empty svg { width: 48px; height: 48px; margin-bottom: 1.5rem; opacity: 0.3; }
-        .empty p { font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 0.5rem; color: #6b6155; }
-        .empty .sub { font-size: 0.8rem; color: #9a8e80; letter-spacing: 0.05em; }
+        .empty p { font-size: 1.1rem; margin-bottom: 0.5rem; color: #a8a29e; }
+        .empty .sub { font-size: 0.8rem; color: #78716c; letter-spacing: 0.05em; }
 
-        .flash { padding: 0.75rem 1rem; border-radius: 2px; margin-bottom: 1.5rem; font-size: 0.85rem; text-align: center; }
-        .flash.success { background: #f0f8f2; color: #3d7a4a; border: 1px solid rgba(61, 122, 74, 0.15); }
-        .flash.error { background: #fef2f0; color: #b5544a; border: 1px solid rgba(181, 84, 74, 0.15); }
+        .flash { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem; text-align: center; }
+        .flash.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .flash.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
 
         @media (max-width: 600px) {
             .tiles { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
