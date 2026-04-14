@@ -7,106 +7,134 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #292524;
+            color: #e7e5e4;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .login-box {
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 2.5rem;
+            background: #44403c;
+            border-radius: 12px;
+            padding: 3rem 2.5rem;
             width: 100%;
-            max-width: 400px;
-            border: 1px solid #334155;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            max-width: 420px;
+            border: 1px solid #57534e;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
-        .login-box h1 {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #38bdf8;
-            margin-bottom: 0.5rem;
-        }
-        .login-box .subtitle {
-            text-align: center;
-            font-size: 0.85rem;
-            color: #64748b;
-            margin-bottom: 2rem;
+        .login-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #f97316, transparent);
+            border-radius: 0 0 4px 4px;
         }
         .icon {
             text-align: center;
             margin-bottom: 1.5rem;
         }
         .icon svg {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
+        }
+        .login-box h1 {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f97316;
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.02em;
+        }
+        .login-box .subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #78716c;
+            margin-bottom: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 400;
         }
         .form-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
         }
         .form-group label {
             display: block;
-            font-size: 0.85rem;
-            color: #94a3b8;
-            margin-bottom: 0.4rem;
+            font-size: 0.75rem;
+            color: #a8a29e;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
         }
         .form-group input {
             width: 100%;
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1rem;
             border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #e2e8f0;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            border: 1px solid #78716c;
+            background: #57534e;
+            color: #f5f5f4;
+            font-size: 0.95rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
+        .form-group input::placeholder { color: #a8a29e; }
         .form-group input:focus {
             outline: none;
-            border-color: #38bdf8;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+            border-color: #f97316;
+            box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
         }
         .form-group input:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
         }
         .btn-login {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.85rem;
             border: none;
             border-radius: 8px;
-            background: #0ea5e9;
+            background: #f97316;
             color: #fff;
-            font-size: 1rem;
+            font-size: 0.8rem;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        .btn-login:hover { background: #0284c7; }
+        .btn-login:hover {
+            background: #ea580c;
+        }
         .btn-login:disabled {
-            background: #475569;
+            background: #57534e;
+            color: #78716c;
             cursor: not-allowed;
         }
         .error-msg {
-            background: #7f1d1d;
-            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
             padding: 0.75rem 1rem;
             border-radius: 8px;
             font-size: 0.85rem;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
+            border: 1px solid rgba(239, 68, 68, 0.25);
         }
         .blocked-msg {
-            background: #7f1d1d;
-            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
             padding: 1rem;
             border-radius: 8px;
-            font-size: 0.9rem;
-            margin-bottom: 1.2rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
             text-align: center;
-            border: 1px solid #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
         .blocked-msg svg {
             display: block;
@@ -118,10 +146,10 @@
     <div class="login-box">
         <div class="icon">
             <svg viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="4" y="24" width="48" height="28" rx="6" stroke="#38bdf8" stroke-width="2.5" fill="none"/>
-                <path d="M16 24V16a12 12 0 0 1 24 0v8" stroke="#38bdf8" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <circle cx="28" cy="38" r="4" fill="#38bdf8"/>
-                <line x1="28" y1="42" x2="28" y2="46" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+                <rect x="4" y="24" width="48" height="28" rx="2" stroke="#f97316" stroke-width="1.5" fill="none"/>
+                <path d="M16 24V16a12 12 0 0 1 24 0v8" stroke="#f97316" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                <circle cx="28" cy="38" r="3" fill="#f97316"/>
+                <line x1="28" y1="41" x2="28" y2="46" stroke="#f97316" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
         </div>
         <h1>Reverse Proxy Manager</h1>
@@ -129,9 +157,9 @@
 
         {% if blocked %}
         <div class="blocked-msg">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="#fca5a5" stroke-width="2"/>
-                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="#fca5a5" stroke-width="2"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="1.5"/>
+                <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" stroke="#ef4444" stroke-width="1.5"/>
             </svg>
             {{ error }}
         </div>
@@ -140,13 +168,25 @@
         {% endif %}
 
         <form method="POST" action="{{ url_for('login') }}">
+            {% if ldap_enabled %}
+            <div class="form-group">
+                <label for="username">Identifiant</label>
+                <input type="text" id="username" name="username" placeholder="Identifiant LDAP"
+                       autofocus {% if blocked %}disabled{% endif %}>
+            </div>
+            {% endif %}
             <div class="form-group">
                 <label for="password">Mot de passe</label>
-                <input type="password" id="password" name="password" placeholder="Entrez le mot de passe"
-                       autofocus required {% if blocked %}disabled{% endif %}>
+                <input type="password" id="password" name="password" placeholder="Mot de passe"
+                       {% if not ldap_enabled %}autofocus{% endif %} required {% if blocked %}disabled{% endif %}>
             </div>
+            {% if ldap_enabled %}
+            <p style="font-size:0.7rem; color:#78716c; margin-bottom:1.2rem; text-align:center;">
+                Connectez-vous avec vos identifiants LDAP, ou laissez le champ identifiant vide pour utiliser le mot de passe local.
+            </p>
+            {% endif %}
             <button type="submit" class="btn-login" {% if blocked %}disabled{% endif %}>
-                {% if blocked %}Accès bloqué{% else %}Se connecter{% endif %}
+                {% if blocked %}Acces bloque{% else %}Se connecter{% endif %}
             </button>
         </form>
     </div>

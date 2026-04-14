@@ -7,151 +7,83 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #292524;
+            color: #e7e5e4;
             min-height: 100vh;
         }
-        .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 3rem 2rem; }
 
-        /* Header */
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 3rem; padding-bottom: 1.5rem; border-bottom: 1px solid #44403c;
         }
         .header h1 {
-            font-size: 1.8rem;
-            color: #38bdf8;
+            font-size: 1.8rem; font-weight: 700;
+            color: #f97316; letter-spacing: 0.02em;
         }
         .btn-admin {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.2rem;
-            background: #334155;
-            color: #e2e8f0;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            border: 1px solid #475569;
-            transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.5rem;
+            background: transparent; color: #e7e5e4; border-radius: 8px; text-decoration: none;
+            font-size: 0.75rem; font-weight: 600; border: 1px solid #57534e;
+            transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.12em;
         }
-        .btn-admin:hover {
-            background: #475569;
-            border-color: #64748b;
-        }
-        .btn-admin svg {
-            width: 18px;
-            height: 18px;
+        .btn-admin:hover { background: #f97316; color: #fff; border-color: #f97316; }
+        .btn-admin svg { width: 16px; height: 16px; }
+
+        .home-section { margin-bottom: 2.5rem; }
+        .home-section-title {
+            font-size: 1.15rem; font-weight: 700;
+            color: #f97316; margin-bottom: 1.2rem; padding-bottom: 0.6rem;
+            border-bottom: 1px solid #44403c; letter-spacing: 0.02em;
         }
 
-        /* Tiles grid */
         .tiles {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.25rem;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem;
         }
-
-        /* Tile card */
         .tile {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            background: #1e293b;
-            border-radius: 16px;
-            border: 1px solid #334155;
-            padding: 1.8rem 1.2rem;
-            text-decoration: none;
-            color: #e2e8f0;
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .tile::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #0ea5e9, #6366f1);
-            opacity: 0;
-            transition: opacity 0.25s;
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+            background: #44403c; border-radius: 12px; border: 1px solid #57534e;
+            padding: 2.2rem 1.5rem; text-decoration: none; color: #e7e5e4;
+            transition: all 0.2s ease; position: relative;
         }
         .tile:hover {
-            border-color: #0ea5e9;
-            transform: translateY(-4px);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+            border-color: rgba(249, 115, 22, 0.5); transform: translateY(-3px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
         }
-        .tile:hover::before { opacity: 1; }
 
         .tile-logo {
-            width: 64px;
-            height: 64px;
-            border-radius: 14px;
-            margin-bottom: 1rem;
-            object-fit: contain;
-            background: #334155;
-            padding: 6px;
+            width: 60px; height: 60px; border-radius: 8px; margin-bottom: 1.2rem;
+            object-fit: contain; background: #57534e; padding: 8px;
         }
         .tile-logo-default {
-            width: 64px;
-            height: 64px;
-            border-radius: 14px;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #0ea5e9, #6366f1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 60px; height: 60px; border-radius: 8px; margin-bottom: 1.2rem;
+            background: linear-gradient(135deg, #f97316, #fb923c);
+            display: flex; align-items: center; justify-content: center;
         }
-        .tile-logo-default svg {
-            width: 32px;
-            height: 32px;
-        }
+        .tile-logo-default svg { width: 28px; height: 28px; }
 
         .tile-name {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 0.4rem;
+            font-size: 1.05rem; font-weight: 700;
+            color: #f5f5f4; margin-bottom: 0.5rem;
         }
+        .tile-url { font-size: 0.7rem; color: #78716c; word-break: break-all; max-width: 100%; letter-spacing: 0.02em; }
 
-        .tile-url {
-            font-size: 0.75rem;
-            color: #64748b;
-            word-break: break-all;
-            max-width: 100%;
-        }
-
-        /* Empty state */
         .empty {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: #64748b;
+            text-align: center; padding: 5rem 2rem; color: #78716c;
         }
-        .empty svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 1rem;
-            opacity: 0.4;
-        }
-        .empty p {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-        .empty .sub {
-            font-size: 0.9rem;
-            color: #475569;
-        }
+        .empty svg { width: 48px; height: 48px; margin-bottom: 1.5rem; opacity: 0.3; }
+        .empty p { font-size: 1.1rem; margin-bottom: 0.5rem; color: #a8a29e; }
+        .empty .sub { font-size: 0.8rem; color: #78716c; letter-spacing: 0.05em; }
+
+        .flash { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.85rem; text-align: center; }
+        .flash.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .flash.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
 
         @media (max-width: 600px) {
-            .tiles { grid-template-columns: repeat(2, 1fr); gap: 0.8rem; }
-            .tile { padding: 1.2rem 0.8rem; }
-            .tile-logo, .tile-logo-default { width: 48px; height: 48px; }
+            .tiles { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+            .tile { padding: 1.5rem 1rem; }
+            .tile-logo, .tile-logo-default { width: 44px; height: 44px; }
             .header { flex-direction: column; gap: 1rem; text-align: center; }
         }
     </style>
@@ -166,29 +98,47 @@
             </a>
         </div>
 
-        {% if tiles %}
-        <div class="tiles">
-            {% for tile in tiles %}
-            <a href="{{ tile.url }}" class="tile" target="_blank" rel="noopener">
-                {% if tile.logo %}
-                <img src="/logos/{{ tile.logo }}" class="tile-logo" alt="{{ tile.name }}">
-                {% else %}
-                <div class="tile-logo-default">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                    </svg>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        {% set has_tiles = sections | selectattr('tiles') | list | length > 0 %}
+        {% set total_tiles = namespace(count=0) %}
+        {% for sec in sections %}{% set total_tiles.count = total_tiles.count + sec.tiles|length %}{% endfor %}
+
+        {% if total_tiles.count > 0 %}
+            {% for sec in sections %}
+                {% if sec.tiles %}
+                <div class="home-section">
+                    {% if sections|length > 1 %}
+                    <div class="home-section-title">{{ sec.name }}</div>
+                    {% endif %}
+                    <div class="tiles">
+                        {% for tile in sec.tiles %}
+                        <a href="{{ tile.url }}" class="tile" target="_blank" rel="noopener">
+                            {% if tile.logo %}
+                            <img src="/logos/{{ tile.logo }}" class="tile-logo" alt="{{ tile.name }}">
+                            {% else %}
+                            <div class="tile-logo-default">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                                </svg>
+                            </div>
+                            {% endif %}
+                            <div class="tile-name">{{ tile.name }}</div>
+                            <div class="tile-url">{{ tile.url }}</div>
+                        </a>
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endif %}
-                <div class="tile-name">{{ tile.name }}</div>
-                <div class="tile-url">{{ tile.url }}</div>
-            </a>
             {% endfor %}
-        </div>
         {% else %}
         <div class="empty">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                 <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
             </svg>
