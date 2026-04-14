@@ -4,223 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration — Reverse Proxy Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f5f0eb;
+            color: #2c2420;
             min-height: 100vh;
+            background-image: radial-gradient(ellipse at 20% 50%, rgba(180, 142, 78, 0.06) 0%, transparent 50%);
         }
-        .container { max-width: 960px; margin: 0 auto; padding: 2rem; }
-        h1 { font-size: 1.8rem; color: #38bdf8; }
-        h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #94a3b8; }
-        .flash {
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-        }
-        .flash.success { background: #065f46; color: #6ee7b7; }
-        .flash.error { background: #7f1d1d; color: #fca5a5; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2.5rem 2rem; }
+        h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #2c2420; font-weight: 600; letter-spacing: 0.02em; }
 
-        /* Sections */
+        .flash { padding: 0.75rem 1rem; border-radius: 2px; margin-bottom: 1.2rem; font-size: 0.85rem; }
+        .flash.success { background: #f0f8f2; color: #3d7a4a; border: 1px solid rgba(61, 122, 74, 0.15); }
+        .flash.error { background: #fef2f0; color: #b5544a; border: 1px solid rgba(181, 84, 74, 0.15); }
+
         .section {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid #334155;
+            background: #ffffff; border-radius: 2px; padding: 1.8rem; margin-bottom: 2rem;
+            border: 1px solid rgba(180, 142, 78, 0.12); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
         }
         .section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: #f1f5f9;
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 1px solid #334155;
+            display: flex; align-items: center; gap: 0.6rem;
+            font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 600; color: #2c2420;
+            margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(180, 142, 78, 0.12);
         }
-        .section-title svg { width: 22px; height: 22px; color: #38bdf8; }
+        .section-title svg { width: 20px; height: 20px; }
 
-        /* Forms */
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 120px auto;
-            gap: 0.75rem;
-            align-items: end;
-        }
-        .form-row-tiles {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 80px auto;
-            gap: 0.75rem;
-            align-items: end;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 120px auto; gap: 0.75rem; align-items: end; }
+        .form-row-tiles { display: grid; grid-template-columns: 1fr 1fr 1fr 80px auto; gap: 0.75rem; align-items: end; }
         .form-group label {
-            display: block;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-bottom: 0.3rem;
+            display: block; font-size: 0.7rem; color: #8a7d6b; margin-bottom: 0.35rem;
+            text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;
         }
         .form-group input, .form-group select {
-            width: 100%;
-            padding: 0.6rem 0.8rem;
-            border-radius: 6px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #e2e8f0;
-            font-size: 0.9rem;
+            width: 100%; padding: 0.6rem 0.8rem; border-radius: 2px; border: 1px solid #ddd5cb;
+            background: #faf8f5; color: #2c2420; font-size: 0.9rem; font-family: 'Inter', sans-serif; transition: border-color 0.3s;
         }
-        .form-group input:focus { outline: none; border-color: #38bdf8; }
-        .form-group input[type="file"] {
-            padding: 0.4rem;
-            font-size: 0.8rem;
-        }
+        .form-group input:focus { outline: none; border-color: #b48e4e; }
+        .form-group input[type="file"] { padding: 0.4rem; font-size: 0.8rem; }
+
         .btn {
-            padding: 0.6rem 1.2rem;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: background 0.2s;
-            white-space: nowrap;
+            padding: 0.6rem 1.2rem; border: none; border-radius: 2px; cursor: pointer; font-size: 0.75rem;
+            font-weight: 600; transition: all 0.3s; white-space: nowrap; text-transform: uppercase;
+            letter-spacing: 0.08em; font-family: 'Inter', sans-serif;
         }
-        .btn-add { background: #0ea5e9; color: #fff; }
-        .btn-add:hover { background: #0284c7; }
-        .btn-delete { background: #dc2626; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-        .btn-delete:hover { background: #b91c1c; }
-        .btn-edit { background: #f59e0b; color: #000; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-        .btn-edit:hover { background: #d97706; }
-        .btn-save { background: #22c55e; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-        .btn-save:hover { background: #16a34a; }
-        .btn-cancel { background: #64748b; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-        .btn-cancel:hover { background: #475569; }
+        .btn-add { background: #b48e4e; color: #fff; border: 1px solid #b48e4e; }
+        .btn-add:hover { background: #a07a3e; }
+        .btn-delete { background: transparent; color: #b5544a; padding: 0.4rem 0.8rem; font-size: 0.7rem; border: 1px solid rgba(181, 84, 74, 0.25); }
+        .btn-delete:hover { background: #fef2f0; }
+        .btn-edit { background: transparent; color: #b48e4e; padding: 0.4rem 0.8rem; font-size: 0.7rem; border: 1px solid rgba(180, 142, 78, 0.3); }
+        .btn-edit:hover { background: rgba(180, 142, 78, 0.06); }
+        .btn-save { background: #b48e4e; color: #fff; padding: 0.4rem 0.8rem; font-size: 0.7rem; }
+        .btn-save:hover { background: #a07a3e; }
+        .btn-cancel { background: transparent; color: #9a8e80; padding: 0.4rem 0.8rem; font-size: 0.7rem; border: 1px solid #ddd5cb; }
+        .btn-cancel:hover { background: #faf8f5; }
+        .btn-backup {
+            background: transparent; color: #b48e4e; border: 1px solid rgba(180, 142, 78, 0.3);
+            padding: 0.5rem 1.2rem; font-size: 0.7rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+        }
+        .btn-backup:hover { background: rgba(180, 142, 78, 0.06); }
+        .btn-restore { background: transparent; color: #8a7d6b; border: 1px solid #ddd5cb; padding: 0.5rem 1.2rem; font-size: 0.7rem; }
+        .btn-restore:hover { background: #faf8f5; }
+        .btn-move {
+            background: transparent; color: #9a8e80; border: 1px solid #ddd5cb; padding: 0.3rem 0.5rem;
+            font-size: 0.75rem; cursor: pointer; line-height: 1; transition: all 0.3s;
+        }
+        .btn-move:hover { color: #b48e4e; border-color: rgba(180, 142, 78, 0.3); }
 
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 8px;
-            overflow: hidden;
-        }
+        table { width: 100%; border-collapse: collapse; }
         th {
-            background: #334155;
-            padding: 0.65rem 0.8rem;
-            text-align: left;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #94a3b8;
-            letter-spacing: 0.05em;
+            background: #faf8f5; padding: 0.65rem 0.8rem; text-align: left; font-size: 0.65rem;
+            text-transform: uppercase; color: #8a7d6b; letter-spacing: 0.1em; font-weight: 600;
+            border-bottom: 1px solid rgba(180, 142, 78, 0.1);
         }
-        td {
-            padding: 0.65rem 0.8rem;
-            border-top: 1px solid #334155;
-            font-size: 0.9rem;
-        }
-        tr:hover { background: #263348; }
-        .port-badge {
-            display: inline-block;
-            background: #1e3a5f;
-            color: #38bdf8;
-            padding: 0.15rem 0.45rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        .actions { display: flex; gap: 0.4rem; }
-        .empty {
-            text-align: center;
-            padding: 1.5rem;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
+        td { padding: 0.65rem 0.8rem; border-top: 1px solid #f0ebe5; font-size: 0.9rem; }
+        tr:hover { background: #fdfcfa; }
+        .port-badge { display: inline-block; background: rgba(180, 142, 78, 0.1); color: #96793a; padding: 0.15rem 0.5rem; border-radius: 2px; font-size: 0.8rem; font-weight: 600; }
+        .actions { display: flex; gap: 0.4rem; align-items: center; }
+        .empty-msg { text-align: center; padding: 1.5rem; color: #9a8e80; font-size: 0.85rem; font-style: italic; }
 
-        /* Tile logo preview */
-        .logo-preview {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            object-fit: contain;
-            background: #334155;
-        }
+        .logo-preview { width: 32px; height: 32px; border-radius: 2px; object-fit: contain; background: #faf8f5; }
         .logo-placeholder {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, #0ea5e9, #6366f1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 32px; height: 32px; border-radius: 2px;
+            background: linear-gradient(135deg, #b48e4e, #c9a462); display: flex; align-items: center; justify-content: center;
         }
-        .logo-placeholder svg { width: 18px; height: 18px; }
+        .logo-placeholder svg { width: 16px; height: 16px; }
 
-        /* Edit inputs in table */
         .edit-input {
-            width: 100%;
-            padding: 0.35rem 0.5rem;
-            border-radius: 4px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: #e2e8f0;
-            font-size: 0.85rem;
+            width: 100%; padding: 0.35rem 0.5rem; border-radius: 2px; border: 1px solid #ddd5cb;
+            background: #faf8f5; color: #2c2420; font-size: 0.85rem; font-family: 'Inter', sans-serif;
+        }
+        .edit-input:focus { outline: none; border-color: #b48e4e; }
+
+        .nav-link {
+            padding: 0.5rem 1.2rem; color: #8a7d6b; border-radius: 2px; text-decoration: none; font-size: 0.7rem;
+            font-weight: 600; border: 1px solid #ddd5cb; transition: all 0.3s; text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .nav-link:hover { color: #b48e4e; border-color: rgba(180, 142, 78, 0.35); }
+        .nav-link-danger { color: #b5544a; border-color: rgba(181, 84, 74, 0.2); }
+        .nav-link-danger:hover { border-color: rgba(181, 84, 74, 0.4); background: #fef2f0; }
+
+        .header-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgba(180, 142, 78, 0.15);
+        }
+
+        /* Section header bar */
+        .sec-header {
+            display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
+            margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid rgba(180, 142, 78, 0.08);
+        }
+        .sec-name {
+            font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 600; color: #2c2420;
+        }
+        .sec-actions { display: flex; gap: 0.3rem; margin-left: auto; align-items: center; }
+
+        /* Add section form */
+        .add-section-form {
+            display: flex; gap: 0.5rem; align-items: end; margin-bottom: 1.5rem;
         }
 
         @media (max-width: 700px) {
             .form-row, .form-row-tiles { grid-template-columns: 1fr; }
+            .header-bar { flex-direction: column; gap: 1rem; }
+            .sec-header { flex-direction: column; align-items: flex-start; }
+            .sec-actions { margin-left: 0; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+        <div class="header-bar">
             <h1>Administration</h1>
-            <div style="display:flex; gap:0.5rem;">
-                <a href="/" style="padding:0.5rem 1rem; background:#334155; color:#e2e8f0; border-radius:6px; text-decoration:none; font-size:0.85rem; font-weight:600; border:1px solid #475569;">Accueil</a>
-                <a href="/logout" style="padding:0.5rem 1rem; background:#dc2626; color:#fff; border-radius:6px; text-decoration:none; font-size:0.85rem; font-weight:600;">Deconnexion</a>
+            <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+                <a href="/" class="nav-link">Accueil</a>
+                <a href="{{ url_for('certs') }}" class="nav-link">Certificats</a>
+                <a href="{{ url_for('ldap_config') }}" class="nav-link">LDAP / SSO</a>
+                <a href="/logout" class="nav-link nav-link-danger">Deconnexion</a>
             </div>
         </div>
 
-        <!-- Flash messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% for category, message in messages %}
         <div class="flash {{ category }}">{{ message }}</div>
         {% endfor %}
         {% endwith %}
 
+        <!-- ===== BACKUP / RESTORE ===== -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b48e4e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Sauvegarde & Restauration
+            </div>
+            <div style="display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+                <a href="{{ url_for('backup') }}" class="btn btn-backup">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Sauvegarder (JSON)
+                </a>
+                <form method="POST" action="{{ url_for('restore') }}" enctype="multipart/form-data" style="display:flex; gap:0.5rem; align-items:center;">
+                    <input type="file" name="backup_file" accept=".json" required style="font-size:0.75rem; color:#8a7d6b; max-width:220px;">
+                    <button type="submit" class="btn btn-restore" onclick="return confirm('Restaurer depuis ce fichier ? Les donnees actuelles seront ecrasees.')">Restaurer</button>
+                </form>
+            </div>
+        </div>
+
         <!-- ===== SECTION IP BLOQUEES ===== -->
         {% if blocked_ips %}
-        <div class="section" style="border-color:#dc2626;">
-            <div class="section-title" style="color:#fca5a5; border-bottom-color:#7f1d1d;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+        <div class="section" style="border-color:rgba(181, 84, 74, 0.25);">
+            <div class="section-title" style="color:#b5544a; border-bottom-color:rgba(181, 84, 74, 0.12);">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b5544a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
                 </svg>
                 IP bloquees ({{ blocked_ips|length }})
             </div>
             <table>
-                <thead>
-                    <tr>
-                        <th style="background:#7f1d1d;">Adresse IP</th>
-                        <th style="background:#7f1d1d;">Tentatives</th>
-                        <th style="background:#7f1d1d;">Temps restant</th>
-                        <th style="background:#7f1d1d;">Action</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Adresse IP</th><th>Tentatives</th><th>Temps restant</th><th>Action</th></tr></thead>
                 <tbody>
                     {% for entry in blocked_ips %}
                     <tr>
-                        <td><code style="background:#7f1d1d; color:#fca5a5;">{{ entry.ip }}</code></td>
+                        <td><code style="background:#fef2f0; color:#b5544a; padding:0.15rem 0.4rem; border-radius:2px; font-size:0.85rem;">{{ entry.ip }}</code></td>
                         <td>{{ entry.attempts }} echecs</td>
                         <td>{{ entry.remaining_min }}m {{ entry.remaining_sec }}s</td>
-                        <td>
-                            <form method="POST" action="{{ url_for('unblock_ip', ip=entry.ip) }}">
-                                <button type="submit" class="btn" style="background:#22c55e; color:#fff; padding:0.4rem 0.8rem; font-size:0.8rem;">Debloquer</button>
-                            </form>
-                        </td>
+                        <td><form method="POST" action="{{ url_for('unblock_ip', ip=entry.ip) }}"><button type="submit" class="btn btn-save">Debloquer</button></form></td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -230,30 +203,23 @@
 
         <!-- ===== HISTORIQUE DES BLOCAGES ===== -->
         {% if block_history %}
-        <div class="section" style="border-color:#f59e0b;">
-            <div class="section-title" style="border-bottom-color:#78350f;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b48e4e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                 </svg>
                 Historique des blocages ({{ block_history|length }})
                 <form method="POST" action="{{ url_for('clear_history') }}" style="margin-left:auto;" onsubmit="return confirm('Effacer tout l\'historique ?')">
-                    <button type="submit" class="btn btn-delete" style="font-size:0.75rem;">Effacer l'historique</button>
+                    <button type="submit" class="btn btn-delete">Effacer</button>
                 </form>
             </div>
             <table>
-                <thead>
-                    <tr>
-                        <th style="background:#78350f;">Date</th>
-                        <th style="background:#78350f;">Adresse IP</th>
-                        <th style="background:#78350f;">Raison</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Date</th><th>Adresse IP</th><th>Raison</th></tr></thead>
                 <tbody>
                     {% for entry in block_history %}
                     <tr>
                         <td style="white-space:nowrap;">{{ entry.date }}</td>
-                        <td><code>{{ entry.ip }}</code></td>
+                        <td><code style="color:#8a7d6b;">{{ entry.ip }}</code></td>
                         <td>{{ entry.reason }}</td>
                     </tr>
                     {% endfor %}
@@ -262,66 +228,109 @@
         </div>
         {% endif %}
 
-        <!-- ===== SECTION TUILES ===== -->
+        <!-- ===== GESTION DES TUILES (SECTIONS) ===== -->
         <div class="section">
             <div class="section-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b48e4e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
                     <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
                 </svg>
-                Gestion des tuiles (page d'accueil)
+                Gestion des tuiles
+            </div>
+
+            <!-- Add section -->
+            <form method="POST" action="{{ url_for('add_section') }}" class="add-section-form">
+                <div class="form-group" style="flex:1; max-width:300px;">
+                    <label for="section_name">Nouvelle section</label>
+                    <input type="text" id="section_name" name="section_name" placeholder="Nom de la section" required>
+                </div>
+                <button type="submit" class="btn btn-add">Ajouter une section</button>
+            </form>
+
+            {% if not sections %}
+            <div class="empty-msg">Aucune section. Creez-en une pour commencer a ajouter des tuiles.</div>
+            {% endif %}
+        </div>
+
+        <!-- Each section -->
+        {% for sec in sections %}
+        <div class="section" id="section-{{ sec.id }}">
+            <!-- Section header -->
+            <div class="sec-header">
+                <span class="sec-name" id="sec-name-{{ sec.id }}">{{ sec.name }}</span>
+                <span style="font-size:0.7rem; color:#9a8e80; margin-left:0.3rem;">({{ sec.tiles|length }} tuile{{ 's' if sec.tiles|length > 1 else '' }})</span>
+                <div class="sec-actions">
+                    <form method="POST" action="{{ url_for('move_section', section_id=sec.id, direction='up') }}" style="display:inline;">
+                        <button type="submit" class="btn-move" title="Monter">&#9650;</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('move_section', section_id=sec.id, direction='down') }}" style="display:inline;">
+                        <button type="submit" class="btn-move" title="Descendre">&#9660;</button>
+                    </form>
+                    <button class="btn btn-edit" onclick="startEditSection('{{ sec.id }}', '{{ sec.name }}', {{ sec.position }})">Renommer</button>
+                    <form method="POST" action="{{ url_for('delete_section', section_id=sec.id) }}" style="display:inline;" onsubmit="return confirm('Supprimer la section « {{ sec.name }} » et toutes ses tuiles ?')">
+                        <button type="submit" class="btn btn-delete">Supprimer</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Edit section (hidden by default) -->
+            <div id="sec-edit-{{ sec.id }}" style="display:none; margin-bottom:1rem;">
+                <form method="POST" action="{{ url_for('edit_section', section_id=sec.id) }}" style="display:flex; gap:0.5rem; align-items:end;">
+                    <div class="form-group" style="flex:1; max-width:250px;">
+                        <label>Nom</label>
+                        <input type="text" name="section_name" value="{{ sec.name }}" required>
+                    </div>
+                    <div class="form-group" style="width:80px;">
+                        <label>Position</label>
+                        <input type="number" name="section_position" value="{{ sec.position }}" min="0">
+                    </div>
+                    <button type="submit" class="btn btn-save">Sauver</button>
+                    <button type="button" class="btn btn-cancel" onclick="document.getElementById('sec-edit-{{ sec.id }}').style.display='none'">Annuler</button>
+                </form>
             </div>
 
             <!-- Add tile form -->
-            <form method="POST" action="{{ url_for('add_tile') }}" enctype="multipart/form-data" style="margin-bottom:1.2rem;">
+            <form method="POST" action="{{ url_for('add_tile', section_id=sec.id) }}" enctype="multipart/form-data" style="margin-bottom:1rem;">
                 <div class="form-row-tiles">
                     <div class="form-group">
-                        <label for="tile_name">Nom de la tuile</label>
-                        <input type="text" id="tile_name" name="tile_name" placeholder="Nextcloud" required>
+                        <label>Nom</label>
+                        <input type="text" name="tile_name" placeholder="Nextcloud" required>
                     </div>
                     <div class="form-group">
-                        <label for="tile_url">URL de redirection</label>
-                        <input type="text" id="tile_url" name="tile_url" placeholder="https://cloud.exemple.com" required>
+                        <label>URL</label>
+                        <input type="text" name="tile_url" placeholder="https://cloud.exemple.com" required>
                     </div>
                     <div class="form-group">
-                        <label for="tile_logo">Logo (image)</label>
-                        <input type="file" id="tile_logo" name="tile_logo" accept="image/*">
+                        <label>Logo</label>
+                        <input type="file" name="tile_logo" accept="image/*">
                     </div>
                     <div class="form-group">
-                        <label for="tile_position">Position</label>
-                        <input type="number" id="tile_position" name="tile_position" value="0" min="0">
+                        <label>Pos.</label>
+                        <input type="number" name="tile_position" value="0" min="0">
                     </div>
                     <button type="submit" class="btn btn-add">Ajouter</button>
                 </div>
             </form>
 
             <!-- Tiles table -->
-            {% if tiles %}
+            {% if sec.tiles %}
             <table>
-                <thead>
-                    <tr>
-                        <th>Pos.</th>
-                        <th>Logo</th>
-                        <th>Nom</th>
-                        <th>URL de redirection</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>Pos.</th><th>Logo</th><th>Nom</th><th>URL</th><th>Actions</th></tr></thead>
                 <tbody>
-                    {% for tile in tiles %}
+                    {% for tile in sec.tiles %}
                     <tr id="tile-row-{{ tile.id }}">
                         <td class="tile-cell-pos">{{ tile.position }}</td>
-                        <td class="tile-cell-logo">
+                        <td>
                             {% if tile.logo %}
                             <img src="/logos/{{ tile.logo }}" class="logo-preview" alt="">
                             {% else %}
                             <div class="logo-placeholder">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                             </div>
                             {% endif %}
                         </td>
                         <td class="tile-cell-name">{{ tile.name }}</td>
-                        <td class="tile-cell-url"><a href="{{ tile.url }}" style="color:#38bdf8; text-decoration:none;" target="_blank">{{ tile.url }}</a></td>
+                        <td class="tile-cell-url"><a href="{{ tile.url }}" style="color:#b48e4e; text-decoration:none;" target="_blank">{{ tile.url }}</a></td>
                         <td>
                             <div class="actions">
                                 <button class="btn btn-edit" onclick="startEditTile('{{ tile.id }}', '{{ tile.name }}', '{{ tile.url }}', {{ tile.position }})">Modifier</button>
@@ -335,22 +344,22 @@
                 </tbody>
             </table>
             {% else %}
-            <div class="empty">Aucune tuile configuree. Ajoutez-en une ci-dessus.</div>
+            <div class="empty-msg">Aucune tuile dans cette section.</div>
             {% endif %}
         </div>
+        {% endfor %}
 
         <!-- ===== SECTION ROUTES PROXY ===== -->
         <div class="section">
             <div class="section-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#b48e4e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/>
                     <polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/>
                     <line x1="4" y1="4" x2="9" y2="9"/>
                 </svg>
-                Routes de reverse proxy (Nginx)
+                Routes de reverse proxy
             </div>
 
-            <!-- Add route form -->
             <form method="POST" action="{{ url_for('add_route') }}" style="margin-bottom:1.2rem;">
                 <div class="form-row">
                     <div class="form-group">
@@ -369,18 +378,9 @@
                 </div>
             </form>
 
-            <!-- Routes table -->
             {% if routes %}
             <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Domaine</th>
-                        <th>Cible</th>
-                        <th>Port</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>#</th><th>Domaine</th><th>Cible</th><th>Port</th><th>Actions</th></tr></thead>
                 <tbody>
                     {% for route in routes %}
                     <tr id="row-{{ loop.index0 }}">
@@ -401,16 +401,21 @@
                 </tbody>
             </table>
             {% else %}
-            <div class="empty">Aucune route configuree.</div>
+            <div class="empty-msg">Aucune route configuree.</div>
             {% endif %}
         </div>
     </div>
 
     <script>
+        /* --- Section edit --- */
+        function startEditSection(id, name, position) {
+            document.getElementById('sec-edit-' + id).style.display = 'block';
+        }
+
         /* --- Route inline edit --- */
         function startEdit(id, domain, target, port) {
-            const row = document.getElementById('row-' + id);
-            const cells = row.querySelectorAll('td');
+            var row = document.getElementById('row-' + id);
+            var cells = row.querySelectorAll('td');
             cells[1].innerHTML = '<input class="edit-input" value="' + domain + '" id="edit-domain-' + id + '">';
             cells[2].innerHTML = '<input class="edit-input" value="' + target + '" id="edit-target-' + id + '">';
             cells[3].innerHTML = '<input class="edit-input" type="number" value="' + port + '" id="edit-port-' + id + '" style="width:80px">';
@@ -418,49 +423,42 @@
                 '<button class="btn btn-save" onclick="saveEdit(' + id + ')">Sauver</button>' +
                 '<button class="btn btn-cancel" onclick="location.reload()">Annuler</button></div>';
         }
-
         function saveEdit(id) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/edit/' + id;
+            var form = document.createElement('form');
+            form.method = 'POST'; form.action = '/edit/' + id;
             [['domain', document.getElementById('edit-domain-' + id).value],
              ['target', document.getElementById('edit-target-' + id).value],
-             ['listen_port', document.getElementById('edit-port-' + id).value]].forEach(function(pair) {
-                const input = document.createElement('input');
-                input.type = 'hidden'; input.name = pair[0]; input.value = pair[1];
+             ['listen_port', document.getElementById('edit-port-' + id).value]].forEach(function(p) {
+                var input = document.createElement('input');
+                input.type = 'hidden'; input.name = p[0]; input.value = p[1];
                 form.appendChild(input);
             });
-            document.body.appendChild(form);
-            form.submit();
+            document.body.appendChild(form); form.submit();
         }
 
         /* --- Tile inline edit --- */
         function startEditTile(id, name, url, position) {
-            const row = document.getElementById('tile-row-' + id);
-            const cells = row.querySelectorAll('td');
+            var row = document.getElementById('tile-row-' + id);
+            var cells = row.querySelectorAll('td');
             cells[0].innerHTML = '<input class="edit-input" type="number" value="' + position + '" id="tedit-pos-' + id + '" style="width:60px">';
-            // cells[1] = logo, keep as is
             cells[2].innerHTML = '<input class="edit-input" value="' + name + '" id="tedit-name-' + id + '">';
             cells[3].innerHTML = '<input class="edit-input" value="' + url + '" id="tedit-url-' + id + '">';
             cells[4].innerHTML = '<div class="actions">' +
                 '<button class="btn btn-save" onclick="saveEditTile(\'' + id + '\')">Sauver</button>' +
                 '<button class="btn btn-cancel" onclick="location.reload()">Annuler</button></div>';
         }
-
         function saveEditTile(id) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/tile/edit/' + id;
+            var form = document.createElement('form');
+            form.method = 'POST'; form.action = '/tile/edit/' + id;
             form.enctype = 'multipart/form-data';
             [['tile_name', document.getElementById('tedit-name-' + id).value],
              ['tile_url', document.getElementById('tedit-url-' + id).value],
-             ['tile_position', document.getElementById('tedit-pos-' + id).value]].forEach(function(pair) {
-                const input = document.createElement('input');
-                input.type = 'hidden'; input.name = pair[0]; input.value = pair[1];
+             ['tile_position', document.getElementById('tedit-pos-' + id).value]].forEach(function(p) {
+                var input = document.createElement('input');
+                input.type = 'hidden'; input.name = p[0]; input.value = p[1];
                 form.appendChild(input);
             });
-            document.body.appendChild(form);
-            form.submit();
+            document.body.appendChild(form); form.submit();
         }
     </script>
 </body>

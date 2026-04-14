@@ -16,7 +16,13 @@
       "Bash(git config:*)",
       "Bash(git branch:*)",
       "Bash(git remote:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(docker exec:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:thomasmaroquinerie.fr)",
+      "Bash(git checkout:*)"
     ]
   }
 }
