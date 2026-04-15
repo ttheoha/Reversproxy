@@ -22,7 +22,11 @@
       "Bash(docker exec:*)",
       "Bash(curl:*)",
       "WebFetch(domain:thomasmaroquinerie.fr)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(gh auth:*)",
+      "Bash(gh repo:*)",
+      "Bash(cat /home/administrateur/Bureau/tools/toolmap/docs/*)",
+      "Bash(git rm:*)"
     ]
   }
 }
