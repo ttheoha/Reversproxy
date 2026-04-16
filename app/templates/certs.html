@@ -196,6 +196,51 @@
             line-height: 1.6;
         }
 
+        /* Let's Encrypt test result */
+        .le-test-box {
+            border-radius: 8px;
+            padding: 1rem 1.2rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .le-test-loading {
+            background: rgba(249, 115, 22, 0.1);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            color: #fb923c;
+        }
+        .le-test-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+        .le-test-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: #f59e0b;
+        }
+        .le-test-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        .le-test-details {
+            margin-top: 0.8rem;
+            padding-top: 0.6rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.8rem;
+            color: #d6d3d1;
+        }
+        .le-test-details div { padding: 0.15rem 0; }
+        .le-test-details code { background: #1c1917; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.78rem; }
+        .le-detail-label { color: #a8a29e; font-weight: 600; }
+        .le-test-warnings {
+            margin-top: 0.6rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(245, 158, 11, 0.2);
+            font-size: 0.8rem;
+        }
+        .le-test-warnings div { padding: 0.15rem 0; }
+
         .upload-zone {
             display: flex;
             flex-direction: column;
@@ -409,8 +454,10 @@
                     </div>
                     <div class="actions-bar">
                         <button type="submit" class="btn btn-primary">Sauvegarder la configuration</button>
+                        <button type="button" class="btn btn-secondary" onclick="testLetsEncrypt()">Tester la configuration</button>
                     </div>
                 </form>
+                <div id="le-test-result" style="display:none; margin-top:1.2rem;"></div>
             </div>
         </div>
     </div>
@@ -425,6 +472,59 @@
             });
             document.getElementById('tab-' + name).classList.add('active');
             event.target.classList.add('active');
+        }
+
+        function testLetsEncrypt() {
+            var box = document.getElementById('le-test-result');
+            box.style.display = 'block';
+            box.className = 'le-test-box le-test-loading';
+            box.innerHTML = '<strong>Test en cours...</strong>';
+
+            fetch('{{ url_for("certs_letsencrypt_test") }}')
+                .then(function(r) { return r.json(); })
+                .then(function(data) {
+                    if (data.ok) {
+                        var html = '<strong>Certificat valide</strong>';
+                        if (data.details) {
+                            html += '<div class="le-test-details">';
+                            if (data.details.subject) html += '<div><span class="le-detail-label">Sujet :</span> ' + data.details.subject + '</div>';
+                            if (data.details.issuer) html += '<div><span class="le-detail-label">Emetteur :</span> ' + data.details.issuer + '</div>';
+                            if (data.details.not_before) html += '<div><span class="le-detail-label">Valide depuis :</span> ' + data.details.not_before + '</div>';
+                            if (data.details.not_after) html += '<div><span class="le-detail-label">Expire le :</span> ' + data.details.not_after + '</div>';
+                            html += '<div><span class="le-detail-label">Fichier :</span> <code>' + data.path + '</code></div>';
+                            if (data.is_letsencrypt) {
+                                html += '<div><span class="le-detail-label">Let\'s Encrypt :</span> Oui</div>';
+                            }
+                            html += '</div>';
+                        }
+                        if (data.warnings && data.warnings.length > 0) {
+                            html += '<div class="le-test-warnings">';
+                            for (var i = 0; i < data.warnings.length; i++) {
+                                html += '<div>&#9888; ' + data.warnings[i] + '</div>';
+                            }
+                            html += '</div>';
+                            box.className = 'le-test-box le-test-warning';
+                        } else {
+                            box.className = 'le-test-box le-test-success';
+                        }
+                        box.innerHTML = html;
+                    } else {
+                        var html = '<strong>Echec du test</strong>';
+                        html += '<div style="margin-top:0.5rem;">' + data.error + '</div>';
+                        if (data.details) {
+                            html += '<div class="le-test-details">';
+                            if (data.details.not_after) html += '<div><span class="le-detail-label">Expire le :</span> ' + data.details.not_after + '</div>';
+                            if (data.path) html += '<div><span class="le-detail-label">Fichier :</span> <code>' + data.path + '</code></div>';
+                            html += '</div>';
+                        }
+                        box.className = 'le-test-box le-test-error';
+                        box.innerHTML = html;
+                    }
+                })
+                .catch(function(err) {
+                    box.className = 'le-test-box le-test-error';
+                    box.innerHTML = '<strong>Erreur</strong><div style="margin-top:0.5rem;">Impossible de contacter le serveur : ' + err.message + '</div>';
+                });
         }
     </script>
 </body>
