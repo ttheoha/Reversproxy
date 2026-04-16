@@ -2,7 +2,7 @@ FROM nginx:1.27-alpine
 
 # Install Python and pip
 RUN apk add --no-cache python3 py3-pip supervisor openssl expat expat-dev \
-    openldap-dev gcc musl-dev python3-dev
+    openldap-dev gcc musl-dev python3-dev certbot
 
 # Create app directory
 WORKDIR /app
@@ -18,7 +18,7 @@ COPY app/ /app/
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Create directories
-RUN mkdir -p /etc/nginx/conf.d /data/certs /data/logos
+RUN mkdir -p /etc/nginx/conf.d /data/certs /data/logos /var/www/certbot
 
 # Copy initial self-signed certs
 COPY certs/ /data/certs/

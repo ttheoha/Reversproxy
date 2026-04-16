@@ -1,6 +1,7 @@
 import base64
 import json
 import os
+import shutil
 import subprocess
 import time
 import uuid
@@ -1047,8 +1048,196 @@ def certs_letsencrypt_save():
         "auto_renew": "le_auto_renew" in request.form,
     }
     save_letsencrypt_config(config)
-    flash("Configuration Let's Encrypt sauvegardee.", "success")
+
+    if not config["enabled"]:
+        flash("Configuration Let's Encrypt sauvegardee (desactivee).", "success")
+        return redirect(url_for("certs"))
+
+    domain = config["domain"]
+    email = config["email"]
+
+    if not domain:
+        flash("Veuillez renseigner un nom de domaine.", "error")
+        return redirect(url_for("certs"))
+
+    # Build certbot command
+    certbot_cmd = [
+        "certbot", "certonly",
+        "--webroot",
+        "-w", "/var/www/certbot",
+        "-d", domain,
+        "--non-interactive",
+        "--agree-tos",
+        "--keep-until-expiring",
+    ]
+    if email:
+        certbot_cmd += ["-m", email]
+    else:
+        certbot_cmd += ["--register-unsafely-without-email"]
+
+    try:
+        result = subprocess.run(
+            certbot_cmd, capture_output=True, text=True, timeout=120
+        )
+        if result.returncode != 0:
+            error_msg = result.stderr.strip() or result.stdout.strip()
+            flash(f"Erreur certbot : {error_msg}", "error")
+            return redirect(url_for("certs"))
+    except subprocess.TimeoutExpired:
+        flash("Certbot a expire (timeout 120s). Verifiez que le port 80 est accessible depuis Internet.", "error")
+        return redirect(url_for("certs"))
+    except Exception as e:
+        flash(f"Erreur lors de l'execution de certbot : {e}", "error")
+        return redirect(url_for("certs"))
+
+    # Copy Let's Encrypt certs to the location nginx expects
+    le_cert = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
+    le_key = f"/etc/letsencrypt/live/{domain}/privkey.pem"
+
+    if not os.path.exists(le_cert) or not os.path.exists(le_key):
+        flash("Certbot a reussi mais les fichiers de certificat sont introuvables.", "error")
+        return redirect(url_for("certs"))
+
+    try:
+        os.makedirs(CERTS_DIR, exist_ok=True)
+        shutil.copy2(le_cert, os.path.join(CERTS_DIR, "selfsigned.crt"))
+        shutil.copy2(le_key, os.path.join(CERTS_DIR, "selfsigned.key"))
+    except Exception as e:
+        flash(f"Certificat obtenu mais erreur lors de la copie : {e}", "error")
+        return redirect(url_for("certs"))
+
+    ok, msg = reload_nginx()
+    if ok:
+        flash(f"Certificat Let's Encrypt obtenu et installe pour {domain}.", "success")
+    else:
+        flash(f"Certificat obtenu mais erreur Nginx : {msg}", "error")
+
     return redirect(url_for("certs"))
+
+
+@app.route("/admin/certs/letsencrypt/test")
+@login_required
+def certs_letsencrypt_test():
+    """Test if Let's Encrypt certificate exists and is valid."""
+    config = load_letsencrypt_config()
+    domain = config.get("domain", "").strip()
+
+    if not domain:
+        return jsonify({"ok": False, "error": "Aucun domaine configure. Veuillez d'abord sauvegarder la configuration avec un nom de domaine."})
+
+    # Check common Let's Encrypt certificate paths
+    le_cert_paths = [
+        f"/etc/letsencrypt/live/{domain}/fullchain.pem",
+        f"/etc/letsencrypt/live/{domain}/cert.pem",
+        os.path.join(CERTS_DIR, "fullchain.pem"),
+        os.path.join(CERTS_DIR, "selfsigned.crt"),
+    ]
+
+    cert_path = None
+    for p in le_cert_paths:
+        if os.path.exists(p):
+            cert_path = p
+            break
+
+    if not cert_path:
+        paths_checked = ", ".join(le_cert_paths[:2])
+        return jsonify({"ok": False, "error": f"Certificat introuvable. Aucun fichier de certificat trouve pour le domaine '{domain}'. Chemins verifies : {paths_checked}"})
+
+    # Read certificate details with openssl
+    try:
+        result = subprocess.run(
+            ["openssl", "x509", "-in", cert_path, "-noout",
+             "-subject", "-issuer", "-dates", "-checkend", "0"],
+            capture_output=True, text=True, timeout=10
+        )
+    except Exception as e:
+        return jsonify({"ok": False, "error": f"Erreur lors de l'execution d'openssl : {e}"})
+
+    if result.returncode != 0:
+        # checkend returns 1 if the cert has expired
+        stderr = result.stderr.strip()
+        if "Certificate will expire" in (result.stdout + stderr):
+            pass  # We'll handle expiry below
+        else:
+            return jsonify({"ok": False, "error": f"Certificat invalide ou illisible ({cert_path}). Erreur openssl : {stderr or result.stdout.strip()}"})
+
+    output = result.stdout.strip()
+    details = {}
+    expired = False
+
+    for line in output.split("\n"):
+        line = line.strip()
+        if "=" in line:
+            key, val = line.split("=", 1)
+            key = key.strip()
+            if key == "subject":
+                details["subject"] = val.strip()
+            elif key == "issuer":
+                details["issuer"] = val.strip()
+            elif key == "notBefore":
+                details["not_before"] = val.strip()
+            elif key == "notAfter":
+                details["not_after"] = val.strip()
+        if "Certificate will expire" in line:
+            expired = True
+
+    # Verify domain matches certificate subject
+    subject = details.get("subject", "")
+    issuer = details.get("issuer", "")
+
+    # Check if it's a Let's Encrypt certificate
+    is_le = any(x in issuer.lower() for x in ["let's encrypt", "letsencrypt", "r3", "r10", "r11", "e5", "e6"])
+
+    # Check expiry with 30-day warning
+    expiry_warning = False
+    try:
+        check30 = subprocess.run(
+            ["openssl", "x509", "-in", cert_path, "-noout", "-checkend", "2592000"],
+            capture_output=True, text=True, timeout=5
+        )
+        if check30.returncode != 0:
+            expiry_warning = True
+    except Exception:
+        pass
+
+    if expired:
+        return jsonify({
+            "ok": False,
+            "error": f"Le certificat a expire ! Date d'expiration : {details.get('not_after', 'inconnue')}. Veuillez renouveler le certificat.",
+            "details": details,
+            "path": cert_path,
+        })
+
+    # Check domain match
+    domain_match = domain in subject
+    if not domain_match:
+        # Also check SAN
+        try:
+            san_result = subprocess.run(
+                ["openssl", "x509", "-in", cert_path, "-noout", "-ext", "subjectAltName"],
+                capture_output=True, text=True, timeout=5
+            )
+            if domain in san_result.stdout:
+                domain_match = True
+        except Exception:
+            pass
+
+    warnings = []
+    if not domain_match:
+        warnings.append(f"Le domaine '{domain}' ne correspond pas au sujet du certificat ({subject}).")
+    if not is_le:
+        warnings.append(f"Ce certificat ne semble pas provenir de Let's Encrypt (emetteur : {issuer}).")
+    if expiry_warning:
+        warnings.append(f"Le certificat expire dans moins de 30 jours ({details.get('not_after', '')}).")
+
+    return jsonify({
+        "ok": True,
+        "details": details,
+        "path": cert_path,
+        "is_letsencrypt": is_le,
+        "domain_match": domain_match,
+        "warnings": warnings,
+    })
 
 
 # Generate nginx conf at module load (works with gunicorn too)
