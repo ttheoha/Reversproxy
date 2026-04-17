@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sites — Reverse Proxy Manager</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #292524;
+            color: #e7e5e4;
+            min-height: 100vh;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 2.5rem 2rem; }
+        h1 { font-size: 1.8rem; color: #f97316; font-weight: 700; letter-spacing: 0.02em; }
+
+        .flash { padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.2rem; font-size: 0.85rem; }
+        .flash.success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.25); }
+        .flash.error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.25); }
+
+        .section {
+            background: #44403c; border-radius: 12px; padding: 1.8rem; margin-bottom: 2rem;
+            border: 1px solid #57534e; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+        .section-title {
+            display: flex; align-items: center; gap: 0.6rem;
+            font-size: 1.05rem; font-weight: 700; color: #f97316;
+            margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid #57534e;
+        }
+        .section-title svg { width: 20px; height: 20px; }
+
+        .info-box {
+            background: #1c1917; border: 1px solid #57534e; border-radius: 8px;
+            padding: 1rem 1.2rem; margin-bottom: 1.5rem; font-size: 0.8rem;
+            color: #a8a29e; line-height: 1.6;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #1c1917; padding: 0.65rem 0.8rem; text-align: left; font-size: 0.65rem;
+            text-transform: uppercase; color: #a8a29e; letter-spacing: 0.1em; font-weight: 600;
+            border-bottom: 1px solid #57534e;
+        }
+        td { padding: 0.65rem 0.8rem; border-top: 1px solid #57534e; font-size: 0.9rem; color: #d6d3d1; }
+        tr:hover { background: #292524; }
+
+        .badge-enabled {
+            display: inline-block; background: rgba(16, 185, 129, 0.15); color: #10b981;
+            padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+        }
+        .badge-disabled {
+            display: inline-block; background: rgba(239, 68, 68, 0.15); color: #ef4444;
+            padding: 0.15rem 0.5rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem; border: none; border-radius: 8px; cursor: pointer; font-size: 0.7rem;
+            font-weight: 600; transition: all 0.2s; white-space: nowrap; text-transform: uppercase;
+            letter-spacing: 0.08em; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .btn-add { background: #f97316; color: #fff; }
+        .btn-add:hover { background: #ea580c; }
+        .btn-toggle { background: transparent; color: #fb923c; border: 1px solid rgba(249, 115, 22, 0.3); }
+        .btn-toggle:hover { background: rgba(249, 115, 22, 0.1); }
+        .btn-delete { background: transparent; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-delete:hover { background: rgba(239, 68, 68, 0.15); }
+        .btn-view { background: transparent; color: #a8a29e; border: 1px solid #57534e; }
+        .btn-view:hover { color: #f97316; border-color: rgba(249, 115, 22, 0.35); }
+
+        .actions { display: flex; gap: 0.4rem; align-items: center; }
+        .empty-msg { text-align: center; padding: 1.5rem; color: #78716c; font-size: 0.85rem; font-style: italic; }
+
+        .form-group label {
+            display: block; font-size: 0.7rem; color: #a8a29e; margin-bottom: 0.35rem;
+            text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 0.6rem 0.8rem; border-radius: 8px; border: 1px solid #78716c;
+            background: #57534e; color: #f5f5f4; font-size: 0.9rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-group textarea {
+            font-family: 'Courier New', monospace; font-size: 0.82rem; resize: vertical;
+            min-height: 150px;
+        }
+        .form-group input::placeholder, .form-group textarea::placeholder { color: #a8a29e; }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none; border-color: #f97316; box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+        }
+        .form-help { font-size: 0.72rem; color: #78716c; margin-top: 0.3rem; line-height: 1.4; }
+
+        .conf-preview {
+            background: #1c1917; border: 1px solid #57534e; border-radius: 8px;
+            padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.78rem;
+            line-height: 1.5; color: #d6d3d1; white-space: pre-wrap; max-height: 200px;
+            overflow-y: auto; display: none; margin-top: 0.5rem;
+        }
+
+        .nav-link {
+            padding: 0.5rem 1.2rem; color: #e7e5e4; border-radius: 8px; text-decoration: none;
+            font-size: 0.7rem; font-weight: 600; border: 1px solid #57534e; transition: all 0.2s;
+            text-transform: uppercase; letter-spacing: 0.08em;
+        }
+        .nav-link:hover { color: #f97316; border-color: rgba(249, 115, 22, 0.35); }
+
+        .header-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #44403c;
+        }
+
+        @media (max-width: 600px) {
+            .header-bar { flex-direction: column; gap: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-bar">
+            <h1>Sites</h1>
+            <div style="display:flex; gap:0.5rem;">
+                <a href="{{ url_for('admin') }}" class="nav-link">Retour admin</a>
+                <a href="/" class="nav-link">Accueil</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <!-- Sites list -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                </svg>
+                Sites configures (sites-enabled)
+            </div>
+
+            <div class="info-box">
+                Les sites sont geres via la structure <code>/etc/nginx/sites-available</code> et <code>/etc/nginx/sites-enabled</code>.
+                Les routes ajoutees dans l'administration generent automatiquement des fichiers de configuration.
+                Vous pouvez aussi ajouter des configurations personnalisees ci-dessous.
+            </div>
+
+            {% if sites %}
+            <table>
+                <thead><tr><th>Fichier</th><th>Statut</th><th>Actions</th></tr></thead>
+                <tbody>
+                    {% for site in sites %}
+                    <tr>
+                        <td><code>{{ site.filename }}</code></td>
+                        <td>
+                            {% if site.enabled %}
+                            <span class="badge-enabled">Active</span>
+                            {% else %}
+                            <span class="badge-disabled">Desactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <form method="POST" action="{{ url_for('toggle_site', filename=site.filename) }}">
+                                    <button type="submit" class="btn btn-toggle">
+                                        {% if site.enabled %}Desactiver{% else %}Activer{% endif %}
+                                    </button>
+                                </form>
+                                <button class="btn btn-view" onclick="togglePreview('preview-{{ loop.index0 }}')">Voir</button>
+                                <form method="POST" action="{{ url_for('delete_site_conf', filename=site.filename) }}"
+                                      onsubmit="return confirm('Supprimer ce site ?')">
+                                    <button type="submit" class="btn btn-delete">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="padding:0;">
+                            <div class="conf-preview" id="preview-{{ loop.index0 }}">{{ site.content }}</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-msg">Aucun site configure. Ajoutez des routes dans l'admin ou une configuration personnalisee ci-dessous.</div>
+            {% endif %}
+        </div>
+
+        <!-- Add custom site -->
+        <div class="section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Ajouter une configuration personnalisee
+            </div>
+
+            <form method="POST" action="{{ url_for('add_site_conf') }}">
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label for="filename">Nom du fichier</label>
+                    <input type="text" id="filename" name="filename" placeholder="mon-site.conf" required>
+                    <div class="form-help">Le fichier sera cree dans /etc/nginx/sites-available/ et active automatiquement.</div>
+                </div>
+                <div class="form-group" style="margin-bottom:1rem;">
+                    <label for="content">Configuration Nginx</label>
+                    <textarea id="content" name="content" required placeholder="server {
+    listen 443 ssl;
+    server_name exemple.com;
+
+    location / {
+        proxy_pass http://192.168.1.10:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}"></textarea>
+                </div>
+                <button type="submit" class="btn btn-add">Ajouter et activer</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function togglePreview(id) {
+            var el = document.getElementById(id);
+            el.style.display = el.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

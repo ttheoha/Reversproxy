@@ -4,12 +4,19 @@ services:
     container_name: reverseproxy_th
     restart: unless-stopped
     ports:
-      - "888:443"
+      - "80:80"
+      - "443:443"
     volumes:
       - proxy-data:/data
+      - letsencrypt-data:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+      - proxy-logs:/var/log/reverseproxy
     environment:
       - SECRET_KEY=changez-moi-en-production
       - ADMIN_PASSWORD=root
 
 volumes:
   proxy-data:
+  letsencrypt-data:
+  certbot-webroot:
+  proxy-logs:
