@@ -101,7 +101,32 @@ for d in data.get('domains', []):
     done
 }
 
-# ── 4. Generation de la config Nginx depuis les routes ──
+# ── 4. Ecriture du fichier credentials OVH si configure ──
+setup_ovh_credentials() {
+    LE_CONFIG="/data/letsencrypt_config.json"
+    if [ -f "$LE_CONFIG" ]; then
+        python3 -c "
+import json, os
+data = json.load(open('$LE_CONFIG'))
+ovh = data.get('ovh', {})
+if ovh.get('application_key') and ovh.get('application_secret') and ovh.get('consumer_key'):
+    ini = f\"\"\"dns_ovh_endpoint = {ovh.get('endpoint', 'ovh-eu')}
+dns_ovh_application_key = {ovh['application_key']}
+dns_ovh_application_secret = {ovh['application_secret']}
+dns_ovh_consumer_key = {ovh['consumer_key']}
+\"\"\"
+    with open('/data/ovh-credentials.ini', 'w') as f:
+        f.write(ini)
+    os.chmod('/data/ovh-credentials.ini', 0o600)
+    print('OVH credentials INI ecrit.')
+else:
+    print('OVH credentials non configures.')
+" 2>/dev/null
+        echo "${GREEN}[OVH]${NC} Fichier credentials verifie."
+    fi
+}
+
+# ── 5. Generation de la config Nginx depuis les routes ──
 generate_configs() {
     echo "${CYAN}[NGINX]${NC} Generation de la configuration des sites..."
     cd /app && python3 -c "from app import generate_nginx_conf, load_routes; generate_nginx_conf(load_routes())"
@@ -125,6 +150,7 @@ banner
 ensure_certs
 check_cert_validity
 check_le_certs
+setup_ovh_credentials
 generate_configs
 check_nginx
 

@@ -9,7 +9,8 @@ WORKDIR /app
 
 # Install Python dependencies
 COPY app/requirements.txt .
-RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt
+RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt && \
+    pip3 install --no-cache-dir --break-system-packages certbot-dns-ovh
 
 # Copy application
 COPY app/ /app/

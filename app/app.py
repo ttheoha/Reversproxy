@@ -16,6 +16,7 @@ TILES_FILE = "/data/tiles.json"
 LOGOS_DIR = "/data/logos"
 LDAP_CONFIG_FILE = "/data/ldap_config.json"
 LETSENCRYPT_CONFIG_FILE = "/data/letsencrypt_config.json"
+OVH_CREDENTIALS_FILE = "/data/ovh-credentials.ini"
 CERTS_DIR = "/data/certs"
 SITES_AVAILABLE = "/etc/nginx/sites-available"
 SITES_ENABLED = "/etc/nginx/sites-enabled"
@@ -1024,12 +1025,104 @@ def save_letsencrypt_config(config):
 
 
 def get_domain_cert_paths(domain):
-    """Return (cert_path, key_path) for a domain. Checks LE first, then global."""
-    le_cert = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
-    le_key = f"/etc/letsencrypt/live/{domain}/privkey.pem"
-    if os.path.exists(le_cert) and os.path.exists(le_key):
-        return le_cert, le_key
+    """Return (cert_path, key_path) for a domain. Checks LE first, then global.
+    Certbot stores wildcard certs under the base domain name (e.g. theoha.ovh/ not *.theoha.ovh/).
+    """
+    # Check paths in order of priority
+    candidates = [domain]
+
+    # For wildcard domain *.theoha.ovh, also check base name theoha.ovh
+    if domain.startswith("*."):
+        candidates.append(domain[2:])
+
+    # For subdomain aa.theoha.ovh, also check base theoha.ovh (wildcard cert)
+    parts = domain.split(".", 1)
+    if len(parts) == 2 and not domain.startswith("*."):
+        candidates.append(parts[1])
+
+    for name in candidates:
+        le_cert = f"/etc/letsencrypt/live/{name}/fullchain.pem"
+        le_key = f"/etc/letsencrypt/live/{name}/privkey.pem"
+        if os.path.exists(le_cert) and os.path.exists(le_key):
+            return le_cert, le_key
+
     return os.path.join(CERTS_DIR, "selfsigned.crt"), os.path.join(CERTS_DIR, "selfsigned.key")
+
+
+def load_ovh_credentials():
+    """Load OVH API credentials from LE config."""
+    config = load_letsencrypt_config()
+    return config.get("ovh", {
+        "endpoint": "ovh-eu",
+        "application_key": "",
+        "application_secret": "",
+        "consumer_key": "",
+    })
+
+
+def save_ovh_credentials(ovh_config):
+    """Save OVH credentials to LE config and write INI file for certbot."""
+    config = load_letsencrypt_config()
+    config["ovh"] = ovh_config
+    save_letsencrypt_config(config)
+    write_ovh_ini(ovh_config)
+
+
+def write_ovh_ini(ovh_config):
+    """Write the certbot-dns-ovh credentials INI file."""
+    ini_content = (
+        f"dns_ovh_endpoint = {ovh_config.get('endpoint', 'ovh-eu')}\n"
+        f"dns_ovh_application_key = {ovh_config.get('application_key', '')}\n"
+        f"dns_ovh_application_secret = {ovh_config.get('application_secret', '')}\n"
+        f"dns_ovh_consumer_key = {ovh_config.get('consumer_key', '')}\n"
+    )
+    with open(OVH_CREDENTIALS_FILE, "w") as f:
+        f.write(ini_content)
+    os.chmod(OVH_CREDENTIALS_FILE, 0o600)
+
+
+def ovh_credentials_ready():
+    """Check if OVH credentials are configured."""
+    ovh = load_ovh_credentials()
+    return all([
+        ovh.get("application_key"),
+        ovh.get("application_secret"),
+        ovh.get("consumer_key"),
+    ])
+
+
+def build_certbot_cmd(domain, email, challenge_type="http"):
+    """Build certbot command for the given domain and challenge type."""
+    certbot_cmd = [
+        "certbot", "certonly",
+        "--non-interactive",
+        "--agree-tos",
+        "--keep-until-expiring",
+    ]
+
+    if challenge_type == "dns-ovh":
+        # Ensure INI file exists
+        ovh = load_ovh_credentials()
+        write_ovh_ini(ovh)
+        certbot_cmd += [
+            "--dns-ovh",
+            "--dns-ovh-credentials", OVH_CREDENTIALS_FILE,
+            "--dns-ovh-propagation-seconds", "60",
+        ]
+    else:
+        certbot_cmd += [
+            "--webroot",
+            "-w", "/var/www/certbot",
+        ]
+
+    certbot_cmd += ["-d", domain]
+
+    if email:
+        certbot_cmd += ["-m", email]
+    else:
+        certbot_cmd += ["--register-unsafely-without-email"]
+
+    return certbot_cmd
 
 
 @app.route("/admin/certs")
@@ -1039,8 +1132,9 @@ def certs():
     le_config = load_letsencrypt_config()
     # Enrich each domain with cert info
     for d in le_config.get("domains", []):
-        le_cert = f"/etc/letsencrypt/live/{d['domain']}/fullchain.pem"
-        if os.path.exists(le_cert):
+        cert_path, _ = get_domain_cert_paths(d["domain"])
+        le_cert = cert_path
+        if not le_cert.endswith("selfsigned.crt"):
             try:
                 result = subprocess.run(
                     ["openssl", "x509", "-in", le_cert, "-noout", "-enddate", "-checkend", "2592000"],
@@ -1055,7 +1149,10 @@ def certs():
                 d["has_cert"] = False
         else:
             d["has_cert"] = False
-    return render_template("certs.html", cert_info=cert_info, le_config=le_config)
+    ovh_config = load_ovh_credentials()
+    ovh_ready = ovh_credentials_ready()
+    return render_template("certs.html", cert_info=cert_info, le_config=le_config,
+                           ovh_config=ovh_config, ovh_ready=ovh_ready)
 
 
 @app.route("/admin/certs/selfsigned", methods=["POST"])
@@ -1145,13 +1242,39 @@ def certs_letsencrypt_settings():
     return redirect(url_for("certs"))
 
 
+@app.route("/admin/certs/ovh/save", methods=["POST"])
+@login_required
+def certs_ovh_save():
+    """Save OVH API credentials."""
+    ovh_config = {
+        "endpoint": request.form.get("ovh_endpoint", "ovh-eu").strip(),
+        "application_key": request.form.get("ovh_application_key", "").strip(),
+        "application_secret": request.form.get("ovh_application_secret", "").strip(),
+        "consumer_key": request.form.get("ovh_consumer_key", "").strip(),
+    }
+    save_ovh_credentials(ovh_config)
+    flash("Identifiants OVH API sauvegardes.", "success")
+    return redirect(url_for("certs"))
+
+
 @app.route("/admin/certs/letsencrypt/add", methods=["POST"])
 @login_required
 def certs_letsencrypt_add():
     """Request a LE certificate for a new domain."""
     domain = request.form.get("le_domain", "").strip().lower()
+    challenge_type = request.form.get("challenge_type", "http")
+
     if not domain:
         flash("Veuillez renseigner un nom de domaine.", "error")
+        return redirect(url_for("certs"))
+
+    # Wildcard requires DNS-01
+    if "*" in domain and challenge_type != "dns-ovh":
+        flash("Les certificats wildcard (*.domaine) necessitent le challenge DNS-01 OVH.", "error")
+        return redirect(url_for("certs"))
+
+    if challenge_type == "dns-ovh" and not ovh_credentials_ready():
+        flash("Configurez d'abord les identifiants OVH API avant d'utiliser le challenge DNS.", "error")
         return redirect(url_for("certs"))
 
     config = load_letsencrypt_config()
@@ -1163,43 +1286,35 @@ def certs_letsencrypt_add():
         flash(f"Le domaine {domain} est deja dans la liste.", "error")
         return redirect(url_for("certs"))
 
-    # Run certbot for this domain
-    certbot_cmd = [
-        "certbot", "certonly",
-        "--webroot",
-        "-w", "/var/www/certbot",
-        "-d", domain,
-        "--non-interactive",
-        "--agree-tos",
-        "--keep-until-expiring",
-    ]
-    if email:
-        certbot_cmd += ["-m", email]
-    else:
-        certbot_cmd += ["--register-unsafely-without-email"]
+    # Build and run certbot command
+    certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
+
+    # DNS-01 can take longer (propagation)
+    timeout = 180 if challenge_type == "dns-ovh" else 120
 
     try:
         result = subprocess.run(
-            certbot_cmd, capture_output=True, text=True, timeout=120
+            certbot_cmd, capture_output=True, text=True, timeout=timeout
         )
         if result.returncode != 0:
             error_msg = result.stderr.strip() or result.stdout.strip()
-            # Add domain with error status
             config.setdefault("domains", []).append({
                 "domain": domain,
+                "challenge": challenge_type,
                 "status": "error",
-                "error": error_msg[:200],
+                "error": error_msg[:300],
             })
             save_letsencrypt_config(config)
             flash(f"Erreur certbot pour {domain} : {error_msg}", "error")
             return redirect(url_for("certs"))
     except subprocess.TimeoutExpired:
-        flash(f"Certbot timeout pour {domain}. Verifiez que le port 80 est accessible.", "error")
+        flash(f"Certbot timeout pour {domain}. Verifiez la configuration.", "error")
         return redirect(url_for("certs"))
 
     # Success - add domain
     config.setdefault("domains", []).append({
         "domain": domain,
+        "challenge": challenge_type,
         "status": "active",
     })
     save_letsencrypt_config(config)
@@ -1210,7 +1325,7 @@ def certs_letsencrypt_add():
     ok, msg = reload_nginx()
 
     if ok:
-        flash(f"Certificat Let's Encrypt obtenu pour {domain}.", "success")
+        flash(f"Certificat Let's Encrypt obtenu pour {domain} (challenge {challenge_type}).", "success")
     else:
         flash(f"Certificat obtenu pour {domain} mais erreur Nginx : {msg}", "error")
 
@@ -1241,23 +1356,22 @@ def certs_letsencrypt_renew(domain):
     config = load_letsencrypt_config()
     email = config.get("email", "")
 
-    certbot_cmd = [
-        "certbot", "certonly",
-        "--webroot",
-        "-w", "/var/www/certbot",
-        "-d", domain,
-        "--non-interactive",
-        "--agree-tos",
-        "--force-renewal",
-    ]
-    if email:
-        certbot_cmd += ["-m", email]
-    else:
-        certbot_cmd += ["--register-unsafely-without-email"]
+    # Find the challenge type used for this domain
+    challenge_type = "http"
+    for d in config.get("domains", []):
+        if d["domain"] == domain:
+            challenge_type = d.get("challenge", "http")
+            break
+
+    certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
+    # Replace --keep-until-expiring with --force-renewal
+    certbot_cmd = [x if x != "--keep-until-expiring" else "--force-renewal" for x in certbot_cmd]
+
+    timeout = 180 if challenge_type == "dns-ovh" else 120
 
     try:
         result = subprocess.run(
-            certbot_cmd, capture_output=True, text=True, timeout=120
+            certbot_cmd, capture_output=True, text=True, timeout=timeout
         )
         if result.returncode != 0:
             error_msg = result.stderr.strip() or result.stdout.strip()
@@ -1312,9 +1426,11 @@ def certs_letsencrypt_renew_all():
 @login_required
 def certs_letsencrypt_test(domain):
     """Test if a specific domain's LE certificate is valid."""
-    le_cert = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
+    cert_path, _ = get_domain_cert_paths(domain)
+    le_cert = cert_path
 
-    if not os.path.exists(le_cert):
+    # Check it's actually a LE cert, not the fallback
+    if le_cert.endswith("selfsigned.crt"):
         return jsonify({"ok": False, "error": f"Certificat introuvable pour {domain}."})
 
     try:

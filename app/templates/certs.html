@@ -253,9 +253,9 @@
                     Certificats Let's Encrypt
                 </div>
                 <div class="info-box">
-                    Gerez vos certificats SSL Let's Encrypt domaine par domaine.
-                    Chaque sous-domaine (ex: <code>web.theoha.ovh</code>, <code>printer.theoha.ovh</code>)
-                    obtient son propre certificat. Le DNS de chaque domaine doit pointer vers ce serveur (port 80 accessible).
+                    Gerez vos certificats SSL Let's Encrypt domaine par domaine.<br>
+                    <strong>HTTP-01</strong> : le DNS doit pointer vers ce serveur, port 80 accessible depuis Internet.<br>
+                    <strong>DNS-01 (OVH)</strong> : validation via l'API OVH DNS. Permet les certificats <strong>wildcard</strong> (<code>*.exemple.com</code>).
                 </div>
 
                 <!-- Global settings -->
@@ -285,11 +285,18 @@
                 <!-- Domain list -->
                 {% if le_config.domains %}
                 <table>
-                    <thead><tr><th>Domaine</th><th>Statut</th><th>Expiration</th><th>Actions</th></tr></thead>
+                    <thead><tr><th>Domaine</th><th>Challenge</th><th>Statut</th><th>Expiration</th><th>Actions</th></tr></thead>
                     <tbody>
                         {% for d in le_config.domains %}
                         <tr>
                             <td><code style="font-size:0.85rem;">{{ d.domain }}</code></td>
+                            <td>
+                                {% if d.get('challenge') == 'dns-ovh' %}
+                                    <span class="badge" style="background:rgba(59,130,246,0.15); color:#3b82f6;">DNS-OVH</span>
+                                {% else %}
+                                    <span class="badge" style="background:rgba(168,162,158,0.15); color:#a8a29e;">HTTP</span>
+                                {% endif %}
+                            </td>
                             <td>
                                 {% if d.has_cert and not d.get('expiry_warning') %}
                                     <span class="badge badge-active">Actif</span>
@@ -314,7 +321,7 @@
                                                 onclick="return confirm('Retirer {{ d.domain }} de Let\'s Encrypt ?')">Retirer</button>
                                     </form>
                                 </div>
-                                <div class="test-result" id="test-{{ d.domain | replace('.', '-') }}"></div>
+                                <div class="test-result" id="test-{{ d.domain | replace('.', '-') | replace('*', 'wc') }}"></div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -335,12 +342,73 @@
 
                 <!-- Add domain form -->
                 <form method="POST" action="{{ url_for('certs_letsencrypt_add') }}" class="add-domain-form">
-                    <div class="form-group" style="flex:1; min-width:250px;">
+                    <div class="form-group" style="flex:1; min-width:220px;">
                         <label for="le_domain">Ajouter un domaine</label>
-                        <input type="text" id="le_domain" name="le_domain" placeholder="web.theoha.ovh">
-                        <div class="form-help">Le DNS doit pointer vers l'IP de ce serveur. Le certificat sera demande immediatement.</div>
+                        <input type="text" id="le_domain" name="le_domain" placeholder="web.exemple.com ou *.exemple.com">
+                    </div>
+                    <div class="form-group" style="min-width:160px;">
+                        <label for="challenge_type">Type de challenge</label>
+                        <select name="challenge_type" id="challenge_type" style="padding:0.7rem 0.9rem; border-radius:8px; border:1px solid #78716c; background:#57534e; color:#f5f5f4; font-size:0.9rem;">
+                            <option value="http">HTTP-01 (port 80)</option>
+                            <option value="dns-ovh" {% if not ovh_ready %}disabled{% endif %}>DNS-01 (OVH API){% if not ovh_ready %} — non configure{% endif %}</option>
+                        </select>
+                        <div class="form-help">Wildcard (*.domaine) necessite DNS-01.</div>
                     </div>
                     <button type="submit" class="btn btn-primary">Obtenir le certificat</button>
+                </form>
+            </div>
+
+            <!-- OVH API Credentials -->
+            <div class="section">
+                <div class="section-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Identifiants OVH API (DNS-01)
+                    {% if ovh_ready %}
+                        <span class="badge badge-active" style="margin-left:auto;">Configure</span>
+                    {% else %}
+                        <span class="badge badge-pending" style="margin-left:auto;">Non configure</span>
+                    {% endif %}
+                </div>
+                <div class="info-box">
+                    Pour utiliser le challenge DNS-01 (necessaire pour les certificats wildcard <code>*.domaine</code>),
+                    vous devez fournir vos identifiants API OVH.<br>
+                    Creez-les sur <strong>https://eu.api.ovh.com/createToken/</strong> avec les droits :<br>
+                    <code>GET /domain/zone/*</code> — <code>PUT /domain/zone/*</code> — <code>POST /domain/zone/*</code> — <code>DELETE /domain/zone/*</code>
+                </div>
+                <form method="POST" action="{{ url_for('certs_ovh_save') }}">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="ovh_endpoint">Endpoint OVH</label>
+                            <select name="ovh_endpoint" id="ovh_endpoint" style="padding:0.7rem 0.9rem; border-radius:8px; border:1px solid #78716c; background:#57534e; color:#f5f5f4; font-size:0.9rem;">
+                                <option value="ovh-eu" {% if ovh_config.endpoint == 'ovh-eu' %}selected{% endif %}>OVH Europe (ovh-eu)</option>
+                                <option value="ovh-ca" {% if ovh_config.endpoint == 'ovh-ca' %}selected{% endif %}>OVH Canada (ovh-ca)</option>
+                                <option value="ovh-us" {% if ovh_config.endpoint == 'ovh-us' %}selected{% endif %}>OVH US (ovh-us)</option>
+                                <option value="kimsufi-eu" {% if ovh_config.endpoint == 'kimsufi-eu' %}selected{% endif %}>Kimsufi EU</option>
+                                <option value="soyoustart-eu" {% if ovh_config.endpoint == 'soyoustart-eu' %}selected{% endif %}>SoYouStart EU</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ovh_application_key">Application Key</label>
+                            <input type="text" id="ovh_application_key" name="ovh_application_key"
+                                   value="{{ ovh_config.application_key }}" placeholder="votre application key">
+                        </div>
+                        <div class="form-group">
+                            <label for="ovh_application_secret">Application Secret</label>
+                            <input type="password" id="ovh_application_secret" name="ovh_application_secret"
+                                   value="{{ ovh_config.application_secret }}" placeholder="votre application secret">
+                        </div>
+                        <div class="form-group">
+                            <label for="ovh_consumer_key">Consumer Key</label>
+                            <input type="text" id="ovh_consumer_key" name="ovh_consumer_key"
+                                   value="{{ ovh_config.consumer_key }}" placeholder="votre consumer key">
+                        </div>
+                    </div>
+                    <div class="actions-bar">
+                        <button type="submit" class="btn btn-primary">Sauvegarder les identifiants OVH</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -418,7 +486,7 @@
         }
 
         function testDomain(domain) {
-            var id = 'test-' + domain.replace(/\./g, '-');
+            var id = 'test-' + domain.replace(/\./g, '-').replace(/\*/g, 'wc');
             var box = document.getElementById(id);
             box.style.display = 'block';
             box.className = 'test-result test-loading';
