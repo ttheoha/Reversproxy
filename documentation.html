@@ -1,472 +1,393 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation — Reverse Proxy Manager v2.2</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #292524;
-            color: #e7e5e4;
-            min-height: 100vh;
-            line-height: 1.7;
-        }
+  <meta charset="UTF-8">
+  <title>Reverse Proxy Manager - Documentation Technique Compl&egrave;te</title>
+  <style>
+    @page { margin: 20mm 15mm; size: A4; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.7; color: #1a1a1a; max-width: 190mm; margin: 0 auto; padding: 15px; font-size: 13px; }
 
-        /* Navigation laterale */
-        .sidebar {
-            position: fixed; top: 0; left: 0; width: 280px; height: 100vh;
-            background: #1c1917; border-right: 1px solid #44403c;
-            overflow-y: auto; padding: 2rem 0; z-index: 100;
-        }
-        .sidebar-title {
-            font-size: 1.1rem; font-weight: 700; color: #f97316;
-            padding: 0 1.5rem; margin-bottom: 0.3rem;
-        }
-        .sidebar-version {
-            font-size: 0.7rem; color: #78716c; padding: 0 1.5rem;
-            margin-bottom: 2rem; letter-spacing: 0.08em; text-transform: uppercase;
-        }
-        .sidebar-section {
-            font-size: 0.65rem; color: #78716c; padding: 0.8rem 1.5rem 0.4rem;
-            text-transform: uppercase; letter-spacing: 0.12em; font-weight: 700;
-        }
-        .sidebar a {
-            display: block; padding: 0.45rem 1.5rem; color: #a8a29e;
-            text-decoration: none; font-size: 0.85rem; transition: all 0.15s;
-            border-left: 2px solid transparent;
-        }
-        .sidebar a:hover {
-            color: #f97316; background: rgba(249, 115, 22, 0.05);
-            border-left-color: #f97316;
-        }
+    h1 { color: #ea580c; font-size: 24px; border-bottom: 3px solid #ea580c; padding-bottom: 8px; margin-top: 40px; page-break-before: always; }
+    h1:first-of-type, .cover + h1 { page-break-before: avoid; }
+    h2 { color: #292524; font-size: 19px; border-bottom: 1px solid #d6d3d1; padding-bottom: 4px; margin-top: 25px; }
+    h3 { color: #44403c; font-size: 16px; margin-top: 18px; }
+    h4 { color: #57534e; font-size: 14px; margin-top: 14px; }
 
-        /* Contenu principal */
-        .main {
-            margin-left: 280px; padding: 3rem 4rem; max-width: 1100px;
-        }
+    code { background: #f5f5f4; padding: 1px 5px; border-radius: 3px; font-size: 12px; font-family: 'Consolas', 'Courier New', monospace; }
+    pre { background: #1c1917; color: #e7e5e4; padding: 12px 15px; border-radius: 6px; overflow-x: auto; font-size: 11.5px; line-height: 1.5; margin: 10px 0; }
+    pre code { background: none; color: inherit; padding: 0; font-size: 11.5px; }
 
-        h1 {
-            font-size: 2.2rem; color: #f97316; font-weight: 800;
-            margin-bottom: 0.5rem; letter-spacing: -0.02em;
-        }
-        .subtitle {
-            font-size: 1rem; color: #78716c; margin-bottom: 3rem;
-            padding-bottom: 2rem; border-bottom: 1px solid #44403c;
-        }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+    th, td { border: 1px solid #d6d3d1; padding: 6px 10px; text-align: left; }
+    th { background: #292524; color: white; font-size: 11.5px; }
+    tr:nth-child(even) { background: #fafaf9; }
+    tr:hover { background: #f5f5f4; }
 
-        h2 {
-            font-size: 1.5rem; color: #f97316; font-weight: 700;
-            margin-top: 3.5rem; margin-bottom: 1.2rem; padding-top: 2rem;
-            border-top: 1px solid #44403c;
-        }
-        h2:first-of-type { border-top: none; padding-top: 0; margin-top: 0; }
+    ul, ol { padding-left: 22px; }
+    li { margin-bottom: 3px; }
 
-        h3 {
-            font-size: 1.1rem; color: #f5f5f4; font-weight: 700;
-            margin-top: 2rem; margin-bottom: 0.8rem;
-        }
+    /* Cover */
+    .cover { text-align: center; padding: 80px 0 60px; page-break-after: always; }
+    .cover h1 { font-size: 52px; border: none; color: #ea580c; margin-bottom: 5px; page-break-before: avoid; }
+    .cover .subtitle { font-size: 22px; color: #44403c; margin: 10px 0 30px; }
+    .cover .meta { font-size: 14px; color: #78716c; line-height: 2; }
+    .cover .stack { font-size: 12px; color: #a8a29e; margin-top: 40px; padding: 10px 20px; background: #fafaf9; border-radius: 8px; display: inline-block; }
 
-        h4 {
-            font-size: 0.95rem; color: #fb923c; font-weight: 600;
-            margin-top: 1.5rem; margin-bottom: 0.5rem;
-        }
+    /* TOC */
+    .toc { page-break-after: always; }
+    .toc h1 { page-break-before: avoid; }
+    .toc ul { list-style: none; padding: 0; }
+    .toc li { padding: 6px 0; border-bottom: 1px dotted #d6d3d1; }
+    .toc li a { text-decoration: none; color: #292524; }
+    .toc .sub { padding-left: 20px; font-size: 12px; border-bottom: none; padding: 3px 0; }
 
-        p { margin-bottom: 1rem; color: #d6d3d1; }
+    /* Callouts */
+    .note { background: #fefce8; border-left: 4px solid #eab308; padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 12px; }
+    .warning { background: #fef2f2; border-left: 4px solid #ef4444; padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 12px; }
+    .info { background: #eff6ff; border-left: 4px solid #3b82f6; padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 12px; }
+    .success { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 12px; }
 
-        ul, ol { margin-bottom: 1rem; padding-left: 1.5rem; }
-        li { margin-bottom: 0.4rem; color: #d6d3d1; }
-        li strong { color: #f5f5f4; }
+    /* Visual elements */
+    .architecture { display: flex; gap: 8px; justify-content: center; align-items: center; margin: 20px 0; flex-wrap: wrap; }
+    .arch-box { padding: 12px 18px; border-radius: 8px; text-align: center; min-width: 100px; font-size: 12px; color: white; }
+    .arch-arrow { font-size: 20px; color: #ea580c; }
 
-        code {
-            background: #44403c; color: #fb923c; padding: 0.15rem 0.5rem;
-            border-radius: 5px; font-size: 0.85em; font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-        }
+    .file-tree { background: #fafaf9; border: 1px solid #e7e5e4; border-radius: 6px; padding: 12px 15px; font-family: 'Consolas', monospace; font-size: 11.5px; line-height: 1.6; }
 
-        pre {
-            background: #1c1917; border: 1px solid #44403c; border-radius: 10px;
-            padding: 1.2rem 1.5rem; margin-bottom: 1.5rem; overflow-x: auto;
-            font-size: 0.85rem; line-height: 1.6;
-        }
-        pre code {
-            background: transparent; padding: 0; color: #e7e5e4;
-        }
+    .flow-step { display: flex; align-items: flex-start; gap: 10px; margin: 8px 0; }
+    .flow-num { background: #ea580c; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; flex-shrink: 0; }
+    .flow-text { flex: 1; }
 
-        .card {
-            background: #44403c; border: 1px solid #57534e; border-radius: 12px;
-            padding: 1.5rem; margin-bottom: 1.5rem;
-        }
-        .card-title {
-            font-size: 0.95rem; font-weight: 700; color: #f97316;
-            margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;
-        }
-        .card-title svg { width: 18px; height: 18px; flex-shrink: 0; }
+    .method { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: bold; font-family: monospace; margin-right: 4px; }
+    .method-get { background: #dcfce7; color: #166534; }
+    .method-post { background: #dbeafe; color: #1e40af; }
 
-        .badge {
-            display: inline-block; padding: 0.15rem 0.6rem; border-radius: 6px;
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
-        .badge-new { background: rgba(16, 185, 129, 0.15); color: #10b981; }
-        .badge-security { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-        .badge-info { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-
-        table {
-            width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;
-            background: #1c1917; border-radius: 10px; overflow: hidden;
-        }
-        th {
-            background: #44403c; padding: 0.7rem 1rem; text-align: left;
-            font-size: 0.7rem; text-transform: uppercase; color: #a8a29e;
-            letter-spacing: 0.1em; font-weight: 700;
-        }
-        td {
-            padding: 0.65rem 1rem; border-top: 1px solid #44403c;
-            font-size: 0.88rem; color: #d6d3d1;
-        }
-        tr:hover td { background: rgba(249, 115, 22, 0.03); }
-
-        .warning {
-            background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25);
-            border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 1.5rem;
-            color: #fbbf24; font-size: 0.9rem;
-        }
-        .warning strong { color: #f59e0b; }
-
-        .info {
-            background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 1.5rem;
-            color: #93c5fd; font-size: 0.9rem;
-        }
-
-        .success {
-            background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 10px; padding: 1rem 1.2rem; margin-bottom: 1.5rem;
-            color: #6ee7b7; font-size: 0.9rem;
-        }
-
-        .toc-badge {
-            float: right; margin-left: 0.5rem;
-        }
-
-        .arch-diagram {
-            background: #1c1917; border: 1px solid #44403c; border-radius: 10px;
-            padding: 1.5rem; margin-bottom: 1.5rem; text-align: center;
-            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-            font-size: 0.82rem; line-height: 1.8; color: #a8a29e;
-            white-space: pre; overflow-x: auto;
-        }
-
-        .feature-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem; margin-bottom: 1.5rem;
-        }
-
-        .step-number {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 28px; height: 28px; background: #f97316; color: #fff;
-            border-radius: 50%; font-size: 0.8rem; font-weight: 700;
-            margin-right: 0.5rem; flex-shrink: 0;
-        }
-
-        .endpoint-method {
-            display: inline-block; padding: 0.1rem 0.5rem; border-radius: 4px;
-            font-size: 0.7rem; font-weight: 700; font-family: monospace;
-            margin-right: 0.3rem;
-        }
-        .method-get { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .method-post { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-
-        footer {
-            margin-top: 4rem; padding-top: 2rem; border-top: 1px solid #44403c;
-            text-align: center; color: #57534e; font-size: 0.8rem;
-        }
-
-        @media (max-width: 900px) {
-            .sidebar { display: none; }
-            .main { margin-left: 0; padding: 2rem 1.5rem; }
-            .feature-grid { grid-template-columns: 1fr; }
-        }
-    </style>
+    footer { text-align: center; color: #a8a29e; font-size: 11px; margin-top: 30px; padding-top: 15px; border-top: 1px solid #d6d3d1; }
+    .page-break { page-break-before: always; }
+  </style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
-    <nav class="sidebar">
-        <div class="sidebar-title">Reverse Proxy Manager</div>
-        <div class="sidebar-version">Documentation v2.2</div>
+<!-- ============================================================ -->
+<!-- COUVERTURE -->
+<!-- ============================================================ -->
+<div class="cover">
+  <h1>Reverse Proxy Manager</h1>
+  <div class="subtitle">Interface web d'administration<br>pour reverse proxy Nginx</div>
+  <div class="meta">
+    <strong>Documentation Technique Compl&egrave;te</strong><br>
+    Version 2.2 &mdash; Avril 2026<br>
+    7 pages d'administration &bull; 30+ endpoints API &bull; 3 services supervis&eacute;s
+  </div>
+  <div class="stack">
+    Docker &bull; Nginx 1.27 Alpine &bull; Flask 3.1 &bull; Gunicorn 23 &bull; Supervisor &bull; Certbot &bull; python-ldap 3.4 &bull; OpenSSL
+  </div>
+</div>
 
-        <div class="sidebar-section">Demarrage</div>
-        <a href="#introduction">Introduction</a>
-        <a href="#architecture">Architecture</a>
-        <a href="#prerequis">Prerequis</a>
-        <a href="#installation">Installation</a>
-        <a href="#premier-lancement">Premier lancement</a>
+<!-- ============================================================ -->
+<!-- TABLE DES MATIERES -->
+<!-- ============================================================ -->
+<div class="toc">
+  <h1 style="page-break-before:avoid;">Table des mati&egrave;res</h1>
+  <ul>
+    <li><a href="#c1">1. Pr&eacute;sentation g&eacute;n&eacute;rale</a></li>
+    <li class="sub"><a href="#c1-1">1.1 Objectif de l'application</a></li>
+    <li class="sub"><a href="#c1-2">1.2 Stack technique</a></li>
+    <li class="sub"><a href="#c1-3">1.3 Fonctionnalit&eacute;s principales</a></li>
+    <li><a href="#c2">2. Architecture technique</a></li>
+    <li class="sub"><a href="#c2-1">2.1 Vue d'ensemble</a></li>
+    <li class="sub"><a href="#c2-2">2.2 Arborescence du projet</a></li>
+    <li class="sub"><a href="#c2-3">2.3 Configuration Docker</a></li>
+    <li class="sub"><a href="#c2-4">2.4 Supervisor &mdash; 3 services</a></li>
+    <li><a href="#c3">3. Installation et d&eacute;ploiement</a></li>
+    <li class="sub"><a href="#c3-1">3.1 Pr&eacute;requis</a></li>
+    <li class="sub"><a href="#c3-2">3.2 Installation pas &agrave; pas</a></li>
+    <li class="sub"><a href="#c3-3">3.3 Variables d'environnement</a></li>
+    <li class="sub"><a href="#c3-4">3.4 Premier lancement</a></li>
+    <li><a href="#c4">4. Routes de reverse proxy</a></li>
+    <li class="sub"><a href="#c4-1">4.1 Ajouter une route</a></li>
+    <li class="sub"><a href="#c4-2">4.2 Configuration Nginx g&eacute;n&eacute;r&eacute;e</a></li>
+    <li class="sub"><a href="#c4-3">4.3 Gestion des sites</a></li>
+    <li><a href="#c5">5. Tuiles de services</a></li>
+    <li class="sub"><a href="#c5-1">5.1 Sections</a></li>
+    <li class="sub"><a href="#c5-2">5.2 Tuiles</a></li>
+    <li class="sub"><a href="#c5-3">5.3 Logos</a></li>
+    <li><a href="#c6">6. Certificats SSL/TLS</a></li>
+    <li class="sub"><a href="#c6-1">6.1 Certificat auto-sign&eacute;</a></li>
+    <li class="sub"><a href="#c6-2">6.2 Certificat personnalis&eacute;</a></li>
+    <li class="sub"><a href="#c6-3">6.3 Let's Encrypt &mdash; HTTP-01</a></li>
+    <li class="sub"><a href="#c6-4">6.4 Let's Encrypt &mdash; DNS-01 OVH (wildcard)</a></li>
+    <li class="sub"><a href="#c6-5">6.5 Renouvellement automatique</a></li>
+    <li><a href="#c7">7. Authentification</a></li>
+    <li class="sub"><a href="#c7-1">7.1 Authentification locale</a></li>
+    <li class="sub"><a href="#c7-2">7.2 LDAP / SSO</a></li>
+    <li class="sub"><a href="#c7-3">7.3 Mode mixte</a></li>
+    <li><a href="#c8">8. S&eacute;curit&eacute; &amp; blocage IP</a></li>
+    <li class="sub"><a href="#c8-1">8.1 Rate limiting</a></li>
+    <li class="sub"><a href="#c8-2">8.2 Historique des blocages</a></li>
+    <li><a href="#c9">9. Logs &amp; supervision</a></li>
+    <li><a href="#c10">10. Sauvegarde &amp; restauration</a></li>
+    <li><a href="#c11">11. API &mdash; Endpoints</a></li>
+    <li class="sub"><a href="#c11-1">11.1 Pages publiques</a></li>
+    <li class="sub"><a href="#c11-2">11.2 Administration</a></li>
+    <li class="sub"><a href="#c11-3">11.3 Sections &amp; tuiles</a></li>
+    <li class="sub"><a href="#c11-4">11.4 Certificats &amp; LDAP</a></li>
+    <li class="sub"><a href="#c11-5">11.5 Logs &amp; sites</a></li>
+    <li><a href="#c12">12. Volumes &amp; donn&eacute;es persistantes</a></li>
+    <li><a href="#c13">13. Changelog</a></li>
+    <li><a href="#annexes">14. Annexes</a></li>
+    <li class="sub"><a href="#a-a">A. Commandes utiles</a></li>
+    <li class="sub"><a href="#a-b">B. Flux de donn&eacute;es</a></li>
+    <li class="sub"><a href="#a-c">C. Configuration Nginx</a></li>
+    <li class="sub"><a href="#a-d">D. S&eacute;curit&eacute;</a></li>
+    <li class="sub"><a href="#a-e">E. D&eacute;pannage</a></li>
+  </ul>
+</div>
 
-        <div class="sidebar-section">Fonctionnalites</div>
-        <a href="#tableau-de-bord">Tableau de bord</a>
-        <a href="#routes-proxy">Routes de reverse proxy</a>
-        <a href="#tuiles-services">Tuiles de services</a>
-        <a href="#certificats-ssl">Certificats SSL/TLS</a>
-        <a href="#ldap-sso">LDAP / SSO</a>
-        <a href="#securite-ip">Securite & blocage IP</a>
-        <a href="#sauvegarde">Sauvegarde & restauration</a>
+<!-- ============================================================ -->
+<!-- CHAPITRE 1 -->
+<!-- ============================================================ -->
+<h1 id="c1">1. Pr&eacute;sentation g&eacute;n&eacute;rale</h1>
 
-        <div class="sidebar-section">Configuration</div>
-        <a href="#variables-env">Variables d'environnement</a>
-        <a href="#nginx-config">Configuration Nginx</a>
-        <a href="#volumes">Volumes & donnees</a>
+<h2 id="c1-1">1.1 Objectif de l'application</h2>
+<p><strong>Reverse Proxy Manager</strong> est une application web autonome permettant de configurer et g&eacute;rer un reverse proxy Nginx via une interface graphique moderne. Conteneuris&eacute;e avec Docker, elle offre une solution cl&eacute; en main pour le routage de services internes.</p>
+<ul>
+  <li><strong>Reverse proxy dynamique</strong> : gestion CRUD des routes Nginx avec rechargement automatique, support WebSocket et HTTPS</li>
+  <li><strong>Page d'accueil personnalisable</strong> : tuiles de services organis&eacute;es en sections avec logos personnalis&eacute;s</li>
+  <li><strong>Certificats SSL/TLS</strong> : auto-sign&eacute;s, import personnalis&eacute;, Let's Encrypt HTTP-01 et DNS-01 OVH (wildcard)</li>
+  <li><strong>Authentification</strong> : mot de passe local + LDAP/SSO avec v&eacute;rification de groupe d'administration</li>
+  <li><strong>S&eacute;curit&eacute;</strong> : rate limiting, blocage automatique d'IP apr&egrave;s tentatives &eacute;chou&eacute;es, historique des blocages</li>
+  <li><strong>Gestion des sites Nginx</strong> : ajout de configurations manuelles, activation/d&eacute;sactivation par symlink</li>
+  <li><strong>Logs en temps r&eacute;el</strong> : consultation des logs Nginx et Certbot depuis l'interface</li>
+  <li><strong>Sauvegarde / Restauration</strong> : export et import complet de la configuration au format JSON (routes, tuiles, logos, LDAP)</li>
+  <li><strong>Renouvellement automatique</strong> : renouvellement certbot toutes les 12 heures via Supervisor</li>
+</ul>
 
-        <div class="sidebar-section">Reference</div>
-        <a href="#api-routes">Endpoints API</a>
-        <a href="#structure-fichiers">Structure des fichiers</a>
-        <a href="#changelog">Changelog</a>
-        <a href="#depannage">Depannage</a>
-    </nav>
+<h2 id="c1-2">1.2 Stack technique</h2>
+<table>
+  <tr><th>Composant</th><th>Technologie</th><th>Version</th><th>R&ocirc;le</th></tr>
+  <tr><td>Image de base</td><td>Nginx Alpine</td><td>1.27</td><td>Reverse proxy et serveur web</td></tr>
+  <tr><td>Framework web</td><td>Flask</td><td>3.1.0</td><td>Interface d'administration et API</td></tr>
+  <tr><td>Serveur WSGI</td><td>Gunicorn</td><td>23.0.0</td><td>Serveur d'application Python</td></tr>
+  <tr><td>Client LDAP</td><td>python-ldap</td><td>3.4.4</td><td>Authentification annuaire d'entreprise</td></tr>
+  <tr><td>Gestionnaire</td><td>Supervisor</td><td>&mdash;</td><td>Orchestration des 3 services internes</td></tr>
+  <tr><td>Certificats</td><td>Certbot + dns-ovh</td><td>&mdash;</td><td>Let's Encrypt HTTP-01 et DNS-01</td></tr>
+  <tr><td>Chiffrement</td><td>OpenSSL</td><td>&mdash;</td><td>G&eacute;n&eacute;ration de certificats auto-sign&eacute;s</td></tr>
+  <tr><td>Conteneurisation</td><td>Docker / Docker Compose</td><td>20+</td><td>D&eacute;ploiement et isolation</td></tr>
+</table>
 
-    <!-- CONTENU PRINCIPAL -->
-    <div class="main">
+<h2 id="c1-3">1.3 Fonctionnalit&eacute;s principales</h2>
+<table>
+  <tr><th>Fonctionnalit&eacute;</th><th>Description</th><th>Version</th></tr>
+  <tr><td>Routes de reverse proxy</td><td>Ajout, modification, suppression de routes avec rechargement Nginx automatique</td><td>v1.0</td></tr>
+  <tr><td>Page d'accueil</td><td>Tuiles de services en grille responsive, organis&eacute;es en sections</td><td>v2.0</td></tr>
+  <tr><td>Authentification locale</td><td>Mot de passe admin avec rate limiting et blocage IP</td><td>v2.0</td></tr>
+  <tr><td>Sauvegarde / Restauration</td><td>Export/import JSON complet incluant logos en base64</td><td>v2.0</td></tr>
+  <tr><td>Historique des blocages</td><td>Journal persistant des &eacute;v&eacute;nements de blocage IP</td><td>v2.1</td></tr>
+  <tr><td>LDAP / SSO</td><td>Authentification via annuaire LDAP/LDAPS avec groupe admin</td><td>v2.2</td></tr>
+  <tr><td>Certificats SSL</td><td>Auto-sign&eacute;s, import personnalis&eacute;, Let's Encrypt multi-domaines</td><td>v2.2</td></tr>
+  <tr><td>Challenge DNS-01 OVH</td><td>Certificats wildcard via API OVH</td><td>v2.2</td></tr>
+  <tr><td>Gestion des sites</td><td>Configurations Nginx manuelles avec activation/d&eacute;sactivation</td><td>v2.2</td></tr>
+  <tr><td>Logs en temps r&eacute;el</td><td>Consultation des logs Nginx access/error et Certbot</td><td>v2.2</td></tr>
+</table>
 
-        <h1>Reverse Proxy Manager</h1>
-        <p class="subtitle">
-            Interface web d'administration pour gerer un reverse proxy Nginx, avec authentification LDAP,
-            gestion des certificats SSL et tableau de bord personnalisable.
-            <span class="badge badge-new">v2.2</span>
-        </p>
+<!-- ============================================================ -->
+<!-- CHAPITRE 2 -->
+<!-- ============================================================ -->
+<h1 id="c2">2. Architecture technique</h1>
 
-        <!-- ============================================================ -->
-        <h2 id="introduction">Introduction</h2>
-        <!-- ============================================================ -->
+<h2 id="c2-1">2.1 Vue d'ensemble</h2>
+<div class="architecture">
+  <div class="arch-box" style="background:#78716c;">
+    <strong>Client</strong><br>Navigateur web<br>HTTPS :443
+  </div>
+  <div class="arch-arrow">&rarr;</div>
+  <div class="arch-box" style="background:#0ea5e9;">
+    <strong>Nginx</strong><br>Reverse proxy<br>SSL termination
+  </div>
+  <div class="arch-arrow">&rarr;</div>
+  <div class="arch-box" style="background:#ea580c;">
+    <strong>Gunicorn</strong><br>Flask app<br>Port 5000
+  </div>
+  <div class="arch-arrow">&rarr;</div>
+  <div class="arch-box" style="background:#6366f1;">
+    <strong>/data</strong><br>Volume Docker<br>JSON + certs
+  </div>
+</div>
 
-        <p>
-            <strong>Reverse Proxy Manager</strong> est une application web autonome permettant de configurer
-            et gerer un reverse proxy Nginx via une interface graphique moderne. L'application est conteneurisee
-            avec Docker et offre une solution cle en main pour le routage de services internes.
-        </p>
+<p>Le flux de donn&eacute;es suit un mod&egrave;le <strong>Client &rarr; HTTPS &rarr; Nginx &rarr; Flask/Gunicorn &rarr; Fichiers JSON</strong>. Nginx sert de reverse proxy et de terminaison SSL. Flask g&egrave;re l'interface d'administration et g&eacute;n&egrave;re dynamiquement les configurations Nginx. Supervisor orchestre les 3 processus (Nginx, Gunicorn, Certbot renewal).</p>
 
-        <div class="feature-grid">
-            <div class="card">
-                <div class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
-                    Reverse Proxy
-                </div>
-                <p style="font-size:0.85rem; margin:0;">Gestion CRUD des routes Nginx avec rechargement automatique, support WebSocket et HTTPS.</p>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    Page d'accueil
-                </div>
-                <p style="font-size:0.85rem; margin:0;">Tuiles de services personnalisables avec logos, organisees en sections.</p>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    Authentification
-                </div>
-                <p style="font-size:0.85rem; margin:0;">Connexion locale ou LDAP/SSO avec verification de groupe d'administration.</p>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Certificats SSL
-                </div>
-                <p style="font-size:0.85rem; margin:0;">Generation de certificats auto-signes, import de certificats personnalises, configuration Let's Encrypt.</p>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                    Securite
-                </div>
-                <p style="font-size:0.85rem; margin:0;">Rate limiting, blocage automatique d'IP apres tentatives echouees, historique des blocages.</p>
-            </div>
-            <div class="card">
-                <div class="card-title">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Sauvegarde
-                </div>
-                <p style="font-size:0.85rem; margin:0;">Export/import complet de la configuration au format JSON, incluant les logos.</p>
-            </div>
-        </div>
+<h2 id="c2-2">2.2 Arborescence du projet</h2>
+<div class="file-tree">
+reversproxy1/<br>
+&#9500;&#9472;&#9472; docker-compose.yml&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Orchestration Docker<br>
+&#9500;&#9472;&#9472; Dockerfile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Image Nginx Alpine + Python<br>
+&#9500;&#9472;&#9472; supervisord.conf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 3 services : flask, nginx, certbot<br>
+&#9500;&#9472;&#9472; entrypoint.sh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Script de d&eacute;marrage avec diagnostics<br>
+&#9500;&#9472;&#9472; certbot-renew.sh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Renouvellement auto Let's Encrypt<br>
+&#9500;&#9472;&#9472; gen-certs.sh&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# G&eacute;n&eacute;ration certificats auto-sign&eacute;s<br>
+&#9500;&#9472;&#9472; documentation.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Cette documentation<br>
+&#9500;&#9472;&#9472; nginx/<br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; nginx.conf&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Configuration Nginx de base<br>
+&#9500;&#9472;&#9472; certs/<br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; selfsigned.crt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Certificat par d&eacute;faut<br>
+&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; selfsigned.key&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Cl&eacute; priv&eacute;e par d&eacute;faut<br>
+&#9492;&#9472;&#9472; app/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; app.py&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Application Flask principale (1700 lignes)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; requirements.txt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# D&eacute;pendances Python<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; templates/<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; home.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Page d'accueil publique (tuiles)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; login.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Page de connexion<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; index.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Tableau de bord admin<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; certs.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Gestion des certificats SSL<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; ldap.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Configuration LDAP<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; sites.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Gestion des sites Nginx<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; logs.html&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Consultation des logs<br>
+</div>
 
-        <!-- ============================================================ -->
-        <h2 id="architecture">Architecture</h2>
-        <!-- ============================================================ -->
+<h2 id="c2-3">2.3 Configuration Docker</h2>
+<h3>docker-compose.yml &mdash; 1 service</h3>
+<table>
+  <tr><th>Service</th><th>Image</th><th>Ports expos&eacute;s</th><th>Volumes</th></tr>
+  <tr><td><code>reversproxy</code></td><td>Build local (Dockerfile)</td><td><strong>80 &rarr; 80</strong>, <strong>888 &rarr; 443</strong></td><td><code>proxy-data</code>, <code>letsencrypt-data</code>, <code>certbot-webroot</code>, <code>proxy-logs</code></td></tr>
+</table>
 
-        <p>L'application fonctionne dans un conteneur Docker unique contenant trois services geres par Supervisor :</p>
-
-        <div class="arch-diagram">
-  +-------------------------------------------------------------+
-  |                    Conteneur Docker                          |
-  |                                                             |
-  |   +-------------------+     +---------------------------+   |
-  |   |     Nginx         |     |     Flask / Gunicorn      |   |
-  |   |   (port 80/443)   |----&gt;|     (port 5000 interne)   |   |
-  |   |                   |     |                           |   |
-  |   | - SSL termination |     | - Interface admin         |   |
-  |   | - Reverse proxy   |     | - API de gestion          |   |
-  |   | - Conf dynamique  |     | - Auth locale + LDAP      |   |
-  |   +-------------------+     +---------------------------+   |
-  |           |                            |                    |
-  |           v                            v                    |
-  |   /etc/nginx/conf.d/          /data/ (volume persistant)    |
-  |     proxy.conf                  - routes.json               |
-  |   (genere par Flask)            - tiles.json                |
-  |                                 - ldap_config.json          |
-  |   +-------------------+        - block_history.json         |
-  |   |   Supervisor      |        - certs/                     |
-  |   | (gestionnaire)    |        - logos/                     |
-  |   +-------------------+                                     |
-  +-------------------------------------------------------------+
-              |
-     Port 888 (host) --&gt; 443 (conteneur)
-        </div>
-
-        <h3>Flux de fonctionnement</h3>
-        <ol>
-            <li><strong>Supervisor</strong> demarre Gunicorn (Flask) en priorite, puis Nginx.</li>
-            <li><strong>Nginx</strong> ecoute sur les ports 80 (redirection HTTP) et 443 (HTTPS).</li>
-            <li>Les requetes vers le domaine d'admin sont proxyfiees vers <strong>Flask</strong> sur le port 5000 interne.</li>
-            <li>Les requetes vers les domaines configures sont proxyfiees vers les <strong>services cibles</strong>.</li>
-            <li>Flask genere dynamiquement le fichier <code>/etc/nginx/conf.d/proxy.conf</code> et recharge Nginx.</li>
-        </ol>
-
-        <!-- ============================================================ -->
-        <h2 id="prerequis">Prerequis</h2>
-        <!-- ============================================================ -->
-
-        <ul>
-            <li><strong>Docker</strong> &ge; 20.10</li>
-            <li><strong>Docker Compose</strong> &ge; 2.0</li>
-            <li>Un systeme Linux (teste sur Ubuntu/Debian)</li>
-            <li>Port <strong>888</strong> disponible sur la machine hote (configurable)</li>
-        </ul>
-
-        <!-- ============================================================ -->
-        <h2 id="installation">Installation</h2>
-        <!-- ============================================================ -->
-
-        <h3>1. Cloner le depot</h3>
-        <pre><code>git clone https://github.com/ttheoha/IA_reversproxy.git
-cd IA_reversproxy</code></pre>
-
-        <h3>2. Configurer les variables d'environnement</h3>
-        <p>Editez le fichier <code>docker-compose.yml</code> pour adapter les parametres :</p>
-        <pre><code>services:
-  reverseproxy:
+<pre><code>services:
+  reversproxy:
     build: .
-    container_name: reverseproxy_th
+    container_name: reversproxy
+    restart: unless-stopped
     ports:
-      - "888:443"        # Port d'acces (modifiable)
+      - "80:80"       # HTTP (redirection + ACME challenge)
+      - "888:443"     # HTTPS (administration + proxy)
     volumes:
       - proxy-data:/data
+      - letsencrypt-data:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+      - proxy-logs:/var/log/reverseproxy
     environment:
-      - SECRET_KEY=votre-cle-secrete-ici    # Cle de session Flask
-      - ADMIN_PASSWORD=votre-mot-de-passe   # Mot de passe admin local
+      - SECRET_KEY=changez-moi-en-production
+      - ADMIN_PASSWORD=root</code></pre>
 
-volumes:
-  proxy-data:</code></pre>
+<h3>Dockerfile &mdash; Image unique</h3>
+<table>
+  <tr><th>Base</th><th>Paquets install&eacute;s</th><th>Actions</th></tr>
+  <tr><td><code>nginx:1.27-alpine</code></td><td>Python 3, pip, Supervisor, OpenSSL, openldap-dev, gcc, Certbot</td><td>Installation des d&eacute;pendances Python, copie de l'application, configuration Nginx, cr&eacute;ation des r&eacute;pertoires</td></tr>
+</table>
 
-        <div class="warning">
-            <strong>Important :</strong> Changez imperativement <code>SECRET_KEY</code> et <code>ADMIN_PASSWORD</code>
-            avant tout deploiement en production.
-        </div>
+<h2 id="c2-4">2.4 Supervisor &mdash; 3 services</h2>
+<table>
+  <tr><th>Programme</th><th>Commande</th><th>Priorit&eacute;</th><th>Description</th></tr>
+  <tr><td><code>flask</code></td><td><code>gunicorn -w 2 -b 127.0.0.1:5000 --timeout 300 app:app</code></td><td>1</td><td>Serveur d'application Flask (2 workers, timeout 5 min pour certbot)</td></tr>
+  <tr><td><code>nginx</code></td><td><code>nginx -g "daemon off;"</code></td><td>2</td><td>Reverse proxy et terminaison SSL</td></tr>
+  <tr><td><code>certbot-renew</code></td><td>Boucle <code>certbot-renew.sh</code> toutes les 12h</td><td>3</td><td>Renouvellement automatique des certificats Let's Encrypt</td></tr>
+</table>
 
-        <h3>3. Construire et demarrer</h3>
-        <pre><code># Construction et demarrage
-docker compose up -d --build
+<!-- ============================================================ -->
+<!-- CHAPITRE 3 -->
+<!-- ============================================================ -->
+<h1 id="c3">3. Installation et d&eacute;ploiement</h1>
 
-# Verifier que le conteneur fonctionne
-docker ps | grep reverseproxy_th
+<h2 id="c3-1">3.1 Pr&eacute;requis</h2>
+<table>
+  <tr><th>Logiciel</th><th>Version minimale</th><th>V&eacute;rification</th></tr>
+  <tr><td>Docker</td><td>20.0+</td><td><code>docker --version</code></td></tr>
+  <tr><td>Docker Compose</td><td>v2+</td><td><code>docker compose version</code></td></tr>
+  <tr><td>Syst&egrave;me</td><td>Linux (Ubuntu/Debian)</td><td>&mdash;</td></tr>
+  <tr><td>Port 888</td><td>Disponible</td><td><code>ss -tlnp | grep 888</code></td></tr>
+</table>
 
-# Consulter les logs
-docker logs -f reverseproxy_th</code></pre>
+<h2 id="c3-2">3.2 Installation pas &agrave; pas</h2>
 
-        <h3>4. Acceder a l'interface</h3>
-        <p>Ouvrez votre navigateur et accedez a :</p>
-        <pre><code>https://&lt;IP-DE-VOTRE-SERVEUR&gt;:888</code></pre>
-        <div class="info">
-            Un certificat auto-signe est genere automatiquement au premier demarrage.
-            Votre navigateur affichera un avertissement de securite que vous pouvez accepter.
-        </div>
+<div class="flow-step"><div class="flow-num">1</div><div class="flow-text">
+  <strong>Cloner le d&eacute;p&ocirc;t</strong>
+  <pre><code>git clone https://github.com/ttheoha/IA_reversproxy.git
+cd IA_reversproxy</code></pre>
+</div></div>
 
-        <!-- ============================================================ -->
-        <h2 id="premier-lancement">Premier lancement</h2>
-        <!-- ============================================================ -->
+<div class="flow-step"><div class="flow-num">2</div><div class="flow-text">
+  <strong>Configurer les variables d'environnement</strong>
+  <p>&Eacute;ditez <code>docker-compose.yml</code> pour modifier <code>SECRET_KEY</code> et <code>ADMIN_PASSWORD</code>.</p>
+</div></div>
 
-        <p>Lors du premier acces, suivez ces etapes :</p>
+<div class="flow-step"><div class="flow-num">3</div><div class="flow-text">
+  <strong>Construire et lancer le conteneur</strong>
+  <pre><code>docker compose up -d --build</code></pre>
+  <p>Premi&egrave;re ex&eacute;cution : ~2 minutes (t&eacute;l&eacute;chargement image + compilation python-ldap).</p>
+</div></div>
 
-        <p><span class="step-number">1</span> <strong>Connexion</strong> — Rendez-vous sur <code>/login</code> et connectez-vous avec le mot de passe defini dans <code>ADMIN_PASSWORD</code>.</p>
+<div class="flow-step"><div class="flow-num">4</div><div class="flow-text">
+  <strong>V&eacute;rifier le d&eacute;marrage</strong>
+  <pre><code>docker ps | grep reversproxy
+docker logs -f reversproxy</code></pre>
+  <p>L'entrypoint affiche un banni&egrave;re color&eacute;e avec l'&eacute;tat des certificats et de Nginx.</p>
+</div></div>
 
-        <p><span class="step-number">2</span> <strong>Certificat SSL</strong> — Allez dans <strong>Certificats</strong> pour generer un certificat auto-signe personnalise ou importer votre propre certificat.</p>
+<div class="flow-step"><div class="flow-num">5</div><div class="flow-text">
+  <strong>Acc&eacute;der &agrave; l'interface</strong>
+  <pre><code>https://&lt;IP-DU-SERVEUR&gt;:888</code></pre>
+</div></div>
 
-        <p><span class="step-number">3</span> <strong>Routes proxy</strong> — Configurez vos premieres routes de reverse proxy dans le tableau de bord d'administration.</p>
+<div class="note">
+  <strong>Note :</strong> Un certificat auto-sign&eacute; est g&eacute;n&eacute;r&eacute; automatiquement au premier d&eacute;marrage. Votre navigateur affichera un avertissement de s&eacute;curit&eacute; que vous pouvez accepter.
+</div>
 
-        <p><span class="step-number">4</span> <strong>Tuiles</strong> — Creez des sections et ajoutez des tuiles pour organiser vos services sur la page d'accueil.</p>
+<h2 id="c3-3">3.3 Variables d'environnement</h2>
+<table>
+  <tr><th>Variable</th><th>Description</th><th>D&eacute;faut</th><th>Obligatoire</th></tr>
+  <tr><td><code>SECRET_KEY</code></td><td>Cl&eacute; secr&egrave;te pour le chiffrement des sessions Flask</td><td><code>change-me-in-production</code></td><td><strong style="color:#ef4444;">Oui</strong></td></tr>
+  <tr><td><code>ADMIN_PASSWORD</code></td><td>Mot de passe d'authentification locale de l'administrateur</td><td><code>admin</code></td><td><strong style="color:#ef4444;">Oui</strong></td></tr>
+</table>
 
-        <p><span class="step-number">5</span> <strong>LDAP (optionnel)</strong> — Si vous utilisez un annuaire LDAP, configurez l'integration dans la section <strong>LDAP / SSO</strong>.</p>
+<div class="warning">
+  <strong>S&eacute;curit&eacute; :</strong> Ces deux variables doivent imp&eacute;rativement &ecirc;tre modifi&eacute;es avant tout d&eacute;ploiement en production. Utilisez des valeurs complexes et uniques.
+</div>
 
-        <p><span class="step-number">6</span> <strong>Sauvegarde</strong> — Effectuez une premiere sauvegarde pour securiser votre configuration.</p>
+<h2 id="c3-4">3.4 Premier lancement</h2>
+<p>Lors du premier acc&egrave;s, suivez ces &eacute;tapes :</p>
 
-        <!-- ============================================================ -->
-        <h2 id="tableau-de-bord">Tableau de bord d'administration</h2>
-        <!-- ============================================================ -->
+<div class="flow-step"><div class="flow-num">1</div><div class="flow-text"><strong>Connexion</strong> &mdash; Rendez-vous sur <code>/login</code> et connectez-vous avec le mot de passe d&eacute;fini dans <code>ADMIN_PASSWORD</code>.</div></div>
+<div class="flow-step"><div class="flow-num">2</div><div class="flow-text"><strong>Certificat SSL</strong> &mdash; Allez dans <strong>Certificats</strong> pour g&eacute;n&eacute;rer un certificat auto-sign&eacute; personnalis&eacute; ou configurer Let's Encrypt.</div></div>
+<div class="flow-step"><div class="flow-num">3</div><div class="flow-text"><strong>Routes proxy</strong> &mdash; Configurez vos premi&egrave;res routes de reverse proxy dans le tableau de bord.</div></div>
+<div class="flow-step"><div class="flow-num">4</div><div class="flow-text"><strong>Tuiles</strong> &mdash; Cr&eacute;ez des sections et ajoutez des tuiles pour organiser vos services sur la page d'accueil.</div></div>
+<div class="flow-step"><div class="flow-num">5</div><div class="flow-text"><strong>LDAP (optionnel)</strong> &mdash; Configurez l'int&eacute;gration LDAP dans la section d&eacute;di&eacute;e.</div></div>
+<div class="flow-step"><div class="flow-num">6</div><div class="flow-text"><strong>Sauvegarde</strong> &mdash; Effectuez une premi&egrave;re sauvegarde pour s&eacute;curiser votre configuration.</div></div>
 
-        <p>
-            Le tableau de bord est accessible a l'adresse <code>/admin</code> apres authentification.
-            Il centralise toutes les fonctionnalites de gestion.
-        </p>
+<!-- ============================================================ -->
+<!-- CHAPITRE 4 -->
+<!-- ============================================================ -->
+<h1 id="c4">4. Routes de reverse proxy</h1>
 
-        <h3>Sections du tableau de bord</h3>
-        <ul>
-            <li><strong>Sauvegarde & Restauration</strong> — Export et import de la configuration complete</li>
-            <li><strong>IP bloquees</strong> — Liste des adresses IP actuellement bloquees avec possibilite de deblocage</li>
-            <li><strong>Historique des blocages</strong> — Journal des evenements de blocage d'IP</li>
-            <li><strong>Gestion des tuiles</strong> — Creation de sections et de tuiles de services</li>
-            <li><strong>Routes de reverse proxy</strong> — Ajout, modification et suppression des routes Nginx</li>
-        </ul>
+<p>Les routes de reverse proxy redirigent les requ&ecirc;tes entrantes vers vos services internes en fonction du nom de domaine (Host header).</p>
 
-        <h3>Navigation</h3>
-        <p>La barre de navigation en haut de page donne acces a :</p>
-        <ul>
-            <li><strong>Accueil</strong> — Page publique avec les tuiles de services</li>
-            <li><strong>Certificats</strong> — Gestion des certificats SSL/TLS</li>
-            <li><strong>LDAP / SSO</strong> — Configuration de l'annuaire LDAP</li>
-            <li><strong>Deconnexion</strong> — Fermeture de la session</li>
-        </ul>
+<h2 id="c4-1">4.1 Ajouter une route</h2>
+<p>Renseignez les champs suivants dans le formulaire du tableau de bord :</p>
+<table>
+  <tr><th>Champ</th><th>Description</th><th>Exemple</th></tr>
+  <tr><td><strong>Domaine / Host</strong></td><td>Le nom de domaine ou hostname cible</td><td><code>cloud.exemple.com</code></td></tr>
+  <tr><td><strong>Cible</strong></td><td>URL ou IP:port du service backend</td><td><code>http://192.168.1.10:8080</code></td></tr>
+  <tr><td><strong>Port d'&eacute;coute</strong></td><td>Port d'&eacute;coute Nginx (443 par d&eacute;faut pour HTTPS)</td><td><code>443</code></td></tr>
+</table>
 
-        <!-- ============================================================ -->
-        <h2 id="routes-proxy">Routes de reverse proxy</h2>
-        <!-- ============================================================ -->
+<p>Fonctionnalit&eacute;s des routes :</p>
+<ul>
+  <li><strong>Ajout</strong> &mdash; Cr&eacute;ation d'une nouvelle route via le formulaire</li>
+  <li><strong>Modification</strong> &mdash; &Eacute;dition inline (domaine, cible, port) via le bouton &laquo; Modifier &raquo;</li>
+  <li><strong>Suppression</strong> &mdash; Suppression avec confirmation</li>
+  <li><strong>Support WebSocket</strong> &mdash; Headers <code>Upgrade</code> et <code>Connection</code> automatiquement configur&eacute;s</li>
+  <li><strong>Rechargement automatique</strong> &mdash; Nginx est valid&eacute; (<code>nginx -t</code>) et recharg&eacute; apr&egrave;s chaque modification</li>
+</ul>
 
-        <p>
-            Les routes de reverse proxy permettent de rediriger les requetes entrantes vers vos services internes
-            en fonction du nom de domaine (Host header).
-        </p>
-
-        <h3>Ajouter une route</h3>
-        <p>Renseignez les champs suivants dans le formulaire du tableau de bord :</p>
-
-        <table>
-            <thead>
-                <tr><th>Champ</th><th>Description</th><th>Exemple</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><strong>Domaine / Host</strong></td><td>Le nom de domaine ou hostname cible</td><td><code>cloud.exemple.com</code></td></tr>
-                <tr><td><strong>Cible</strong></td><td>URL ou IP:port du service backend</td><td><code>http://192.168.1.10:8080</code></td></tr>
-                <tr><td><strong>Port</strong></td><td>Port d'ecoute Nginx (443 par defaut pour HTTPS)</td><td><code>443</code></td></tr>
-            </tbody>
-        </table>
-
-        <h3>Configuration Nginx generee</h3>
-        <p>Pour chaque route, un bloc <code>server</code> Nginx est automatiquement genere :</p>
-        <pre><code>server {
+<h2 id="c4-2">4.2 Configuration Nginx g&eacute;n&eacute;r&eacute;e</h2>
+<p>Pour chaque route, un fichier <code>.conf</code> est cr&eacute;&eacute; dans <code>/etc/nginx/sites-available/</code> et link&eacute; dans <code>/etc/nginx/sites-enabled/</code> :</p>
+<pre><code>server {
     listen 443 ssl;
     server_name cloud.exemple.com;
 
-    ssl_certificate     /data/certs/selfsigned.crt;
-    ssl_certificate_key /data/certs/selfsigned.key;
+    ssl_certificate     /etc/letsencrypt/live/cloud.exemple.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/cloud.exemple.com/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
 
     location / {
         proxy_pass http://192.168.1.10:8080;
@@ -480,529 +401,533 @@ docker logs -f reverseproxy_th</code></pre>
     }
 }</code></pre>
 
-        <h3>Fonctionnalites des routes</h3>
-        <ul>
-            <li><strong>Ajout</strong> — Creation d'une nouvelle route via le formulaire</li>
-            <li><strong>Modification</strong> — Edition inline (domaine, cible, port) via le bouton "Modifier"</li>
-            <li><strong>Suppression</strong> — Suppression avec confirmation via le bouton "Supprimer"</li>
-            <li><strong>Support WebSocket</strong> — Les headers <code>Upgrade</code> et <code>Connection</code> sont automatiquement configures</li>
-            <li><strong>Rechargement automatique</strong> — Nginx est recharge automatiquement apres chaque modification</li>
-            <li><strong>Validation</strong> — La configuration est validee avant le rechargement (<code>nginx -t</code>)</li>
-        </ul>
+<div class="info">
+  <strong>R&eacute;solution des certificats :</strong> L'application cherche d'abord un certificat Let's Encrypt pour le domaine, puis pour le domaine de base (wildcard), puis se rabat sur le certificat global auto-sign&eacute;. Si le port est <code>80</code>, le bloc est configur&eacute; sans SSL.
+</div>
 
-        <div class="info">
-            Si le port est <code>80</code>, le bloc sera configure sans SSL. Pour tous les autres ports, SSL est active avec
-            les certificats situes dans <code>/data/certs/</code>.
-        </div>
+<h2 id="c4-3">4.3 Gestion des sites</h2>
+<p>La page <code>/admin/sites</code> permet de g&eacute;rer les fichiers de configuration Nginx manuellement :</p>
+<ul>
+  <li><strong>Liste des sites</strong> &mdash; Tous les fichiers <code>.conf</code> de <code>sites-available</code> avec leur statut (activ&eacute;/d&eacute;sactiv&eacute;)</li>
+  <li><strong>Activation / D&eacute;sactivation</strong> &mdash; Cr&eacute;ation ou suppression du symlink dans <code>sites-enabled</code></li>
+  <li><strong>Ajout manuel</strong> &mdash; Cr&eacute;ation d'un fichier <code>.conf</code> personnalis&eacute; avec validation automatique</li>
+  <li><strong>Suppression</strong> &mdash; Suppression du fichier et du symlink associ&eacute;</li>
+  <li><strong>Rollback</strong> &mdash; Si la configuration est invalide, le site est automatiquement retir&eacute;</li>
+</ul>
 
-        <!-- ============================================================ -->
-        <h2 id="tuiles-services">Tuiles de services</h2>
-        <!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- CHAPITRE 5 -->
+<!-- ============================================================ -->
+<h1 id="c5">5. Tuiles de services</h1>
 
-        <p>
-            La page d'accueil (<code>/</code>) affiche une grille de tuiles cliquables organisees en sections.
-            Chaque tuile represente un service ou une application accessible.
-        </p>
+<p>La page d'accueil (<code>/</code>) affiche une grille de tuiles cliquables organis&eacute;es en sections. Chaque tuile repr&eacute;sente un service ou une application accessible.</p>
 
-        <h3>Gestion des sections</h3>
-        <ul>
-            <li><strong>Creer une section</strong> — Saisissez un nom dans le formulaire "Nouvelle section"</li>
-            <li><strong>Renommer</strong> — Cliquez sur "Renommer" pour modifier le nom et la position</li>
-            <li><strong>Reordonner</strong> — Utilisez les fleches haut/bas pour deplacer les sections</li>
-            <li><strong>Supprimer</strong> — Supprime la section et toutes ses tuiles (avec confirmation)</li>
-        </ul>
+<h2 id="c5-1">5.1 Sections</h2>
+<ul>
+  <li><strong>Cr&eacute;er une section</strong> &mdash; Saisissez un nom dans le formulaire &laquo; Nouvelle section &raquo;</li>
+  <li><strong>Renommer</strong> &mdash; Modifiez le nom et la position d'une section existante</li>
+  <li><strong>R&eacute;ordonner</strong> &mdash; Utilisez les fl&egrave;ches haut/bas pour d&eacute;placer les sections</li>
+  <li><strong>Supprimer</strong> &mdash; Supprime la section et toutes ses tuiles (avec logos associ&eacute;s)</li>
+</ul>
 
-        <h3>Gestion des tuiles</h3>
-        <table>
-            <thead>
-                <tr><th>Champ</th><th>Description</th><th>Requis</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><strong>Nom</strong></td><td>Nom du service affiche sur la tuile</td><td>Oui</td></tr>
-                <tr><td><strong>URL</strong></td><td>Adresse du service (s'ouvre dans un nouvel onglet)</td><td>Oui</td></tr>
-                <tr><td><strong>Logo</strong></td><td>Image du service (PNG, JPG, SVG, WebP, ICO, GIF)</td><td>Non</td></tr>
-                <tr><td><strong>Position</strong></td><td>Ordre d'affichage dans la section (0 = premier)</td><td>Non</td></tr>
-            </tbody>
-        </table>
+<h2 id="c5-2">5.2 Tuiles</h2>
+<table>
+  <tr><th>Champ</th><th>Description</th><th>Requis</th></tr>
+  <tr><td><strong>Nom</strong></td><td>Nom du service affich&eacute; sur la tuile</td><td>Oui</td></tr>
+  <tr><td><strong>URL</strong></td><td>Adresse du service (s'ouvre dans un nouvel onglet)</td><td>Oui</td></tr>
+  <tr><td><strong>Logo</strong></td><td>Image du service</td><td>Non</td></tr>
+  <tr><td><strong>Position</strong></td><td>Ordre d'affichage dans la section (0 = premier)</td><td>Non</td></tr>
+</table>
 
-        <h3>Logos</h3>
-        <ul>
-            <li>Formats acceptes : <code>PNG</code>, <code>JPG</code>, <code>JPEG</code>, <code>GIF</code>, <code>SVG</code>, <code>WebP</code>, <code>ICO</code></li>
-            <li>Les logos sont stockes dans <code>/data/logos/</code> avec un nom UUID unique</li>
-            <li>Si aucun logo n'est fourni, une icone avec degradee orange est affichee</li>
-            <li>Les logos sont automatiquement supprimes lorsque la tuile ou la section est supprimee</li>
-        </ul>
+<h2 id="c5-3">5.3 Logos</h2>
+<ul>
+  <li><strong>Formats accept&eacute;s</strong> : PNG, JPG, JPEG, GIF, SVG, WebP, ICO</li>
+  <li>Stock&eacute;s dans <code>/data/logos/</code> avec un nom UUID unique</li>
+  <li>Si aucun logo n'est fourni, une ic&ocirc;ne avec d&eacute;grad&eacute; orange est affich&eacute;e</li>
+  <li>Automatiquement supprim&eacute;s lors de la suppression d'une tuile ou d'une section</li>
+  <li>Grille responsive : 4 colonnes sur desktop, 2 sur mobile</li>
+</ul>
 
-        <h3>Affichage</h3>
-        <ul>
-            <li>Grille responsive : 4 colonnes sur desktop, 2 sur mobile</li>
-            <li>Les noms de sections sont masques s'il n'y a qu'une seule section</li>
-            <li>Effet de survol : elevation de la tuile et bordure orange</li>
-            <li>Message "Aucun service disponible" affiche si aucune tuile n'est configuree</li>
-        </ul>
+<!-- ============================================================ -->
+<!-- CHAPITRE 6 -->
+<!-- ============================================================ -->
+<h1 id="c6">6. Certificats SSL/TLS</h1>
 
-        <!-- ============================================================ -->
-        <h2 id="certificats-ssl">Certificats SSL/TLS <span class="badge badge-new">v2.2</span></h2>
-        <!-- ============================================================ -->
+<p>La page <code>/admin/certs</code> centralise toute la gestion des certificats HTTPS.</p>
 
-        <p>
-            La page de gestion des certificats (<code>/admin/certs</code>) permet de configurer le chiffrement
-            HTTPS pour le reverse proxy.
-        </p>
+<h2 id="c6-1">6.1 Certificat auto-sign&eacute;</h2>
+<p>G&eacute;n&eacute;rez un nouveau certificat auto-sign&eacute; avec les param&egrave;tres :</p>
+<table>
+  <tr><th>Param&egrave;tre</th><th>Description</th><th>D&eacute;faut</th></tr>
+  <tr><td><strong>Nom commun (CN)</strong></td><td>Le hostname principal</td><td><code>localhost</code></td></tr>
+  <tr><td><strong>Dur&eacute;e de validit&eacute;</strong></td><td>En jours</td><td>3650 (10 ans)</td></tr>
+</table>
 
-        <h3>Certificat actuel</h3>
-        <p>L'onglet "Certificat actuel" affiche les informations du certificat en place :</p>
-        <ul>
-            <li><strong>Sujet (CN)</strong> — Nom commun du certificat</li>
-            <li><strong>Emetteur</strong> — Autorite de certification</li>
-            <li><strong>Valide du / au</strong> — Periode de validite</li>
-            <li><strong>Empreinte SHA-256</strong> — Fingerprint du certificat</li>
-        </ul>
-
-        <h3>Certificat auto-signe</h3>
-        <p>Generez un nouveau certificat auto-signe avec les parametres :</p>
-        <ul>
-            <li><strong>Nom commun (CN)</strong> — Le hostname principal (ex: <code>proxy.exemple.com</code>)</li>
-            <li><strong>Duree de validite</strong> — En jours (defaut : 3650 jours / 10 ans)</li>
-        </ul>
-        <pre><code># Commande executee en interne :
+<pre><code># Commande ex&eacute;cut&eacute;e en interne :
 openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
   -keyout /data/certs/selfsigned.key \
   -out /data/certs/selfsigned.crt \
-  -subj "/CN=proxy.exemple.com"</code></pre>
+  -subj "/C=FR/ST=Local/L=Local/O=ReverseProxy/CN=proxy.exemple.com"</code></pre>
 
-        <h3>Certificat personnalise</h3>
-        <p>Importez votre propre certificat et cle privee :</p>
-        <ul>
-            <li><strong>Certificat</strong> — Fichier <code>.crt</code> ou <code>.pem</code></li>
-            <li><strong>Cle privee</strong> — Fichier <code>.key</code> ou <code>.pem</code></li>
-        </ul>
-        <div class="warning">
-            Les fichiers sont valides avec <code>openssl</code> avant d'etre enregistres.
-            Un certificat invalide sera rejete avec un message d'erreur.
-        </div>
+<h2 id="c6-2">6.2 Certificat personnalis&eacute;</h2>
+<p>Importez votre propre certificat et cl&eacute; priv&eacute;e :</p>
+<ul>
+  <li><strong>Certificat</strong> &mdash; Fichier <code>.crt</code> ou <code>.pem</code></li>
+  <li><strong>Cl&eacute; priv&eacute;e</strong> &mdash; Fichier <code>.key</code> ou <code>.pem</code></li>
+</ul>
 
-        <h3>Let's Encrypt (experimental)</h3>
-        <p>L'interface de configuration Let's Encrypt permet de preparer les parametres pour une integration future :</p>
-        <ul>
-            <li><strong>Domaine</strong> — Le domaine a certifier</li>
-            <li><strong>Email</strong> — Email de contact pour les notifications</li>
-            <li><strong>Renouvellement automatique</strong> — Option activable</li>
-        </ul>
-        <div class="info">
-            La generation automatique de certificats Let's Encrypt n'est pas encore implementee.
-            La configuration est sauvegardee pour une integration dans une version future.
-        </div>
+<div class="info">
+  Les fichiers sont valid&eacute;s avec <code>openssl</code> avant d'&ecirc;tre enregistr&eacute;s. Un certificat ou une cl&eacute; invalide sera rejet&eacute;(e) avec un message d'erreur.
+</div>
 
-        <!-- ============================================================ -->
-        <h2 id="ldap-sso">LDAP / SSO <span class="badge badge-new">v2.2</span></h2>
-        <!-- ============================================================ -->
+<h2 id="c6-3">6.3 Let's Encrypt &mdash; HTTP-01</h2>
+<p>Le challenge HTTP-01 est le mode standard pour les domaines non-wildcard :</p>
+<ol>
+  <li>Renseignez l'<strong>email</strong> de contact et activez le <strong>renouvellement automatique</strong></li>
+  <li>Ajoutez un domaine avec le type de challenge <strong>HTTP-01</strong></li>
+  <li>Certbot cr&eacute;e un fichier dans <code>/var/www/certbot/.well-known/acme-challenge/</code></li>
+  <li>Let's Encrypt v&eacute;rifie le fichier via le port 80 et d&eacute;livre le certificat</li>
+  <li>Nginx est automatiquement reconfigur&eacute; pour utiliser le nouveau certificat</li>
+</ol>
 
-        <p>
-            L'integration LDAP permet d'authentifier les administrateurs via un annuaire d'entreprise
-            (Active Directory, OpenLDAP, etc.).
-        </p>
+<div class="note">
+  <strong>Pr&eacute;requis :</strong> Le port 80 du serveur doit &ecirc;tre accessible depuis Internet pour que Let's Encrypt puisse valider le domaine. Le DNS du domaine doit pointer vers l'IP du serveur.
+</div>
 
-        <h3>Configuration</h3>
-        <table>
-            <thead>
-                <tr><th>Parametre</th><th>Description</th><th>Exemple</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><strong>Activer LDAP</strong></td><td>Active/desactive l'authentification LDAP</td><td>Oui / Non</td></tr>
-                <tr><td><strong>Serveur</strong></td><td>Adresse du serveur LDAP</td><td><code>ldap.exemple.com</code></td></tr>
-                <tr><td><strong>Port</strong></td><td>Port du serveur (389 pour LDAP, 636 pour LDAPS)</td><td><code>389</code></td></tr>
-                <tr><td><strong>SSL/TLS</strong></td><td>Activer la connexion chiffree</td><td>Oui / Non</td></tr>
-                <tr><td><strong>Bind DN</strong></td><td>DN du compte de service pour la recherche</td><td><code>cn=admin,dc=exemple,dc=com</code></td></tr>
-                <tr><td><strong>Bind Password</strong></td><td>Mot de passe du compte de service</td><td>-</td></tr>
-                <tr><td><strong>Base DN</strong></td><td>Base de recherche des utilisateurs</td><td><code>ou=users,dc=exemple,dc=com</code></td></tr>
-                <tr><td><strong>Filtre utilisateur</strong></td><td>Filtre LDAP avec <code>{username}</code> comme variable</td><td><code>(uid={username})</code></td></tr>
-                <tr><td><strong>Groupe admin</strong></td><td>DN du groupe d'administrateurs (optionnel)</td><td><code>cn=admins,ou=groups,dc=exemple,dc=com</code></td></tr>
-            </tbody>
-        </table>
+<h2 id="c6-4">6.4 Let's Encrypt &mdash; DNS-01 OVH (wildcard)</h2>
+<p>Le challenge DNS-01 via l'API OVH permet d'obtenir des <strong>certificats wildcard</strong> (ex: <code>*.theoha.ovh</code>) :</p>
 
-        <h3>Flux d'authentification LDAP</h3>
-        <ol>
-            <li>L'utilisateur saisit son <strong>identifiant LDAP</strong> et son <strong>mot de passe</strong></li>
-            <li>L'application se connecte au serveur LDAP avec le <strong>compte de service</strong> (Bind DN)</li>
-            <li>Une recherche est effectuee dans la <strong>Base DN</strong> avec le filtre utilisateur</li>
-            <li>Si l'utilisateur est trouve, une tentative de <strong>bind</strong> avec ses identifiants est effectuee</li>
-            <li>Si un <strong>groupe admin</strong> est configure, l'appartenance de l'utilisateur est verifiee</li>
-            <li>En cas de succes, la session est creee</li>
-        </ol>
+<h4>Configuration des identifiants OVH</h4>
+<table>
+  <tr><th>Param&egrave;tre</th><th>Description</th></tr>
+  <tr><td><code>Endpoint</code></td><td>Point d'entr&eacute;e API OVH (<code>ovh-eu</code> par d&eacute;faut)</td></tr>
+  <tr><td><code>Application Key</code></td><td>Cl&eacute; d'application OVH</td></tr>
+  <tr><td><code>Application Secret</code></td><td>Secret d'application OVH</td></tr>
+  <tr><td><code>Consumer Key</code></td><td>Cl&eacute; consommateur OVH</td></tr>
+</table>
 
-        <h3>Test de connexion</h3>
-        <p>
-            Le bouton <strong>"Tester la connexion"</strong> execute un test complet en 5 etapes :
-        </p>
-        <ul>
-            <li>Connexion au serveur LDAP</li>
-            <li>Bind avec le compte de service</li>
-            <li>Recherche dans la base DN</li>
-            <li>Verification du filtre utilisateur</li>
-            <li>Verification du groupe admin (si configure)</li>
-        </ul>
+<p>Les identifiants sont stock&eacute;s dans <code>/data/ovh-credentials.ini</code> (permissions 600) et utilis&eacute;s par le plugin <code>certbot-dns-ovh</code>.</p>
 
-        <h3>Mode de connexion mixte</h3>
-        <p>
-            Lorsque LDAP est active, la page de connexion affiche un champ <strong>"Identifiant LDAP"</strong>
-            supplementaire. L'authentification essaie d'abord le LDAP, puis se rabat sur le mot de passe
-            local si le champ identifiant est vide ou si LDAP echoue.
-        </p>
-        <div class="info">
-            Le mot de passe local (<code>ADMIN_PASSWORD</code>) reste toujours fonctionnel comme solution de secours,
-            meme lorsque LDAP est active.
-        </div>
+<div class="info">
+  <strong>Propagation DNS :</strong> Le challenge DNS-01 attend 60 secondes la propagation des enregistrements TXT. Le timeout total est de 180 secondes.
+</div>
 
-        <!-- ============================================================ -->
-        <h2 id="securite-ip">Securite & blocage IP</h2>
-        <!-- ============================================================ -->
+<h2 id="c6-5">6.5 Renouvellement automatique</h2>
+<p>Le script <code>certbot-renew.sh</code> est ex&eacute;cut&eacute; <strong>toutes les 12 heures</strong> par Supervisor :</p>
+<ol>
+  <li>V&eacute;rifie si le renouvellement automatique est activ&eacute; dans la configuration</li>
+  <li>Ex&eacute;cute <code>certbot renew --webroot</code> pour tous les certificats existants</li>
+  <li>Reg&eacute;n&egrave;re les configurations Nginx pour pointer vers les bons certificats</li>
+  <li>Recharge Nginx</li>
+</ol>
+<p>Les logs de renouvellement sont &eacute;crits dans <code>/var/log/reverseproxy/certbot.log</code>.</p>
 
-        <h3>Rate limiting</h3>
-        <p>Le systeme protege l'interface de connexion contre les attaques par force brute :</p>
-        <ul>
-            <li><strong>Seuil</strong> — 6 tentatives echouees par adresse IP</li>
-            <li><strong>Duree de blocage</strong> — 10 minutes apres depassement du seuil</li>
-            <li><strong>Deblocage automatique</strong> — L'IP est automatiquement debloquee a l'expiration du delai</li>
-            <li><strong>Reinitialisation</strong> — Le compteur est remis a zero apres une connexion reussie</li>
-        </ul>
+<h4>Actions manuelles</h4>
+<ul>
+  <li><strong>Renouveler un domaine</strong> &mdash; Bouton &laquo; Renouveler &raquo; pour forcer le renouvellement d'un domaine sp&eacute;cifique</li>
+  <li><strong>Renouveler tout</strong> &mdash; Bouton &laquo; Renouveler tous &raquo; pour forcer le renouvellement global</li>
+  <li><strong>Tester un certificat</strong> &mdash; V&eacute;rifie la validit&eacute;, l'&eacute;metteur (Let's Encrypt) et l'expiration (alerte &lt; 30 jours)</li>
+  <li><strong>Retirer un domaine</strong> &mdash; Supprime le domaine de la gestion Let's Encrypt (fallback sur le certificat global)</li>
+</ul>
 
-        <h3>Gestion des IP bloquees</h3>
-        <p>Depuis le tableau de bord d'administration :</p>
-        <ul>
-            <li>Visualisation des IP actuellement bloquees avec le nombre de tentatives et le temps restant</li>
-            <li>Deblocage manuel immediat d'une IP</li>
-        </ul>
+<!-- ============================================================ -->
+<!-- CHAPITRE 7 -->
+<!-- ============================================================ -->
+<h1 id="c7">7. Authentification</h1>
 
-        <h3>Historique des blocages</h3>
-        <ul>
-            <li>Les 200 derniers evenements de blocage sont conserves</li>
-            <li>Chaque entree contient : date, adresse IP, raison du blocage</li>
-            <li>L'historique est persistant (stocke dans <code>/data/block_history.json</code>)</li>
-            <li>Possibilite d'effacer l'historique complet</li>
-        </ul>
+<h2 id="c7-1">7.1 Authentification locale</h2>
+<p>L'authentification par d&eacute;faut utilise un mot de passe unique d&eacute;fini par la variable <code>ADMIN_PASSWORD</code>. La connexion s'effectue sur la page <code>/login</code>.</p>
 
-        <!-- ============================================================ -->
-        <h2 id="sauvegarde">Sauvegarde & restauration</h2>
-        <!-- ============================================================ -->
+<h2 id="c7-2">7.2 LDAP / SSO</h2>
+<p>L'int&eacute;gration LDAP permet d'authentifier les administrateurs via un annuaire d'entreprise (Active Directory, OpenLDAP, etc.).</p>
 
-        <h3>Sauvegarde</h3>
-        <p>Le bouton <strong>"Sauvegarder (JSON)"</strong> genere un fichier de backup contenant :</p>
-        <ul>
-            <li>Toutes les routes de reverse proxy</li>
-            <li>Toutes les sections et tuiles (avec positions)</li>
-            <li>Tous les logos (encodes en base64)</li>
-            <li>La configuration LDAP</li>
-            <li>L'historique des blocages IP</li>
-        </ul>
-        <p>Le fichier est telecharge sous le nom <code>reverseproxy_backup.json</code>.</p>
+<h4>Param&egrave;tres de configuration</h4>
+<table>
+  <tr><th>Param&egrave;tre</th><th>Description</th><th>Exemple</th></tr>
+  <tr><td><strong>Activer LDAP</strong></td><td>Active/d&eacute;sactive l'authentification LDAP</td><td>Oui / Non</td></tr>
+  <tr><td><strong>Serveur</strong></td><td>Adresse du serveur LDAP</td><td><code>ldap.exemple.com</code></td></tr>
+  <tr><td><strong>Port</strong></td><td>Port du serveur (389 LDAP, 636 LDAPS)</td><td><code>636</code></td></tr>
+  <tr><td><strong>SSL/TLS</strong></td><td>Activer la connexion chiffr&eacute;e</td><td>Oui / Non</td></tr>
+  <tr><td><strong>Bind DN</strong></td><td>DN du compte de service pour la recherche</td><td><code>cn=admin,dc=exemple,dc=com</code></td></tr>
+  <tr><td><strong>Bind Password</strong></td><td>Mot de passe du compte de service</td><td>&mdash;</td></tr>
+  <tr><td><strong>Base DN</strong></td><td>Base de recherche des utilisateurs</td><td><code>ou=users,dc=exemple,dc=com</code></td></tr>
+  <tr><td><strong>Filtre utilisateur</strong></td><td>Filtre LDAP (<code>{username}</code> = variable)</td><td><code>(uid={username})</code></td></tr>
+  <tr><td><strong>Groupe admin</strong></td><td>DN du groupe d'administrateurs (optionnel)</td><td><code>cn=admins,ou=groups,dc=exemple,dc=com</code></td></tr>
+</table>
 
-        <h3>Restauration</h3>
-        <ol>
-            <li>Cliquez sur le champ de selection de fichier</li>
-            <li>Selectionnez un fichier <code>.json</code> de sauvegarde</li>
-            <li>Cliquez sur <strong>"Restaurer"</strong></li>
-            <li>Confirmez dans la boite de dialogue</li>
-        </ol>
-        <div class="warning">
-            <strong>Attention :</strong> La restauration ecrase toutes les donnees actuelles
-            (routes, tuiles, logos, configuration LDAP). Effectuez une sauvegarde prealable si necessaire.
-        </div>
+<h4>Flux d'authentification LDAP</h4>
+<div class="flow-step"><div class="flow-num">1</div><div class="flow-text">L'utilisateur saisit son <strong>identifiant LDAP</strong> et son <strong>mot de passe</strong></div></div>
+<div class="flow-step"><div class="flow-num">2</div><div class="flow-text">Connexion au serveur LDAP avec le <strong>compte de service</strong> (Bind DN)</div></div>
+<div class="flow-step"><div class="flow-num">3</div><div class="flow-text">Recherche dans la <strong>Base DN</strong> avec le filtre utilisateur</div></div>
+<div class="flow-step"><div class="flow-num">4</div><div class="flow-text">Tentative de <strong>bind</strong> avec les identifiants de l'utilisateur</div></div>
+<div class="flow-step"><div class="flow-num">5</div><div class="flow-text">V&eacute;rification de l'appartenance au <strong>groupe admin</strong> (si configur&eacute;)</div></div>
+<div class="flow-step"><div class="flow-num">6</div><div class="flow-text">Cr&eacute;ation de la session en cas de succ&egrave;s</div></div>
 
-        <!-- ============================================================ -->
-        <h2 id="variables-env">Variables d'environnement</h2>
-        <!-- ============================================================ -->
+<h4>Test de connexion</h4>
+<p>Le bouton <strong>&laquo; Tester la connexion &raquo;</strong> ex&eacute;cute un test complet en 5 &eacute;tapes : connexion TCP/TLS, bind service, recherche Base DN, v&eacute;rification du filtre utilisateur, v&eacute;rification du groupe admin.</p>
 
-        <table>
-            <thead>
-                <tr><th>Variable</th><th>Description</th><th>Defaut</th><th>Obligatoire</th></tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>SECRET_KEY</code></td>
-                    <td>Cle secrete pour le chiffrement des sessions Flask</td>
-                    <td><code>change-me-in-production</code></td>
-                    <td><span class="badge badge-security">Oui</span></td>
-                </tr>
-                <tr>
-                    <td><code>ADMIN_PASSWORD</code></td>
-                    <td>Mot de passe d'authentification locale de l'administrateur</td>
-                    <td><code>admin</code></td>
-                    <td><span class="badge badge-security">Oui</span></td>
-                </tr>
-            </tbody>
-        </table>
+<h2 id="c7-3">7.3 Mode mixte</h2>
+<p>Lorsque LDAP est activ&eacute;, la page de connexion affiche un champ <strong>&laquo; Identifiant LDAP &raquo;</strong> suppl&eacute;mentaire. L'authentification essaie d'abord le LDAP, puis se rabat sur le mot de passe local si le champ identifiant est vide.</p>
 
-        <div class="warning">
-            <strong>Securite :</strong> Ces deux variables doivent imperativement etre modifiees avant tout deploiement
-            en production. Utilisez des valeurs complexes et uniques.
-        </div>
+<div class="success">
+  <strong>Fallback garanti :</strong> Le mot de passe local (<code>ADMIN_PASSWORD</code>) reste toujours fonctionnel comme solution de secours, m&ecirc;me lorsque LDAP est activ&eacute; ou que le serveur LDAP est injoignable.
+</div>
 
-        <!-- ============================================================ -->
-        <h2 id="nginx-config">Configuration Nginx</h2>
-        <!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- CHAPITRE 8 -->
+<!-- ============================================================ -->
+<h1 id="c8">8. S&eacute;curit&eacute; &amp; blocage IP</h1>
 
-        <p>La configuration Nginx de base se trouve dans <code>nginx/nginx.conf</code> :</p>
+<h2 id="c8-1">8.1 Rate limiting</h2>
+<p>Le syst&egrave;me prot&egrave;ge l'interface de connexion contre les attaques par force brute :</p>
+<table>
+  <tr><th>Param&egrave;tre</th><th>Valeur</th><th>Description</th></tr>
+  <tr><td>Seuil de blocage</td><td>6 tentatives</td><td>Nombre de tentatives &eacute;chou&eacute;es avant blocage</td></tr>
+  <tr><td>Dur&eacute;e de blocage</td><td>10 minutes</td><td>Dur&eacute;e pendant laquelle l'IP est bloqu&eacute;e</td></tr>
+  <tr><td>D&eacute;blocage automatique</td><td>Oui</td><td>L'IP est automatiquement d&eacute;bloqu&eacute;e &agrave; expiration</td></tr>
+  <tr><td>R&eacute;initialisation</td><td>Apr&egrave;s connexion r&eacute;ussie</td><td>Le compteur est remis &agrave; z&eacute;ro</td></tr>
+</table>
 
-        <h3>Caracteristiques</h3>
-        <ul>
-            <li><strong>Worker processes</strong> — Auto-detecte le nombre de CPU</li>
-            <li><strong>Protocoles SSL</strong> — TLSv1.2 et TLSv1.3</li>
-            <li><strong>Redirection HTTP</strong> — Toutes les requetes HTTP (port 80) sont redirigees vers HTTPS</li>
-            <li><strong>Serveur par defaut</strong> — Les requetes sans correspondance de domaine sont envoyees a Flask</li>
-            <li><strong>Logs</strong> — Format combine avec <code>X-Forwarded-For</code></li>
-        </ul>
+<p>Depuis le tableau de bord d'administration :</p>
+<ul>
+  <li>Visualisation des IP actuellement bloqu&eacute;es avec le temps restant</li>
+  <li>D&eacute;blocage manuel imm&eacute;diat d'une IP</li>
+</ul>
 
-        <h3>Configuration dynamique</h3>
-        <p>
-            Le fichier <code>/etc/nginx/conf.d/proxy.conf</code> est genere automatiquement par Flask
-            a chaque ajout, modification ou suppression de route. Ce fichier contient les blocs <code>server</code>
-            pour chaque route configuree.
-        </p>
+<h2 id="c8-2">8.2 Historique des blocages</h2>
+<ul>
+  <li>Les <strong>200 derniers</strong> &eacute;v&eacute;nements de blocage sont conserv&eacute;s</li>
+  <li>Chaque entr&eacute;e contient : date, adresse IP, raison du blocage</li>
+  <li>L'historique est persistant (stock&eacute; dans <code>/data/block_history.json</code>)</li>
+  <li>Possibilit&eacute; d'effacer l'historique complet depuis le tableau de bord</li>
+</ul>
 
-        <!-- ============================================================ -->
-        <h2 id="volumes">Volumes & donnees persistantes</h2>
-        <!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- CHAPITRE 9 -->
+<!-- ============================================================ -->
+<h1 id="c9">9. Logs &amp; supervision</h1>
 
-        <p>Toutes les donnees persistantes sont stockees dans le volume Docker <code>proxy-data</code>, monte sur <code>/data</code> :</p>
+<p>La page <code>/admin/logs</code> permet de consulter les journaux en temps r&eacute;el depuis l'interface web.</p>
 
-        <table>
-            <thead>
-                <tr><th>Fichier / Repertoire</th><th>Description</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><code>/data/routes.json</code></td><td>Configuration des routes de reverse proxy</td></tr>
-                <tr><td><code>/data/tiles.json</code></td><td>Sections et tuiles de la page d'accueil</td></tr>
-                <tr><td><code>/data/ldap_config.json</code></td><td>Configuration du serveur LDAP</td></tr>
-                <tr><td><code>/data/letsencrypt_config.json</code></td><td>Configuration Let's Encrypt (future)</td></tr>
-                <tr><td><code>/data/block_history.json</code></td><td>Historique des blocages IP</td></tr>
-                <tr><td><code>/data/logos/</code></td><td>Logos des tuiles (images uploadees)</td></tr>
-                <tr><td><code>/data/certs/selfsigned.crt</code></td><td>Certificat SSL</td></tr>
-                <tr><td><code>/data/certs/selfsigned.key</code></td><td>Cle privee SSL</td></tr>
-            </tbody>
-        </table>
+<table>
+  <tr><th>Type de log</th><th>Fichier</th><th>Description</th></tr>
+  <tr><td><code>nginx-access</code></td><td><code>/var/log/nginx/access.log</code></td><td>Requ&ecirc;tes HTTP re&ccedil;ues par Nginx</td></tr>
+  <tr><td><code>nginx-error</code></td><td><code>/var/log/nginx/error.log</code></td><td>Erreurs de configuration et de proxy Nginx</td></tr>
+  <tr><td><code>certbot</code></td><td><code>/var/log/reverseproxy/certbot.log</code></td><td>Renouvellement automatique Let's Encrypt</td></tr>
+</table>
 
-        <!-- ============================================================ -->
-        <h2 id="api-routes">Endpoints API</h2>
-        <!-- ============================================================ -->
+<ul>
+  <li>Affichage des <strong>100 derni&egrave;res lignes</strong> par d&eacute;faut (configurable jusqu'&agrave; 500)</li>
+  <li><strong>API de rafra&icirc;chissement</strong> : endpoint <code>/admin/logs/api</code> pour un rechargement AJAX en temps r&eacute;el</li>
+  <li>Les logs Nginx utilisent un format <code>main</code> incluant <code>X-Forwarded-For</code></li>
+</ul>
 
-        <h3>Pages publiques</h3>
-        <table>
-            <thead><tr><th>Methode</th><th>Route</th><th>Description</th></tr></thead>
-            <tbody>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/</code></td><td>Page d'accueil avec les tuiles de services</td></tr>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/logos/&lt;filename&gt;</code></td><td>Servir les logos uploades</td></tr>
-                <tr><td><span class="endpoint-method method-get">GET</span><span class="endpoint-method method-post">POST</span></td><td><code>/login</code></td><td>Page d'authentification</td></tr>
-            </tbody>
-        </table>
+<!-- ============================================================ -->
+<!-- CHAPITRE 10 -->
+<!-- ============================================================ -->
+<h1 id="c10">10. Sauvegarde &amp; restauration</h1>
 
-        <h3>Administration (authentification requise)</h3>
-        <table>
-            <thead><tr><th>Methode</th><th>Route</th><th>Description</th></tr></thead>
-            <tbody>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/admin</code></td><td>Tableau de bord d'administration</td></tr>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/logout</code></td><td>Deconnexion</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/add</code></td><td>Ajouter une route proxy</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/edit/&lt;id&gt;</code></td><td>Modifier une route</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/delete/&lt;id&gt;</code></td><td>Supprimer une route</td></tr>
-            </tbody>
-        </table>
+<h3>Sauvegarde</h3>
+<p>Le bouton <strong>&laquo; Sauvegarder (JSON) &raquo;</strong> g&eacute;n&egrave;re un fichier <code>reverseproxy_backup.json</code> contenant :</p>
+<ul>
+  <li>Toutes les routes de reverse proxy</li>
+  <li>Toutes les sections et tuiles (avec positions)</li>
+  <li>Tous les logos (encod&eacute;s en base64)</li>
+  <li>La configuration LDAP</li>
+  <li>L'historique des blocages IP</li>
+</ul>
 
-        <h3>Sections & tuiles (authentification requise)</h3>
-        <table>
-            <thead><tr><th>Methode</th><th>Route</th><th>Description</th></tr></thead>
-            <tbody>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/section/add</code></td><td>Creer une section</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/section/edit/&lt;id&gt;</code></td><td>Modifier une section</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/section/delete/&lt;id&gt;</code></td><td>Supprimer une section</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/section/move/&lt;id&gt;/&lt;dir&gt;</code></td><td>Deplacer une section (up/down)</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/tile/add/&lt;section_id&gt;</code></td><td>Ajouter une tuile</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/tile/edit/&lt;id&gt;</code></td><td>Modifier une tuile</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/tile/delete/&lt;id&gt;</code></td><td>Supprimer une tuile</td></tr>
-            </tbody>
-        </table>
+<h3>Restauration</h3>
+<div class="flow-step"><div class="flow-num">1</div><div class="flow-text">Cliquez sur le champ de s&eacute;lection de fichier</div></div>
+<div class="flow-step"><div class="flow-num">2</div><div class="flow-text">S&eacute;lectionnez un fichier <code>.json</code> de sauvegarde</div></div>
+<div class="flow-step"><div class="flow-num">3</div><div class="flow-text">Cliquez sur <strong>&laquo; Restaurer &raquo;</strong></div></div>
+<div class="flow-step"><div class="flow-num">4</div><div class="flow-text">Confirmez dans la bo&icirc;te de dialogue</div></div>
 
-        <h3>LDAP & certificats (authentification requise)</h3>
-        <table>
-            <thead><tr><th>Methode</th><th>Route</th><th>Description</th></tr></thead>
-            <tbody>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/admin/ldap</code></td><td>Page de configuration LDAP</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/admin/ldap/save</code></td><td>Sauvegarder la configuration LDAP</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/admin/ldap/test</code></td><td>Tester la connexion LDAP</td></tr>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/admin/certs</code></td><td>Page de gestion des certificats</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/admin/certs/selfsigned</code></td><td>Generer un certificat auto-signe</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/admin/certs/upload</code></td><td>Importer un certificat personnalise</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/admin/certs/letsencrypt</code></td><td>Sauvegarder la config Let's Encrypt</td></tr>
-            </tbody>
-        </table>
+<div class="warning">
+  <strong>Attention :</strong> La restauration &eacute;crase toutes les donn&eacute;es actuelles (routes, tuiles, logos, configuration LDAP). Effectuez une sauvegarde pr&eacute;alable si n&eacute;cessaire. Les routes Nginx sont automatiquement reg&eacute;n&eacute;r&eacute;es et Nginx est recharg&eacute;.
+</div>
 
-        <h3>Utilitaires (authentification requise)</h3>
-        <table>
-            <thead><tr><th>Methode</th><th>Route</th><th>Description</th></tr></thead>
-            <tbody>
-                <tr><td><span class="endpoint-method method-get">GET</span></td><td><code>/admin/backup</code></td><td>Telecharger la sauvegarde JSON</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/admin/restore</code></td><td>Restaurer depuis un backup</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/unblock/&lt;ip&gt;</code></td><td>Debloquer une adresse IP</td></tr>
-                <tr><td><span class="endpoint-method method-post">POST</span></td><td><code>/clear-history</code></td><td>Effacer l'historique des blocages</td></tr>
-            </tbody>
-        </table>
+<!-- ============================================================ -->
+<!-- CHAPITRE 11 -->
+<!-- ============================================================ -->
+<h1 id="c11">11. API &mdash; Endpoints</h1>
 
-        <!-- ============================================================ -->
-        <h2 id="structure-fichiers">Structure des fichiers</h2>
-        <!-- ============================================================ -->
+<h2 id="c11-1">11.1 Pages publiques</h2>
+<table>
+  <tr><th>M&eacute;thode</th><th>Route</th><th>Description</th></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/</code></td><td>Page d'accueil avec les tuiles de services</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/logos/&lt;filename&gt;</code></td><td>Servir les logos upload&eacute;s</td></tr>
+  <tr><td><span class="method method-get">GET</span> <span class="method method-post">POST</span></td><td><code>/login</code></td><td>Page d'authentification</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/logout</code></td><td>D&eacute;connexion</td></tr>
+</table>
 
-        <pre><code>reversproxy1/
-+-- app/
-|   +-- app.py                  # Application Flask principale
-|   +-- requirements.txt        # Dependances Python
-|   +-- templates/
-|       +-- home.html           # Page d'accueil publique
-|       +-- login.html          # Page de connexion
-|       +-- index.html          # Tableau de bord admin
-|       +-- ldap.html           # Configuration LDAP
-|       +-- certs.html          # Gestion des certificats
-+-- nginx/
-|   +-- nginx.conf              # Configuration Nginx de base
-+-- certs/
-|   +-- selfsigned.crt          # Certificat par defaut
-|   +-- selfsigned.key          # Cle privee par defaut
-+-- Dockerfile                  # Image Docker
-+-- docker-compose.yml          # Composition Docker
-+-- supervisord.conf            # Configuration Supervisor
-+-- gen-certs.sh                # Script de generation de certificats
-+-- documentation.html          # Cette documentation</code></pre>
+<h2 id="c11-2">11.2 Administration (authentification requise)</h2>
+<table>
+  <tr><th>M&eacute;thode</th><th>Route</th><th>Description</th></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin</code></td><td>Tableau de bord d'administration</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/add</code></td><td>Ajouter une route proxy</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/edit/&lt;id&gt;</code></td><td>Modifier une route</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/delete/&lt;id&gt;</code></td><td>Supprimer une route</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/unblock/&lt;ip&gt;</code></td><td>D&eacute;bloquer une adresse IP</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/clear-history</code></td><td>Effacer l'historique des blocages</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/backup</code></td><td>T&eacute;l&eacute;charger la sauvegarde JSON</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/restore</code></td><td>Restaurer depuis un backup</td></tr>
+</table>
 
-        <h3>Technologies utilisees</h3>
-        <table>
-            <thead><tr><th>Composant</th><th>Technologie</th><th>Version</th></tr></thead>
-            <tbody>
-                <tr><td>Image de base</td><td>Nginx Alpine</td><td>1.27</td></tr>
-                <tr><td>Framework web</td><td>Flask</td><td>3.1.0</td></tr>
-                <tr><td>Serveur WSGI</td><td>Gunicorn</td><td>23.0.0</td></tr>
-                <tr><td>Client LDAP</td><td>python-ldap</td><td>3.4.4</td></tr>
-                <tr><td>Gestionnaire de processus</td><td>Supervisor</td><td>-</td></tr>
-                <tr><td>Chiffrement</td><td>OpenSSL</td><td>-</td></tr>
-            </tbody>
-        </table>
+<h2 id="c11-3">11.3 Sections &amp; tuiles</h2>
+<table>
+  <tr><th>M&eacute;thode</th><th>Route</th><th>Description</th></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/section/add</code></td><td>Cr&eacute;er une section</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/section/edit/&lt;id&gt;</code></td><td>Modifier une section</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/section/delete/&lt;id&gt;</code></td><td>Supprimer une section</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/section/move/&lt;id&gt;/&lt;dir&gt;</code></td><td>D&eacute;placer une section (up/down)</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/tile/add/&lt;section_id&gt;</code></td><td>Ajouter une tuile</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/tile/edit/&lt;id&gt;</code></td><td>Modifier une tuile</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/tile/delete/&lt;id&gt;</code></td><td>Supprimer une tuile</td></tr>
+</table>
 
-        <!-- ============================================================ -->
-        <h2 id="changelog">Changelog</h2>
-        <!-- ============================================================ -->
+<h2 id="c11-4">11.4 Certificats &amp; LDAP</h2>
+<table>
+  <tr><th>M&eacute;thode</th><th>Route</th><th>Description</th></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/certs</code></td><td>Page de gestion des certificats</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/selfsigned</code></td><td>G&eacute;n&eacute;rer un certificat auto-sign&eacute;</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/upload</code></td><td>Importer un certificat personnalis&eacute;</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/letsencrypt/settings</code></td><td>Sauvegarder les param&egrave;tres Let's Encrypt</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/letsencrypt/add</code></td><td>Demander un certificat LE pour un domaine</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/letsencrypt/remove/&lt;domain&gt;</code></td><td>Retirer un domaine de LE</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/letsencrypt/renew/&lt;domain&gt;</code></td><td>Forcer le renouvellement d'un domaine</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/letsencrypt/renew-all</code></td><td>Renouveler tous les certificats</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/certs/letsencrypt/test/&lt;domain&gt;</code></td><td>Tester la validit&eacute; d'un certificat (JSON)</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/certs/ovh/save</code></td><td>Sauvegarder les identifiants OVH API</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/ldap</code></td><td>Page de configuration LDAP</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/ldap/save</code></td><td>Sauvegarder la configuration LDAP</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/ldap/test</code></td><td>Tester la connexion LDAP</td></tr>
+</table>
 
-        <h3>v2.2 — LDAP & Certificats <span class="badge badge-new">Actuelle</span></h3>
-        <ul>
-            <li>Integration LDAP/SSO complete avec support LDAP et LDAPS</li>
-            <li>Test de connexion LDAP en 5 etapes depuis l'interface</li>
-            <li>Verification de l'appartenance au groupe d'administration</li>
-            <li>Mode mixte : authentification LDAP + mot de passe local en fallback</li>
-            <li>Gestion des certificats SSL : generation auto-signee, import personnalise</li>
-            <li>Interface de configuration Let's Encrypt (preparatoire)</li>
-            <li>Affichage des informations du certificat actuel</li>
-        </ul>
+<h2 id="c11-5">11.5 Logs &amp; sites</h2>
+<table>
+  <tr><th>M&eacute;thode</th><th>Route</th><th>Description</th></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/logs</code></td><td>Page de consultation des logs</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/logs/api</code></td><td>API JSON pour rafra&icirc;chissement en temps r&eacute;el</td></tr>
+  <tr><td><span class="method method-get">GET</span></td><td><code>/admin/sites</code></td><td>Liste des sites Nginx</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/sites/toggle/&lt;filename&gt;</code></td><td>Activer/d&eacute;sactiver un site</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/sites/add</code></td><td>Ajouter un fichier de configuration</td></tr>
+  <tr><td><span class="method method-post">POST</span></td><td><code>/admin/sites/delete/&lt;filename&gt;</code></td><td>Supprimer un fichier de configuration</td></tr>
+</table>
 
-        <h3>v2.1 — Historique des blocages</h3>
-        <ul>
-            <li>Historique persistant des evenements de blocage IP</li>
-            <li>Tableau d'affichage avec date, IP et raison</li>
-            <li>Gestion des IP bloquees dans le tableau de bord (deblocage manuel)</li>
-            <li>Bouton d'effacement de l'historique complet</li>
-        </ul>
+<!-- ============================================================ -->
+<!-- CHAPITRE 12 -->
+<!-- ============================================================ -->
+<h1 id="c12">12. Volumes &amp; donn&eacute;es persistantes</h1>
 
-        <h3>v2.0 — Authentification & tuiles</h3>
-        <ul>
-            <li>Systeme d'authentification par mot de passe local</li>
-            <li>Rate limiting : blocage automatique apres 6 tentatives echouees</li>
-            <li>Page d'accueil avec tuiles de services personnalisables</li>
-            <li>Gestion des sections (creation, renommage, reordonnancement, suppression)</li>
-            <li>Upload de logos pour les tuiles</li>
-            <li>Systeme de sauvegarde et restauration JSON</li>
-            <li>Tableau de bord d'administration complet</li>
-        </ul>
+<h3>Volumes Docker</h3>
+<table>
+  <tr><th>Volume</th><th>Point de montage</th><th>Description</th></tr>
+  <tr><td><code>proxy-data</code></td><td><code>/data</code></td><td>Configuration, tuiles, logos, certificats auto-sign&eacute;s</td></tr>
+  <tr><td><code>letsencrypt-data</code></td><td><code>/etc/letsencrypt</code></td><td>Certificats Let's Encrypt et comptes ACME</td></tr>
+  <tr><td><code>certbot-webroot</code></td><td><code>/var/www/certbot</code></td><td>Fichiers de challenge HTTP-01</td></tr>
+  <tr><td><code>proxy-logs</code></td><td><code>/var/log/reverseproxy</code></td><td>Logs de l'application (certbot, nginx-check)</td></tr>
+</table>
 
-        <h3>v1.0 — Version initiale</h3>
-        <ul>
-            <li>Reverse proxy Nginx avec gestion des routes via interface web</li>
-            <li>Generation dynamique de la configuration Nginx</li>
-            <li>Support HTTPS avec certificat auto-signe</li>
-            <li>Conteneurisation Docker avec Supervisor</li>
-        </ul>
+<h3>Fichiers dans <code>/data</code></h3>
+<table>
+  <tr><th>Fichier / R&eacute;pertoire</th><th>Description</th></tr>
+  <tr><td><code>/data/routes.json</code></td><td>Configuration des routes de reverse proxy</td></tr>
+  <tr><td><code>/data/tiles.json</code></td><td>Sections et tuiles de la page d'accueil</td></tr>
+  <tr><td><code>/data/ldap_config.json</code></td><td>Configuration du serveur LDAP</td></tr>
+  <tr><td><code>/data/letsencrypt_config.json</code></td><td>Configuration Let's Encrypt (email, domaines, OVH)</td></tr>
+  <tr><td><code>/data/block_history.json</code></td><td>Historique des blocages IP</td></tr>
+  <tr><td><code>/data/ovh-credentials.ini</code></td><td>Identifiants API OVH pour certbot-dns-ovh</td></tr>
+  <tr><td><code>/data/logos/</code></td><td>Logos des tuiles (images upload&eacute;es)</td></tr>
+  <tr><td><code>/data/certs/selfsigned.crt</code></td><td>Certificat SSL global (fallback)</td></tr>
+  <tr><td><code>/data/certs/selfsigned.key</code></td><td>Cl&eacute; priv&eacute;e SSL globale</td></tr>
+</table>
 
-        <!-- ============================================================ -->
-        <h2 id="depannage">Depannage</h2>
-        <!-- ============================================================ -->
+<!-- ============================================================ -->
+<!-- CHAPITRE 13 -->
+<!-- ============================================================ -->
+<h1 id="c13">13. Changelog</h1>
 
-        <h3>Problemes courants</h3>
+<h2>v2.2 &mdash; Let's Encrypt, DNS-01 OVH, Logs &amp; Sites</h2>
+<ul>
+  <li>Let's Encrypt multi-domaines avec challenge HTTP-01 (certbot webroot)</li>
+  <li>Challenge DNS-01 via API OVH pour certificats wildcard (<code>*.domaine</code>)</li>
+  <li>Renouvellement automatique des certificats toutes les 12 heures</li>
+  <li>R&eacute;solution intelligente des certificats (LE &rarr; wildcard &rarr; global)</li>
+  <li>Test de validit&eacute; des certificats depuis l'interface (endpoint JSON)</li>
+  <li>Gestion des sites Nginx (ajout, activation, d&eacute;sactivation, suppression)</li>
+  <li>Consultation des logs Nginx et Certbot en temps r&eacute;el</li>
+  <li>Entrypoint avec banni&egrave;re de diagnostic au d&eacute;marrage</li>
+  <li>Int&eacute;gration LDAP/SSO compl&egrave;te avec support LDAP et LDAPS</li>
+  <li>Test de connexion LDAP en 5 &eacute;tapes depuis l'interface</li>
+  <li>V&eacute;rification de l'appartenance au groupe d'administration</li>
+  <li>Mode mixte : authentification LDAP + mot de passe local en fallback</li>
+  <li>Gestion compl&egrave;te des certificats SSL (auto-sign&eacute;s, import, Let's Encrypt)</li>
+  <li>Affichage des informations du certificat actuel</li>
+</ul>
 
-        <h4>Le conteneur ne demarre pas</h4>
-        <pre><code># Verifier les logs
-docker logs reverseproxy_th
+<h2>v2.1 &mdash; Historique des blocages</h2>
+<ul>
+  <li>Historique persistant des &eacute;v&eacute;nements de blocage IP</li>
+  <li>Tableau d'affichage avec date, IP et raison</li>
+  <li>Gestion des IP bloqu&eacute;es dans le tableau de bord (d&eacute;blocage manuel)</li>
+  <li>Bouton d'effacement de l'historique complet</li>
+</ul>
 
-# Verifier que le port 888 n'est pas utilise
-ss -tlnp | grep 888
+<h2>v2.0 &mdash; Authentification &amp; tuiles</h2>
+<ul>
+  <li>Syst&egrave;me d'authentification par mot de passe local</li>
+  <li>Rate limiting : blocage automatique apr&egrave;s 6 tentatives &eacute;chou&eacute;es</li>
+  <li>Page d'accueil avec tuiles de services personnalisables</li>
+  <li>Gestion des sections (cr&eacute;ation, renommage, r&eacute;ordonnancement, suppression)</li>
+  <li>Upload de logos pour les tuiles</li>
+  <li>Syst&egrave;me de sauvegarde et restauration JSON</li>
+  <li>Tableau de bord d'administration complet</li>
+</ul>
 
-# Reconstruire l'image
-docker compose down
-docker compose up -d --build</code></pre>
+<h2>v1.0 &mdash; Version initiale</h2>
+<ul>
+  <li>Reverse proxy Nginx avec gestion des routes via interface web</li>
+  <li>G&eacute;n&eacute;ration dynamique de la configuration Nginx</li>
+  <li>Support HTTPS avec certificat auto-sign&eacute;</li>
+  <li>Conteneurisation Docker avec Supervisor</li>
+</ul>
 
-        <h4>Erreur "502 Bad Gateway"</h4>
-        <ul>
-            <li>Verifiez que le service cible est accessible depuis le conteneur</li>
-            <li>Verifiez que l'adresse et le port cible sont corrects</li>
-            <li>Testez la connectivite : <code>docker exec reverseproxy_th curl -I http://&lt;cible&gt;</code></li>
-        </ul>
+<!-- ============================================================ -->
+<!-- ANNEXES -->
+<!-- ============================================================ -->
+<h1 id="annexes">14. Annexes</h1>
 
-        <h4>La configuration Nginx ne se recharge pas</h4>
-        <pre><code># Tester la configuration
-docker exec reverseproxy_th nginx -t
+<h2 id="a-a">A. Commandes utiles</h2>
+<table>
+  <tr><th>Commande</th><th>Description</th></tr>
+  <tr><td><code>docker compose up -d --build</code></td><td>Construire et lancer le conteneur</td></tr>
+  <tr><td><code>docker compose down</code></td><td>Arr&ecirc;ter le conteneur</td></tr>
+  <tr><td><code>docker compose down -v</code></td><td>Arr&ecirc;ter et supprimer les volumes (reset complet)</td></tr>
+  <tr><td><code>docker logs -f reversproxy</code></td><td>Suivre les logs du conteneur</td></tr>
+  <tr><td><code>docker exec reversproxy nginx -t</code></td><td>Tester la configuration Nginx</td></tr>
+  <tr><td><code>docker exec reversproxy nginx -s reload</code></td><td>Recharger Nginx manuellement</td></tr>
+  <tr><td><code>docker exec reversproxy cat /etc/nginx/sites-enabled/*.conf</code></td><td>Voir les configurations de sites actifs</td></tr>
+  <tr><td><code>docker exec reversproxy certbot certificates</code></td><td>Lister les certificats Let's Encrypt</td></tr>
+  <tr><td><code>docker exec reversproxy cat /var/log/reverseproxy/certbot.log</code></td><td>Voir les logs de renouvellement certbot</td></tr>
+  <tr><td><code>docker restart reversproxy</code></td><td>Red&eacute;marrer le conteneur (r&eacute;initialise les blocages IP en m&eacute;moire)</td></tr>
+</table>
 
-# Recharger manuellement
-docker exec reverseproxy_th nginx -s reload
+<h2 id="a-b">B. Flux de donn&eacute;es</h2>
+<pre><code>
+  Client (navigateur)
+       |
+       v HTTPS :443 (port 888 hote)
+  +---------------------+
+  |    Nginx             |  Reverse proxy + SSL termination
+  |    (port 80/443)     |  + ACME challenge (/.well-known/)
+  +---------+-----------+
+            |
+            | Domaine = admin ?
+            |
+    +-------+-------+
+    v               v
+  Flask           Service cible
+  (port 5000)     (proxy_pass)
+    |
+    v
+  /data/            /etc/nginx/sites-enabled/
+  - routes.json     - domaine.conf (auto-generated)
+  - tiles.json      - custom.conf (manual)
+  - ldap_config.json
+  - letsencrypt_config.json
+  - certs/
+  - logos/
+</code></pre>
 
-# Voir la config generee
-docker exec reverseproxy_th cat /etc/nginx/conf.d/proxy.conf</code></pre>
+<h2 id="a-c">C. Configuration Nginx</h2>
+<p>Le fichier <code>nginx/nginx.conf</code> configure :</p>
+<ul>
+  <li><strong>Worker processes</strong> &mdash; Auto-d&eacute;tection du nombre de CPU</li>
+  <li><strong>Protocoles SSL</strong> &mdash; TLSv1.2 et TLSv1.3</li>
+  <li><strong>Client max body size</strong> &mdash; 1 Go (pour les uploads de logos et backups)</li>
+  <li><strong>Port 80</strong> &mdash; Redirection HTTP &rarr; HTTPS + support ACME challenge Let's Encrypt</li>
+  <li><strong>Sites dynamiques</strong> &mdash; <code>include /etc/nginx/sites-enabled/*.conf</code></li>
+  <li><strong>Serveur par d&eacute;faut</strong> &mdash; Port 443 <code>default_server</code>, proxyfie vers Flask (port 5000)</li>
+  <li><strong>Logs</strong> &mdash; Format <code>main</code> avec <code>X-Forwarded-For</code></li>
+</ul>
 
-        <h4>LDAP : erreur de connexion</h4>
-        <ul>
-            <li>Verifiez que le serveur LDAP est accessible depuis le conteneur</li>
-            <li>Verifiez les informations de Bind DN et mot de passe</li>
-            <li>Si LDAPS, verifiez que le port est <code>636</code> et que SSL est active</li>
-            <li>Utilisez le bouton <strong>"Tester la connexion"</strong> pour un diagnostic detaille</li>
-        </ul>
+<h2 id="a-d">D. S&eacute;curit&eacute;</h2>
+<ul>
+  <li><strong>HTTPS</strong> &mdash; Toutes les communications sont chiffr&eacute;es via TLS</li>
+  <li><strong>Rate limiting</strong> &mdash; Blocage automatique des IP apr&egrave;s 6 tentatives de connexion &eacute;chou&eacute;es</li>
+  <li><strong>Authentification</strong> &mdash; Mot de passe local + LDAP/SSO avec v&eacute;rification de groupe</li>
+  <li><strong>Sessions Flask</strong> &mdash; Chiffr&eacute;es via <code>SECRET_KEY</code> (cookie sign&eacute;)</li>
+  <li><strong>Fichiers sensibles</strong> &mdash; Les identifiants OVH sont stock&eacute;s avec permissions 600</li>
+  <li><strong>Validation Nginx</strong> &mdash; Chaque modification est valid&eacute;e via <code>nginx -t</code> avant rechargement</li>
+  <li><strong>Rollback automatique</strong> &mdash; Les configurations invalides sont retir&eacute;es automatiquement</li>
+</ul>
 
-        <h4>IP bloquee par erreur</h4>
-        <ul>
-            <li>Accedez au tableau de bord depuis une autre IP</li>
-            <li>Cliquez sur <strong>"Debloquer"</strong> en face de l'IP bloquee</li>
-            <li>Ou attendez l'expiration automatique (10 minutes)</li>
-            <li>En dernier recours : <code>docker restart reverseproxy_th</code> (les blocages en memoire sont reinitialises)</li>
-        </ul>
+<div class="warning">
+  <strong>Recommandations production :</strong>
+  <ul>
+    <li>Changer <code>SECRET_KEY</code> et <code>ADMIN_PASSWORD</code> avec des valeurs complexes</li>
+    <li>Utiliser des certificats Let's Encrypt plut&ocirc;t que des auto-sign&eacute;s</li>
+    <li>Restreindre l'acc&egrave;s r&eacute;seau (firewall, VPN)</li>
+    <li>Sauvegarder r&eacute;guli&egrave;rement la configuration (bouton Backup)</li>
+    <li>Configurer LDAP pour une authentification centralis&eacute;e</li>
+  </ul>
+</div>
 
-        <h4>Certificat invalide apres upload</h4>
-        <ul>
-            <li>Verifiez que le certificat et la cle correspondent : <pre><code>openssl x509 -noout -modulus -in cert.crt | md5sum
-openssl rsa -noout -modulus -in cert.key | md5sum</code></pre></li>
-            <li>Les deux empreintes MD5 doivent etre identiques</li>
-        </ul>
+<h2 id="a-e">E. D&eacute;pannage</h2>
+<table>
+  <tr><th>Probl&egrave;me</th><th>Cause probable</th><th>Solution</th></tr>
+  <tr>
+    <td>Le conteneur ne d&eacute;marre pas</td>
+    <td>Port 888 d&eacute;j&agrave; utilis&eacute; ou erreur de build</td>
+    <td><code>docker logs reversproxy</code> puis <code>ss -tlnp | grep 888</code>. Reconstruire avec <code>docker compose up -d --build</code>.</td>
+  </tr>
+  <tr>
+    <td>Erreur &laquo; 502 Bad Gateway &raquo;</td>
+    <td>Service cible inaccessible</td>
+    <td>V&eacute;rifier l'adresse et le port cible. Tester : <code>docker exec reversproxy curl -I http://&lt;cible&gt;</code></td>
+  </tr>
+  <tr>
+    <td>Config Nginx ne se recharge pas</td>
+    <td>Erreur de syntaxe dans la configuration</td>
+    <td><code>docker exec reversproxy nginx -t</code> puis <code>nginx -s reload</code></td>
+  </tr>
+  <tr>
+    <td>LDAP : erreur de connexion</td>
+    <td>Serveur LDAP inaccessible ou identifiants incorrects</td>
+    <td>Utiliser le bouton &laquo; Tester la connexion &raquo; pour un diagnostic d&eacute;taill&eacute; en 5 &eacute;tapes</td>
+  </tr>
+  <tr>
+    <td>IP bloqu&eacute;e par erreur</td>
+    <td>6 tentatives de connexion &eacute;chou&eacute;es</td>
+    <td>D&eacute;bloquer depuis le tableau de bord ou attendre 10 minutes. En dernier recours : <code>docker restart reversproxy</code></td>
+  </tr>
+  <tr>
+    <td>Certificat LE &eacute;choue</td>
+    <td>Port 80 non accessible ou DNS mal configur&eacute;</td>
+    <td>V&eacute;rifier que le port 80 est ouvert et que le DNS pointe vers le serveur. Consulter les logs certbot.</td>
+  </tr>
+  <tr>
+    <td>Wildcard LE &eacute;choue</td>
+    <td>Identifiants OVH incorrects ou propagation DNS</td>
+    <td>V&eacute;rifier les cl&eacute;s API OVH. Le challenge DNS-01 attend 60s de propagation (timeout 180s).</td>
+  </tr>
+  <tr>
+    <td>Certificat invalide apr&egrave;s upload</td>
+    <td>Certificat et cl&eacute; ne correspondent pas</td>
+    <td>V&eacute;rifier : <code>openssl x509 -noout -modulus -in cert.crt | md5sum</code> et <code>openssl rsa -noout -modulus -in cert.key | md5sum</code> (doivent &ecirc;tre identiques)</td>
+  </tr>
+  <tr>
+    <td>R&eacute;initialisation compl&egrave;te</td>
+    <td>&mdash;</td>
+    <td><code>docker compose down -v && docker compose up -d --build</code> (supprime toutes les donn&eacute;es)</td>
+  </tr>
+</table>
 
-        <h4>Reinitialiser completement</h4>
-        <pre><code># Supprimer le conteneur et le volume
-docker compose down -v
-
-# Reconstruire et redemarrer
-docker compose up -d --build</code></pre>
-
-        <div class="warning">
-            <strong>Attention :</strong> L'option <code>-v</code> supprime le volume de donnees.
-            Toutes les configurations, routes, tuiles et logos seront perdus.
-            Effectuez une sauvegarde au prealable.
-        </div>
-
-        <footer>
-            <p>Reverse Proxy Manager v2.2 — Documentation generee le 14 avril 2026</p>
-            <p style="margin-top:0.5rem; color:#44403c;">Propulse par Flask, Nginx & Docker</p>
-        </footer>
-
-    </div>
+<footer>
+  <p><strong>Reverse Proxy Manager</strong> &mdash; Documentation technique compl&egrave;te &mdash; Version 2.2 &mdash; Avril 2026</p>
+  <p>Nginx 1.27 &bull; Flask 3.1 &bull; Gunicorn 23 &bull; Certbot &bull; python-ldap 3.4 &bull; Supervisor &bull; Docker</p>
+</footer>
 
 </body>
 </html>
