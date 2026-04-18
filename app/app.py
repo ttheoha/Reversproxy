@@ -1340,107 +1340,117 @@ def certs_letsencrypt_remove(domain):
     config["domains"] = [d for d in config.get("domains", []) if d["domain"] != domain]
     save_letsencrypt_config(config)
 
-    # Regenerate nginx to fallback to global cert
-    routes = load_routes()
-    generate_nginx_conf(routes)
-    reload_nginx()
-
-    flash(f"Domaine {domain} retire de Let's Encrypt.", "success")
-    return redirect(url_for("certs"))
-
-
-@app.route("/admin/certs/letsencrypt/renew/<path:domain>", methods=["POST"])
-@login_required
-def certs_letsencrypt_renew(domain):
-    """Force renewal for a specific domain."""
-    config = load_letsencrypt_config()
-    email = config.get("email", "")
-
-    # Find the challenge type used for this domain
-    challenge_type = "http"
-    for d in config.get("domains", []):
-        if d["domain"] == domain:
-            challenge_type = d.get("challenge", "http")
-            break
-
-    certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
-    # Replace --keep-until-expiring with --force-renewal
-    certbot_cmd = [x if x != "--keep-until-expiring" else "--force-renewal" for x in certbot_cmd]
-
-    timeout = 180 if challenge_type == "dns-ovh" else 120
-
-    try:
-        result = subprocess.run(
-            certbot_cmd, capture_output=True, text=True, timeout=timeout
-        )
-        if result.returncode != 0:
-            error_msg = result.stderr.strip() or result.stdout.strip()
-            flash(f"Erreur renouvellement {domain} : {error_msg}", "error")
-            return redirect(url_for("certs"))
-    except subprocess.TimeoutExpired:
-        flash(f"Certbot timeout pour {domain}.", "error")
+    if not config["enabled"]:
+        flash("Configuration Let's Encrypt sauvegardee (desactivee).", "success")
         return redirect(url_for("certs"))
 
-    # Update status
-    for d in config.get("domains", []):
-        if d["domain"] == domain:
-            d["status"] = "active"
-            d.pop("error", None)
-    save_letsencrypt_config(config)
+    domain = config["domain"]
+    email = config["email"]
 
-    # Regenerate nginx configs
-    routes = load_routes()
-    generate_nginx_conf(routes)
-    reload_nginx()
+    if not domain:
+        flash("Veuillez renseigner un nom de domaine.", "error")
+        return redirect(url_for("certs"))
 
-    flash(f"Certificat renouvele pour {domain}.", "success")
-    return redirect(url_for("certs"))
+    # Build certbot command
+    certbot_cmd = [
+        "certbot", "certonly",
+        "--webroot",
+        "-w", "/var/www/certbot",
+        "-d", domain,
+        "--non-interactive",
+        "--agree-tos",
+        "--keep-until-expiring",
+    ]
+    if email:
+        certbot_cmd += ["-m", email]
+    else:
+        certbot_cmd += ["--register-unsafely-without-email"]
 
-
-@app.route("/admin/certs/letsencrypt/renew-all", methods=["POST"])
-@login_required
-def certs_letsencrypt_renew_all():
-    """Force renewal for all managed domains."""
     try:
         result = subprocess.run(
-            ["certbot", "renew", "--webroot", "-w", "/var/www/certbot",
-             "--force-renewal", "--no-random-sleep-on-renew"],
-            capture_output=True, text=True, timeout=300
+            certbot_cmd, capture_output=True, text=True, timeout=120
         )
         if result.returncode != 0:
             error_msg = result.stderr.strip() or result.stdout.strip()
-            flash(f"Erreur renouvellement global : {error_msg}", "error")
-        else:
-            # Regenerate nginx configs
-            routes = load_routes()
-            generate_nginx_conf(routes)
-            reload_nginx()
-            flash("Tous les certificats ont ete renouveles.", "success")
+            flash(f"Erreur certbot : {error_msg}", "error")
+            return redirect(url_for("certs"))
     except subprocess.TimeoutExpired:
-        flash("Certbot timeout lors du renouvellement global.", "error")
+        flash("Certbot a expire (timeout 120s). Verifiez que le port 80 est accessible depuis Internet.", "error")
+        return redirect(url_for("certs"))
+    except Exception as e:
+        flash(f"Erreur lors de l'execution de certbot : {e}", "error")
+        return redirect(url_for("certs"))
+
+    # Copy Let's Encrypt certs to the location nginx expects
+    le_cert = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
+    le_key = f"/etc/letsencrypt/live/{domain}/privkey.pem"
+
+    if not os.path.exists(le_cert) or not os.path.exists(le_key):
+        flash("Certbot a reussi mais les fichiers de certificat sont introuvables.", "error")
+        return redirect(url_for("certs"))
+
+    try:
+        os.makedirs(CERTS_DIR, exist_ok=True)
+        shutil.copy2(le_cert, os.path.join(CERTS_DIR, "selfsigned.crt"))
+        shutil.copy2(le_key, os.path.join(CERTS_DIR, "selfsigned.key"))
+    except Exception as e:
+        flash(f"Certificat obtenu mais erreur lors de la copie : {e}", "error")
+        return redirect(url_for("certs"))
+
+    ok, msg = reload_nginx()
+    if ok:
+        flash(f"Certificat Let's Encrypt obtenu et installe pour {domain}.", "success")
+    else:
+        flash(f"Certificat obtenu mais erreur Nginx : {msg}", "error")
 
     return redirect(url_for("certs"))
 
 
-@app.route("/admin/certs/letsencrypt/test/<path:domain>")
+@app.route("/admin/certs/letsencrypt/test")
 @login_required
-def certs_letsencrypt_test(domain):
-    """Test if a specific domain's LE certificate is valid."""
-    cert_path, _ = get_domain_cert_paths(domain)
-    le_cert = cert_path
+def certs_letsencrypt_test():
+    """Test if Let's Encrypt certificate exists and is valid."""
+    config = load_letsencrypt_config()
+    domain = config.get("domain", "").strip()
 
-    # Check it's actually a LE cert, not the fallback
-    if le_cert.endswith("selfsigned.crt"):
-        return jsonify({"ok": False, "error": f"Certificat introuvable pour {domain}."})
+    if not domain:
+        return jsonify({"ok": False, "error": "Aucun domaine configure. Veuillez d'abord sauvegarder la configuration avec un nom de domaine."})
 
+    # Check common Let's Encrypt certificate paths
+    le_cert_paths = [
+        f"/etc/letsencrypt/live/{domain}/fullchain.pem",
+        f"/etc/letsencrypt/live/{domain}/cert.pem",
+        os.path.join(CERTS_DIR, "fullchain.pem"),
+        os.path.join(CERTS_DIR, "selfsigned.crt"),
+    ]
+
+    cert_path = None
+    for p in le_cert_paths:
+        if os.path.exists(p):
+            cert_path = p
+            break
+
+    if not cert_path:
+        paths_checked = ", ".join(le_cert_paths[:2])
+        return jsonify({"ok": False, "error": f"Certificat introuvable. Aucun fichier de certificat trouve pour le domaine '{domain}'. Chemins verifies : {paths_checked}"})
+
+    # Read certificate details with openssl
     try:
         result = subprocess.run(
-            ["openssl", "x509", "-in", le_cert, "-noout",
+            ["openssl", "x509", "-in", cert_path, "-noout",
              "-subject", "-issuer", "-dates", "-checkend", "0"],
             capture_output=True, text=True, timeout=10
         )
     except Exception as e:
-        return jsonify({"ok": False, "error": f"Erreur openssl : {e}"})
+        return jsonify({"ok": False, "error": f"Erreur lors de l'execution d'openssl : {e}"})
+
+    if result.returncode != 0:
+        # checkend returns 1 if the cert has expired
+        stderr = result.stderr.strip()
+        if "Certificate will expire" in (result.stdout + stderr):
+            pass  # We'll handle expiry below
+        else:
+            return jsonify({"ok": False, "error": f"Certificat invalide ou illisible ({cert_path}). Erreur openssl : {stderr or result.stdout.strip()}"})
 
     output = result.stdout.strip()
     details = {}
@@ -1462,13 +1472,18 @@ def certs_letsencrypt_test(domain):
         if "Certificate will expire" in line:
             expired = True
 
+    # Verify domain matches certificate subject
+    subject = details.get("subject", "")
     issuer = details.get("issuer", "")
+
+    # Check if it's a Let's Encrypt certificate
     is_le = any(x in issuer.lower() for x in ["let's encrypt", "letsencrypt", "r3", "r10", "r11", "e5", "e6"])
 
+    # Check expiry with 30-day warning
     expiry_warning = False
     try:
         check30 = subprocess.run(
-            ["openssl", "x509", "-in", le_cert, "-noout", "-checkend", "2592000"],
+            ["openssl", "x509", "-in", cert_path, "-noout", "-checkend", "2592000"],
             capture_output=True, text=True, timeout=5
         )
         if check30.returncode != 0:
@@ -1479,11 +1494,28 @@ def certs_letsencrypt_test(domain):
     if expired:
         return jsonify({
             "ok": False,
-            "error": f"Certificat expire pour {domain} ! ({details.get('not_after', 'inconnue')})",
+            "error": f"Le certificat a expire ! Date d'expiration : {details.get('not_after', 'inconnue')}. Veuillez renouveler le certificat.",
             "details": details,
+            "path": cert_path,
         })
 
+    # Check domain match
+    domain_match = domain in subject
+    if not domain_match:
+        # Also check SAN
+        try:
+            san_result = subprocess.run(
+                ["openssl", "x509", "-in", cert_path, "-noout", "-ext", "subjectAltName"],
+                capture_output=True, text=True, timeout=5
+            )
+            if domain in san_result.stdout:
+                domain_match = True
+        except Exception:
+            pass
+
     warnings = []
+    if not domain_match:
+        warnings.append(f"Le domaine '{domain}' ne correspond pas au sujet du certificat ({subject}).")
     if not is_le:
         warnings.append(f"Ce certificat ne semble pas provenir de Let's Encrypt (emetteur : {issuer}).")
     if expiry_warning:
@@ -1492,185 +1524,11 @@ def certs_letsencrypt_test(domain):
     return jsonify({
         "ok": True,
         "details": details,
+        "path": cert_path,
         "is_letsencrypt": is_le,
+        "domain_match": domain_match,
         "warnings": warnings,
     })
-
-
-# --- Logs ---
-
-def read_log_tail(filepath, lines=100):
-    """Read the last N lines of a log file."""
-    if not os.path.exists(filepath):
-        return f"Fichier introuvable : {filepath}"
-    try:
-        result = subprocess.run(
-            ["tail", "-n", str(lines), filepath],
-            capture_output=True, text=True, timeout=5
-        )
-        return result.stdout or "(vide)"
-    except Exception as e:
-        return f"Erreur de lecture : {e}"
-
-
-@app.route("/admin/logs")
-@login_required
-def logs():
-    log_type = request.args.get("type", "nginx-access")
-    lines = min(int(request.args.get("lines", 100)), 500)
-
-    log_files = {
-        "nginx-access": "/var/log/nginx/access.log",
-        "nginx-error": "/var/log/nginx/error.log",
-        "certbot": os.path.join(LOG_DIR, "certbot.log"),
-    }
-
-    filepath = log_files.get(log_type, log_files["nginx-access"])
-    content = read_log_tail(filepath, lines)
-
-    return render_template("logs.html",
-                           log_content=content,
-                           log_type=log_type,
-                           lines=lines,
-                           log_types=list(log_files.keys()))
-
-
-@app.route("/admin/logs/api")
-@login_required
-def logs_api():
-    """API endpoint for live log refresh."""
-    log_type = request.args.get("type", "nginx-access")
-    lines = min(int(request.args.get("lines", 100)), 500)
-
-    log_files = {
-        "nginx-access": "/var/log/nginx/access.log",
-        "nginx-error": "/var/log/nginx/error.log",
-        "certbot": os.path.join(LOG_DIR, "certbot.log"),
-    }
-
-    filepath = log_files.get(log_type, log_files["nginx-access"])
-    content = read_log_tail(filepath, lines)
-    return jsonify({"content": content, "type": log_type})
-
-
-# --- Sites management ---
-
-@app.route("/admin/sites")
-@login_required
-def sites():
-    """List all sites in sites-available and their enabled status."""
-    available = []
-    if os.path.isdir(SITES_AVAILABLE):
-        for f in sorted(os.listdir(SITES_AVAILABLE)):
-            if f.endswith(".conf"):
-                enabled_path = os.path.join(SITES_ENABLED, f)
-                is_enabled = os.path.islink(enabled_path) or os.path.exists(enabled_path)
-                avail_path = os.path.join(SITES_AVAILABLE, f)
-                try:
-                    with open(avail_path) as fh:
-                        content = fh.read()
-                except Exception:
-                    content = ""
-                available.append({
-                    "filename": f,
-                    "enabled": is_enabled,
-                    "content": content,
-                })
-    return render_template("sites.html", sites=available)
-
-
-@app.route("/admin/sites/toggle/<filename>", methods=["POST"])
-@login_required
-def toggle_site(filename):
-    """Enable or disable a site by adding/removing its symlink."""
-    if not filename.endswith(".conf"):
-        flash("Fichier invalide.", "error")
-        return redirect(url_for("sites"))
-
-    avail_path = os.path.join(SITES_AVAILABLE, filename)
-    enabled_path = os.path.join(SITES_ENABLED, filename)
-
-    if not os.path.exists(avail_path):
-        flash(f"Site {filename} introuvable.", "error")
-        return redirect(url_for("sites"))
-
-    if os.path.islink(enabled_path) or os.path.exists(enabled_path):
-        os.remove(enabled_path)
-        ok, msg = reload_nginx()
-        flash(f"Site {filename} desactive. {msg}", "success" if ok else "error")
-    else:
-        os.symlink(avail_path, enabled_path)
-        ok, msg = reload_nginx()
-        flash(f"Site {filename} active. {msg}", "success" if ok else "error")
-
-    return redirect(url_for("sites"))
-
-
-@app.route("/admin/sites/add", methods=["POST"])
-@login_required
-def add_site_conf():
-    """Add a custom site configuration file."""
-    filename = request.form.get("filename", "").strip()
-    content = request.form.get("content", "").strip()
-
-    if not filename:
-        flash("Le nom du fichier est obligatoire.", "error")
-        return redirect(url_for("sites"))
-
-    if not filename.endswith(".conf"):
-        filename += ".conf"
-
-    filename = sanitize_filename(filename)
-
-    if not content:
-        flash("Le contenu de la configuration est obligatoire.", "error")
-        return redirect(url_for("sites"))
-
-    avail_path = os.path.join(SITES_AVAILABLE, filename)
-    enabled_path = os.path.join(SITES_ENABLED, filename)
-
-    os.makedirs(SITES_AVAILABLE, exist_ok=True)
-    os.makedirs(SITES_ENABLED, exist_ok=True)
-
-    with open(avail_path, "w") as f:
-        f.write(content)
-
-    # Enable by default
-    if os.path.islink(enabled_path) or os.path.exists(enabled_path):
-        os.remove(enabled_path)
-    os.symlink(avail_path, enabled_path)
-
-    ok, msg = reload_nginx()
-    if ok:
-        flash(f"Site {filename} ajoute et active.", "success")
-    else:
-        # Rollback on invalid config
-        os.remove(enabled_path)
-        os.remove(avail_path)
-        flash(f"Configuration Nginx invalide, site non ajoute : {msg}", "error")
-
-    return redirect(url_for("sites"))
-
-
-@app.route("/admin/sites/delete/<filename>", methods=["POST"])
-@login_required
-def delete_site_conf(filename):
-    """Delete a site configuration."""
-    if not filename.endswith(".conf"):
-        flash("Fichier invalide.", "error")
-        return redirect(url_for("sites"))
-
-    avail_path = os.path.join(SITES_AVAILABLE, filename)
-    enabled_path = os.path.join(SITES_ENABLED, filename)
-
-    if os.path.islink(enabled_path) or os.path.exists(enabled_path):
-        os.remove(enabled_path)
-    if os.path.exists(avail_path):
-        os.remove(avail_path)
-
-    ok, msg = reload_nginx()
-    flash(f"Site {filename} supprime. {msg}", "success" if ok else "error")
-    return redirect(url_for("sites"))
 
 
 # Generate nginx conf at module load (works with gunicorn too)

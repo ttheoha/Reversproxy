@@ -19,8 +19,7 @@ COPY app/ /app/
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 
 # Create directories
-RUN mkdir -p /etc/nginx/conf.d /etc/nginx/sites-available /etc/nginx/sites-enabled \
-    /data/certs /data/logos /var/www/certbot /var/log/reverseproxy /etc/letsencrypt
+RUN mkdir -p /etc/nginx/conf.d /data/certs /data/logos /var/www/certbot
 
 # Copy initial self-signed certs
 COPY certs/ /data/certs/
