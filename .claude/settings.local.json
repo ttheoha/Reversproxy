@@ -26,7 +26,18 @@
       "Bash(gh auth:*)",
       "Bash(gh repo:*)",
       "Bash(cat /home/administrateur/Bureau/tools/toolmap/docs/*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(find /home/administrateur/Bureau/tools/reversproxy1 -type f ! -path */.git/* -printf %pn)",
+      "Bash(sudo kill:*)",
+      "Bash(sudo lsof:*)",
+      "Bash(sudo systemctl:*)",
+      "Bash(docker network:*)",
+      "Bash(docker stop:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(wc -l /home/administrateur/Bureau/tools/reversproxy1/app/templates/*.html)",
+      "Bash(git rebase:*)",
+      "Bash(GIT_EDITOR=true git rebase --continue)"
     ]
   }
 }

@@ -6,6 +6,10 @@ mkdir -p /data/certs /data/logos /var/www/certbot \
          /etc/nginx/sites-available /etc/nginx/sites-enabled \
          /etc/letsencrypt "$LOG_DIR"
 
+# Replace default nginx symlinks (/dev/stdout, /dev/stderr) with real files
+rm -f /var/log/nginx/access.log /var/log/nginx/error.log
+touch /var/log/nginx/access.log /var/log/nginx/error.log
+
 # ── Couleurs ──
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
