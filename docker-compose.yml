@@ -1,11 +1,11 @@
 services:
-  reverseproxy:
+  reversproxy:
     build: .
-    container_name: reverseproxy_th
+    container_name: reversproxy
     restart: unless-stopped
     ports:
       - "80:80"
-      - "443:443"
+      - "888:443"
     volumes:
       - proxy-data:/data
       - letsencrypt-data:/etc/letsencrypt

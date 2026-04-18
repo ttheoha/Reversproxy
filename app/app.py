@@ -215,19 +215,28 @@ server {{
             os.remove(enabled_path)
         os.symlink(avail_path, enabled_path)
 
-    # Clean up old auto-generated site files that no longer exist in routes
-    # Only remove files that start with "# Auto-generated" to preserve custom configs
-    for directory in [SITES_AVAILABLE, SITES_ENABLED]:
+    # Clean up old site files that no longer exist in routes
+    for directory in [SITES_ENABLED, SITES_AVAILABLE]:
         for existing in os.listdir(directory):
-            if existing.endswith(".conf") and existing not in expected_files:
-                filepath = os.path.join(directory, existing)
+            if not existing.endswith(".conf"):
+                continue
+            filepath = os.path.join(directory, existing)
+
+            # Always remove broken symlinks
+            if os.path.islink(filepath) and not os.path.exists(filepath):
+                os.remove(filepath)
+                continue
+
+            # Remove auto-generated files not in current routes
+            if existing not in expected_files:
                 if os.path.islink(filepath):
-                    # For symlinks in sites-enabled, check the target
                     target_path = os.path.realpath(filepath)
-                    if os.path.exists(target_path):
+                    try:
                         with open(target_path) as f:
                             if f.readline().startswith("# Auto-generated"):
                                 os.remove(filepath)
+                    except OSError:
+                        os.remove(filepath)
                 elif os.path.isfile(filepath):
                     with open(filepath) as f:
                         if f.readline().startswith("# Auto-generated"):
@@ -1529,6 +1538,189 @@ def certs_letsencrypt_test():
         "domain_match": domain_match,
         "warnings": warnings,
     })
+
+
+# --- Logs ---
+
+def read_log_tail(filepath, lines=100):
+    """Read the last N lines of a log file."""
+    if not os.path.exists(filepath):
+        return f"Fichier introuvable : {filepath}"
+    try:
+        with open(filepath, "rb") as f:
+            # Seek from end to find last N lines efficiently
+            f.seek(0, 2)
+            size = f.tell()
+            if size == 0:
+                return "(vide)"
+            # Read last chunk (generous buffer for N lines)
+            chunk_size = min(size, lines * 512)
+            f.seek(max(0, size - chunk_size))
+            data = f.read().decode("utf-8", errors="replace")
+            result_lines = data.splitlines()
+            return "\n".join(result_lines[-lines:]) or "(vide)"
+    except Exception as e:
+        return f"Erreur de lecture : {e}"
+
+
+@app.route("/admin/logs")
+@login_required
+def logs():
+    log_type = request.args.get("type", "nginx-access")
+    lines = min(int(request.args.get("lines", 100)), 500)
+
+    log_files = {
+        "nginx-access": "/var/log/nginx/access.log",
+        "nginx-error": "/var/log/nginx/error.log",
+        "certbot": os.path.join(LOG_DIR, "certbot.log"),
+    }
+
+    filepath = log_files.get(log_type, log_files["nginx-access"])
+    content = read_log_tail(filepath, lines)
+
+    return render_template("logs.html",
+                           log_content=content,
+                           log_type=log_type,
+                           lines=lines,
+                           log_types=list(log_files.keys()))
+
+
+@app.route("/admin/logs/api")
+@login_required
+def logs_api():
+    """API endpoint for live log refresh."""
+    log_type = request.args.get("type", "nginx-access")
+    lines = min(int(request.args.get("lines", 100)), 500)
+
+    log_files = {
+        "nginx-access": "/var/log/nginx/access.log",
+        "nginx-error": "/var/log/nginx/error.log",
+        "certbot": os.path.join(LOG_DIR, "certbot.log"),
+    }
+
+    filepath = log_files.get(log_type, log_files["nginx-access"])
+    content = read_log_tail(filepath, lines)
+    return jsonify({"content": content, "type": log_type})
+
+
+# --- Sites management ---
+
+@app.route("/admin/sites")
+@login_required
+def sites():
+    """List all sites in sites-available and their enabled status."""
+    available = []
+    if os.path.isdir(SITES_AVAILABLE):
+        for f in sorted(os.listdir(SITES_AVAILABLE)):
+            if f.endswith(".conf"):
+                enabled_path = os.path.join(SITES_ENABLED, f)
+                is_enabled = os.path.islink(enabled_path) or os.path.exists(enabled_path)
+                avail_path = os.path.join(SITES_AVAILABLE, f)
+                try:
+                    with open(avail_path) as fh:
+                        content = fh.read()
+                except Exception:
+                    content = ""
+                available.append({
+                    "filename": f,
+                    "enabled": is_enabled,
+                    "content": content,
+                })
+    return render_template("sites.html", sites=available)
+
+
+@app.route("/admin/sites/toggle/<filename>", methods=["POST"])
+@login_required
+def toggle_site(filename):
+    """Enable or disable a site by adding/removing its symlink."""
+    if not filename.endswith(".conf"):
+        flash("Fichier invalide.", "error")
+        return redirect(url_for("sites"))
+
+    avail_path = os.path.join(SITES_AVAILABLE, filename)
+    enabled_path = os.path.join(SITES_ENABLED, filename)
+
+    if not os.path.exists(avail_path):
+        flash(f"Site {filename} introuvable.", "error")
+        return redirect(url_for("sites"))
+
+    if os.path.islink(enabled_path) or os.path.exists(enabled_path):
+        os.remove(enabled_path)
+        ok, msg = reload_nginx()
+        flash(f"Site {filename} desactive. {msg}", "success" if ok else "error")
+    else:
+        os.symlink(avail_path, enabled_path)
+        ok, msg = reload_nginx()
+        flash(f"Site {filename} active. {msg}", "success" if ok else "error")
+
+    return redirect(url_for("sites"))
+
+
+@app.route("/admin/sites/add", methods=["POST"])
+@login_required
+def add_site_conf():
+    """Add a custom site configuration file."""
+    filename = request.form.get("filename", "").strip()
+    content = request.form.get("content", "").strip()
+
+    if not filename:
+        flash("Le nom du fichier est obligatoire.", "error")
+        return redirect(url_for("sites"))
+
+    if not filename.endswith(".conf"):
+        filename += ".conf"
+
+    filename = sanitize_filename(filename)
+
+    if not content:
+        flash("Le contenu de la configuration est obligatoire.", "error")
+        return redirect(url_for("sites"))
+
+    avail_path = os.path.join(SITES_AVAILABLE, filename)
+    enabled_path = os.path.join(SITES_ENABLED, filename)
+
+    os.makedirs(SITES_AVAILABLE, exist_ok=True)
+    os.makedirs(SITES_ENABLED, exist_ok=True)
+
+    with open(avail_path, "w") as f:
+        f.write(content)
+
+    # Enable by default
+    if os.path.islink(enabled_path) or os.path.exists(enabled_path):
+        os.remove(enabled_path)
+    os.symlink(avail_path, enabled_path)
+
+    ok, msg = reload_nginx()
+    if ok:
+        flash(f"Site {filename} ajoute et active.", "success")
+    else:
+        # Rollback on invalid config
+        os.remove(enabled_path)
+        os.remove(avail_path)
+        flash(f"Configuration Nginx invalide, site non ajoute : {msg}", "error")
+
+    return redirect(url_for("sites"))
+
+
+@app.route("/admin/sites/delete/<filename>", methods=["POST"])
+@login_required
+def delete_site_conf(filename):
+    """Delete a site configuration."""
+    if not filename.endswith(".conf"):
+        flash("Fichier invalide.", "error")
+        return redirect(url_for("sites"))
+
+    avail_path = os.path.join(SITES_AVAILABLE, filename)
+    enabled_path = os.path.join(SITES_ENABLED, filename)
+
+    if os.path.islink(enabled_path) or os.path.exists(enabled_path):
+        os.remove(enabled_path)
+    if os.path.exists(avail_path):
+        os.remove(avail_path)
+
+    ok, msg = reload_nginx()
+    flash(f"Site {filename} supprime. {msg}", "success" if ok else "error")
+    return redirect(url_for("sites"))
 
 
 # Generate nginx conf at module load (works with gunicorn too)
