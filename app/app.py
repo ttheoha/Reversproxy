@@ -1100,21 +1100,23 @@ def ovh_credentials_ready():
     ])
 
 
-def build_certbot_cmd(domain, email, challenge_type="http"):
+def build_certbot_cmd(domain, email, challenge_type="http", force_renewal=False):
     """Build certbot command for the given domain and challenge type."""
     certbot_cmd = [
         "certbot", "certonly",
         "--non-interactive",
         "--agree-tos",
-        "--keep-until-expiring",
     ]
+
+    if force_renewal:
+        certbot_cmd.append("--force-renewal")
 
     if challenge_type == "dns-ovh":
         # Ensure INI file exists
         ovh = load_ovh_credentials()
         write_ovh_ini(ovh)
         certbot_cmd += [
-            "--dns-ovh",
+            "--authenticator", "dns-ovh",
             "--dns-ovh-credentials", OVH_CREDENTIALS_FILE,
             "--dns-ovh-propagation-seconds", "60",
         ]
@@ -1295,16 +1297,26 @@ def certs_letsencrypt_add():
         flash(f"Le domaine {domain} est deja dans la liste.", "error")
         return redirect(url_for("certs"))
 
-    # Build and run certbot command
-    certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
+    # Build and run certbot command (force renewal to avoid keeping stale certs)
+    certbot_cmd = build_certbot_cmd(domain, email, challenge_type, force_renewal=True)
+
+    # Log the command for debugging
+    log_dir = "/var/log/reverseproxy"
+    os.makedirs(log_dir, exist_ok=True)
+    with open(os.path.join(log_dir, "certbot.log"), "a") as log:
+        log.write(f"\n[{time.strftime('%Y-%m-%d %H:%M:%S')}] Running: {' '.join(certbot_cmd)}\n")
 
     # DNS-01 can take longer (propagation)
-    timeout = 180 if challenge_type == "dns-ovh" else 120
+    timeout = 300 if challenge_type == "dns-ovh" else 120
 
     try:
         result = subprocess.run(
             certbot_cmd, capture_output=True, text=True, timeout=timeout
         )
+        # Log full output
+        with open(os.path.join(log_dir, "certbot.log"), "a") as log:
+            log.write(f"Return code: {result.returncode}\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}\n")
+
         if result.returncode != 0:
             error_msg = result.stderr.strip() or result.stdout.strip()
             config.setdefault("domains", []).append({
@@ -1317,7 +1329,22 @@ def certs_letsencrypt_add():
             flash(f"Erreur certbot pour {domain} : {error_msg}", "error")
             return redirect(url_for("certs"))
     except subprocess.TimeoutExpired:
-        flash(f"Certbot timeout pour {domain}. Verifiez la configuration.", "error")
+        flash(f"Certbot timeout pour {domain} ({timeout}s). Verifiez la configuration DNS/OVH.", "error")
+        return redirect(url_for("certs"))
+
+    # Verify the cert was actually created
+    cert_path, _ = get_domain_cert_paths(domain)
+    if cert_path.endswith("selfsigned.crt"):
+        # Certbot returned 0 but no LE cert found - something went wrong
+        output = result.stdout.strip() + " " + result.stderr.strip()
+        config.setdefault("domains", []).append({
+            "domain": domain,
+            "challenge": challenge_type,
+            "status": "error",
+            "error": f"Certbot OK mais certificat introuvable. Sortie: {output[:200]}",
+        })
+        save_letsencrypt_config(config)
+        flash(f"Certbot a retourne succes mais aucun certificat trouve pour {domain}. Verifiez les logs.", "error")
         return redirect(url_for("certs"))
 
     # Success - add domain
@@ -1372,11 +1399,9 @@ def certs_letsencrypt_renew(domain):
         return redirect(url_for("certs"))
 
     challenge_type = domain_entry.get("challenge", "http")
-    certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
-    # Force renewal
-    certbot_cmd.append("--force-renewal")
+    certbot_cmd = build_certbot_cmd(domain, email, challenge_type, force_renewal=True)
 
-    timeout = 180 if challenge_type == "dns-ovh" else 120
+    timeout = 300 if challenge_type == "dns-ovh" else 120
 
     try:
         result = subprocess.run(certbot_cmd, capture_output=True, text=True, timeout=timeout)
@@ -1412,10 +1437,9 @@ def certs_letsencrypt_renew_all():
     for domain_entry in config.get("domains", []):
         domain = domain_entry["domain"]
         challenge_type = domain_entry.get("challenge", "http")
-        certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
-        certbot_cmd.append("--force-renewal")
+        certbot_cmd = build_certbot_cmd(domain, email, challenge_type, force_renewal=True)
 
-        timeout = 180 if challenge_type == "dns-ovh" else 120
+        timeout = 300 if challenge_type == "dns-ovh" else 120
 
         try:
             result = subprocess.run(certbot_cmd, capture_output=True, text=True, timeout=timeout)

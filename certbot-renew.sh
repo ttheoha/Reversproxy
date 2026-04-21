@@ -24,10 +24,26 @@ if [ "$AUTO_RENEW" != "True" ] || [ -z "$DOMAINS" ]; then
     exit 0
 fi
 
+# Ecrire le fichier credentials OVH si necessaire
+python3 -c "
+import json, os
+data = json.load(open('$LE_CONFIG'))
+ovh = data.get('ovh', {})
+if ovh.get('application_key') and ovh.get('application_secret') and ovh.get('consumer_key'):
+    ini = f\"\"\"dns_ovh_endpoint = {ovh.get('endpoint', 'ovh-eu')}
+dns_ovh_application_key = {ovh['application_key']}
+dns_ovh_application_secret = {ovh['application_secret']}
+dns_ovh_consumer_key = {ovh['consumer_key']}
+\"\"\"
+    with open('/data/ovh-credentials.ini', 'w') as f:
+        f.write(ini)
+    os.chmod('/data/ovh-credentials.ini', 0o600)
+" 2>/dev/null
+
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Tentative de renouvellement Let's Encrypt" >> "$LOG_DIR/certbot.log"
 
-# Renouveler tous les certificats existants
-certbot renew --webroot -w /var/www/certbot --quiet --no-random-sleep-on-renew 2>>"$LOG_DIR/certbot.log"
+# certbot renew utilise automatiquement le bon authenticator pour chaque cert
+certbot renew --quiet --no-random-sleep-on-renew 2>>"$LOG_DIR/certbot.log"
 RESULT=$?
 
 if [ $RESULT -eq 0 ]; then

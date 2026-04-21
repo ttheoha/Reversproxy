@@ -2,15 +2,15 @@ FROM nginx:1.27-alpine
 
 # Install Python and pip
 RUN apk add --no-cache python3 py3-pip supervisor openssl expat expat-dev \
-    openldap-dev gcc musl-dev python3-dev certbot
+    openldap-dev gcc musl-dev python3-dev libffi-dev
 
 # Create app directory
 WORKDIR /app
 
-# Install Python dependencies
+# Install Python dependencies (certbot + plugin from pip to avoid version mismatch)
 COPY app/requirements.txt .
 RUN pip3 install --no-cache-dir --break-system-packages -r requirements.txt && \
-    pip3 install --no-cache-dir --break-system-packages certbot-dns-ovh
+    pip3 install --no-cache-dir --break-system-packages certbot certbot-dns-ovh
 
 # Copy application
 COPY app/ /app/
