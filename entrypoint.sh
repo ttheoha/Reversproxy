@@ -86,8 +86,12 @@ for d in data.get('domains', []):
     fi
 
     echo "${CYAN}[LE]${NC} Verification des certificats Let's Encrypt :"
-    for DOMAIN in $DOMAINS; do
-        LE_CERT="/etc/letsencrypt/live/$DOMAIN/fullchain.pem"
+    echo "$DOMAINS" | while IFS= read -r DOMAIN; do
+        [ -z "$DOMAIN" ] && continue
+        # Wildcard certs are stored under the base domain name
+        CERT_NAME="$DOMAIN"
+        case "$DOMAIN" in \*.*) CERT_NAME="${DOMAIN#\*.}" ;; esac
+        LE_CERT="/etc/letsencrypt/live/$CERT_NAME/fullchain.pem"
         if [ -f "$LE_CERT" ]; then
             NOT_AFTER=$(openssl x509 -in "$LE_CERT" -noout -enddate 2>/dev/null | sed 's/notAfter=//')
             if openssl x509 -in "$LE_CERT" -noout -checkend 0 >/dev/null 2>&1; then

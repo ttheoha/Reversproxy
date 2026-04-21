@@ -1349,69 +1349,90 @@ def certs_letsencrypt_remove(domain):
     config["domains"] = [d for d in config.get("domains", []) if d["domain"] != domain]
     save_letsencrypt_config(config)
 
-    if not config["enabled"]:
-        flash("Configuration Let's Encrypt sauvegardee (desactivee).", "success")
+    # Regenerate nginx configs to fall back to self-signed cert
+    routes = load_routes()
+    generate_nginx_conf(routes)
+    reload_nginx()
+
+    flash(f"Domaine {domain} retire de Let's Encrypt.", "success")
+    return redirect(url_for("certs"))
+
+
+@app.route("/admin/certs/letsencrypt/renew/<path:domain>", methods=["POST"])
+@login_required
+def certs_letsencrypt_renew(domain):
+    """Renew a LE certificate for a single domain."""
+    config = load_letsencrypt_config()
+    email = config.get("email", "")
+
+    # Find domain entry to get challenge type
+    domain_entry = next((d for d in config.get("domains", []) if d["domain"] == domain), None)
+    if not domain_entry:
+        flash(f"Domaine {domain} introuvable dans la configuration.", "error")
         return redirect(url_for("certs"))
 
-    domain = config["domain"]
-    email = config["email"]
+    challenge_type = domain_entry.get("challenge", "http")
+    certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
+    # Force renewal
+    certbot_cmd.append("--force-renewal")
 
-    if not domain:
-        flash("Veuillez renseigner un nom de domaine.", "error")
-        return redirect(url_for("certs"))
-
-    # Build certbot command
-    certbot_cmd = [
-        "certbot", "certonly",
-        "--webroot",
-        "-w", "/var/www/certbot",
-        "-d", domain,
-        "--non-interactive",
-        "--agree-tos",
-        "--keep-until-expiring",
-    ]
-    if email:
-        certbot_cmd += ["-m", email]
-    else:
-        certbot_cmd += ["--register-unsafely-without-email"]
+    timeout = 180 if challenge_type == "dns-ovh" else 120
 
     try:
-        result = subprocess.run(
-            certbot_cmd, capture_output=True, text=True, timeout=120
-        )
+        result = subprocess.run(certbot_cmd, capture_output=True, text=True, timeout=timeout)
         if result.returncode != 0:
             error_msg = result.stderr.strip() or result.stdout.strip()
-            flash(f"Erreur certbot : {error_msg}", "error")
+            flash(f"Erreur renouvellement {domain} : {error_msg}", "error")
             return redirect(url_for("certs"))
     except subprocess.TimeoutExpired:
-        flash("Certbot a expire (timeout 120s). Verifiez que le port 80 est accessible depuis Internet.", "error")
-        return redirect(url_for("certs"))
-    except Exception as e:
-        flash(f"Erreur lors de l'execution de certbot : {e}", "error")
+        flash(f"Timeout lors du renouvellement de {domain}.", "error")
         return redirect(url_for("certs"))
 
-    # Copy Let's Encrypt certs to the location nginx expects
-    le_cert = f"/etc/letsencrypt/live/{domain}/fullchain.pem"
-    le_key = f"/etc/letsencrypt/live/{domain}/privkey.pem"
-
-    if not os.path.exists(le_cert) or not os.path.exists(le_key):
-        flash("Certbot a reussi mais les fichiers de certificat sont introuvables.", "error")
-        return redirect(url_for("certs"))
-
-    try:
-        os.makedirs(CERTS_DIR, exist_ok=True)
-        shutil.copy2(le_cert, os.path.join(CERTS_DIR, "selfsigned.crt"))
-        shutil.copy2(le_key, os.path.join(CERTS_DIR, "selfsigned.key"))
-    except Exception as e:
-        flash(f"Certificat obtenu mais erreur lors de la copie : {e}", "error")
-        return redirect(url_for("certs"))
-
+    # Regenerate nginx configs
+    routes = load_routes()
+    generate_nginx_conf(routes)
     ok, msg = reload_nginx()
-    if ok:
-        flash(f"Certificat Let's Encrypt obtenu et installe pour {domain}.", "success")
-    else:
-        flash(f"Certificat obtenu mais erreur Nginx : {msg}", "error")
 
+    if ok:
+        flash(f"Certificat renouvele pour {domain}.", "success")
+    else:
+        flash(f"Certificat renouvele pour {domain} mais erreur Nginx : {msg}", "error")
+
+    return redirect(url_for("certs"))
+
+
+@app.route("/admin/certs/letsencrypt/renew-all", methods=["POST"])
+@login_required
+def certs_letsencrypt_renew_all():
+    """Renew all LE certificates."""
+    config = load_letsencrypt_config()
+    email = config.get("email", "")
+    results = []
+
+    for domain_entry in config.get("domains", []):
+        domain = domain_entry["domain"]
+        challenge_type = domain_entry.get("challenge", "http")
+        certbot_cmd = build_certbot_cmd(domain, email, challenge_type)
+        certbot_cmd.append("--force-renewal")
+
+        timeout = 180 if challenge_type == "dns-ovh" else 120
+
+        try:
+            result = subprocess.run(certbot_cmd, capture_output=True, text=True, timeout=timeout)
+            if result.returncode == 0:
+                results.append(f"{domain} : OK")
+            else:
+                error_msg = result.stderr.strip() or result.stdout.strip()
+                results.append(f"{domain} : ERREUR - {error_msg[:100]}")
+        except subprocess.TimeoutExpired:
+            results.append(f"{domain} : TIMEOUT")
+
+    # Regenerate nginx configs
+    routes = load_routes()
+    generate_nginx_conf(routes)
+    reload_nginx()
+
+    flash("Renouvellement termine. " + " | ".join(results), "success")
     return redirect(url_for("certs"))
 
 
